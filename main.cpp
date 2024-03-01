@@ -29,7 +29,6 @@ int main(int agrc, char **argv)
     Game game(renderer, &event, &painter, GAME_WIDTH, GAME_HEIGHT);
 
     renderSplashScreen();
-    game.init();
     while (game.isGameRunning()) {
         game.handleEvent();
         game.process();

@@ -2,14 +2,23 @@
 #define GAME_H_INCLUDED
 
 #include <set>
+#include <chrono>
+#include <thread>
+#include <ctime>
 
 #include "../init.h"
 #include "../gundam/gundam.h"
 #include "../Painter.h"
 #include "../enemy/chicken.h"
 
-const int NUMBER_OF_CHICKEN = 30;
-const int NUMBER_OF_CHICKEN_PER_ROW = 10;
+#define CLOCK_NOW chrono::system_clock::now
+
+const int NUMBER_OF_CHICKEN = 3;
+const int NUMBER_OF_CHICKEN_PER_ROW = 3;
+const int MINI_BOSS_ROUND = 3;
+const int BOSS_ROUND = 4;
+
+const double INIT_DELAY = 2;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -23,12 +32,15 @@ class Game {
     SDL_Event *event;
     Painter *painter;
 
+    bool roundWon;
     int width, height;
-    int score;
+    int score, round;
     GameStatus status;
     Gundam gundam;
     set<Chicken*> chickens;
     vector<Bullet*>chickenBullets;
+
+    chrono::system_clock::time_point initStart, initEnd;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
