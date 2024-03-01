@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ChickenInvaders" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ChickenInvaders" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/ChickenInvaders" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="Painter.cpp" />
+		<Unit filename="Painter.h" />
+		<Unit filename="enemy/chicken.cpp" />
+		<Unit filename="enemy/chicken.h" />
+		<Unit filename="game/game.cpp" />
+		<Unit filename="game/game.h" />
+		<Unit filename="gundam/gundam.cpp" />
+		<Unit filename="gundam/gundam.h" />
+		<Unit filename="init.cpp" />
+		<Unit filename="init.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="main.cpp" />
+		<Unit filename="sdl_init.cpp" />
+		<Unit filename="sdl_init.h" />
+		<Unit filename="weapon/bullet.cpp" />
+		<Unit filename="weapon/bullet.h" />
+		<Unit filename="weapon/weapon.cpp" />
+		<Unit filename="weapon/weapon.h" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
