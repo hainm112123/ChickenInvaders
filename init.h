@@ -4,16 +4,24 @@
 #include <set>
 #include <vector>
 #include <assert.h>
+#include <chrono>
+#include <thread>
+#include <ctime>
 
 #include "SDL.h"
 #include "SDL_image.h"
 #include "Painter.h"
 
+#define CLOCK_NOW chrono::system_clock::now
+
 using namespace std;
 
-const int SCREEN_WIDTH = 1280;
+typedef chrono::system_clock::time_point Time;
+typedef chrono::duration<double> ElapsedTime;
+
+const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 720;
-const int GAME_WIDTH = 1280;
+const int GAME_WIDTH = 1200;
 const int GAME_HEIGHT = 4096;
 
 enum WeaponType {
@@ -25,18 +33,32 @@ enum WeaponType {
     CHICKEN_EGG,
 };
 
+enum EntityType {
+    GUNDAM = 0,
+    BACKGROUND,
+    CHICKEN,
+    CHICKEN_BOSS,
+    BULLET,
+};
+
 struct EnemyMoveState {
-    int goLeft, goRight, goUp, goDown;
+    bool goLeft, goRight, goUp, goDown;
 };
 
 class Entity {
+    EntityType type;
     SDL_Rect rect;
-    SDL_Texture *texture;
+    Texture texture;
     int step_x = 0, step_y = 0;
+    int frame = 0;
 
 public:
+    bool operator < (const Entity &other) const {
+        return (rect.x < other.rect.x) || (rect.x == other.rect.x && rect.y < other.rect.y);
+    }
+
     Entity();
-    Entity(SDL_Rect _rect);
+    Entity(EntityType _type, SDL_Rect _rect = {0, 0, 0, 0});
 
     int getX() const {
         return rect.x;
@@ -58,7 +80,19 @@ public:
     bool collisionWith(const Entity &entity);
 
     void render(SDL_Renderer *renderer);
+    void setTexture(Texture _texture);
+};
 
+class Gallery {
+    Painter *painter;
+public:
+    vector<Texture> chickens, blasters, borons, neutrons, eggs;
+    Texture gundam, laser, rock, background;
+
+    Gallery(Painter *_painter);
+    ~Gallery();
+
+    void loadGamePictures();
 };
 
 #endif // INIT_H_INCLUDED

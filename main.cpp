@@ -28,12 +28,20 @@ int main(int agrc, char **argv)
     Painter painter(window, renderer);
     Game game(renderer, &event, &painter, GAME_WIDTH, GAME_HEIGHT);
 
+
+    auto a = SDL_GetTicks();
+    auto b = SDL_GetTicks();
+
     renderSplashScreen();
-    while (game.isGameRunning()) {
-        game.handleEvent();
-        game.process();
-        SDL_RenderPresent(renderer);
-        SDL_Delay(1);
+    while (game.getGameStatus() == GAME_RUNNING) {
+        a = SDL_GetTicks();
+        double delta = a - b;
+        if (delta > (double)(1000)/144) {
+//            cout << "FPS: " << 1000 / delta << "\n";
+            b = a;
+            game.process();
+        }
+//        cout << (game.getGameStatus() == GAME_WON);
     }
 
     waitUntilKeyPressed();

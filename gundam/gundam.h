@@ -7,7 +7,8 @@
 #include "../weapon/weapon.h"
 #include "../init.h"
 
-const int GUNDAM_SIZE = 20;
+const int GUNDAM_WIDTH = 65;
+const int GUNDAM_HEIGHT = 67;
 const int GUNDAM_SPEED = 4;
 
 enum GundamMove {
@@ -50,10 +51,10 @@ public:
         return alive;
     }
 
-    void render(SDL_Renderer *renderer, Painter *painter);
+    void render(SDL_Renderer *renderer);
 
     void _move();
-    void control(SDL_Event event);
+    void control(SDL_Event event, Gallery *gallery);
     void handleBullet(SDL_Renderer *renderer);
     void removeBullet(Bullet *bullet);
     void dead();

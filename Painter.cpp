@@ -15,8 +15,8 @@ Painter::Painter(SDL_Window *window, SDL_Renderer *_renderer): renderer(_rendere
     }
     setPosition(width / 2, height / 2);
     setAngle(0);
-    setColor(WHITE_COLOR);
-    clearWithBgColor(BLACK_COLOR);
+//    setColor(WHITE_COLOR);
+//    clearWithBgColor(BLACK_COLOR);
 }
 
 void Painter::setPosition(double x, double y) {
@@ -34,9 +34,8 @@ void Painter::setColor(SDL_Color color) {
 }
 
 void Painter::clearWithBgColor(SDL_Color bgColor) {
-    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, 0);
+    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
     SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 0);
 }
 
 void Painter::moveForward(double length) {
@@ -84,19 +83,24 @@ void Painter::createCircle(double radius) {
     }
 }
 
-SDL_Texture *Painter::loadTexture(string path) {
+Texture Painter::loadTexture(string path) {
     SDL_Texture *newTexture = NULL;
     SDL_Surface *loadedSurface = IMG_Load(path.c_str());
+    int w, h;
     if (loadedSurface == NULL) {
         cout << "Unable to load image " << path << " SDL_image Error: " << IMG_GetError() << "\n";
     }
     else {
+        Uint32 colorKey = SDL_MapRGB(loadedSurface->format, 170, 170, 170);
+        SDL_SetColorKey(loadedSurface, SDL_TRUE, colorKey);
         newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-        if (newTexture == NULL)
-        cout << "Unable to create texture from " << path << " SDL Error: " << SDL_GetError() << "\n";
+        w = loadedSurface->w; h = loadedSurface->h;
+        if (newTexture == NULL) {
+            cout << "Unable to create texture from " << path << " SDL Error: " << SDL_GetError() << "\n";
+        }
         SDL_FreeSurface(loadedSurface);
     }
-    return newTexture;
+    return {newTexture, w, h};
 }
 
 bool Painter::createImage(SDL_Texture *texture, SDL_Rect *srcrect, SDL_Rect *dstrect) {

@@ -1,24 +1,17 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
-#include <set>
-#include <chrono>
-#include <thread>
-#include <ctime>
-
 #include "../init.h"
 #include "../gundam/gundam.h"
 #include "../Painter.h"
 #include "../enemy/chicken.h"
 
-#define CLOCK_NOW chrono::system_clock::now
-
-const int NUMBER_OF_CHICKEN = 3;
-const int NUMBER_OF_CHICKEN_PER_ROW = 3;
+const int NUMBER_OF_CHICKEN = 30;
+const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const int MINI_BOSS_ROUND = 3;
 const int BOSS_ROUND = 4;
 
-const double INIT_DELAY = 2;
+const double INIT_DELAY = 1;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -31,14 +24,21 @@ class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
     Painter *painter;
+    Gallery *gallery;
 
     bool roundWon;
     int width, height;
     int score, round;
     GameStatus status;
+
+    Entity background;
+
     Gundam gundam;
+
     set<Chicken*> chickens;
+    Chicken *topChicken, *bottomChicken, *leftChicken, *rightChicken;
     vector<Bullet*>chickenBullets;
+    EnemyMoveState enemyMoveState;
 
     chrono::system_clock::time_point initStart, initEnd;
 
@@ -51,14 +51,13 @@ public:
     int getHeight() const {
         return height;
     }
-
-    bool isGameRunning() const {
-        return status == GAME_RUNNING;
+    int getGameStatus() const {
+        return status;
     }
 
     void setGameStatus(GameStatus newStatus);
     void init();
-    void handleEvent();
+    void handleGameEvent();
     void process();
 
     void handleChicken();

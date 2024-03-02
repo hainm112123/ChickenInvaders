@@ -1,15 +1,14 @@
 #include "gundam.h"
 #include "../weapon/bullet.h"
 
-Gundam::Gundam(): entity({SCREEN_WIDTH / 2, SCREEN_HEIGHT - GUNDAM_SIZE, GUNDAM_SIZE, GUNDAM_SIZE}) {
+Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}) {
     bulletDmg = GUNDAM_BLASTER_DAMAGE;
     lives = 3;
     alive = true;
 }
 
-void Gundam::render(SDL_Renderer *renderer, Painter *painter) {
+void Gundam::render(SDL_Renderer *renderer) {
     if (!alive) return;
-    painter->setColor(GREEN_COLOR);
     entity.render(renderer);
 }
 
@@ -18,7 +17,7 @@ void Gundam::_move() {
     entity._move(true);
 }
 
-void Gundam::control(SDL_Event event) {
+void Gundam::control(SDL_Event event, Gallery *gallery) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
@@ -33,8 +32,9 @@ void Gundam::control(SDL_Event event) {
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_SPACE && alive) {
-            Bullet *bullet = new Bullet(Entity({entity.getX() + entity.getW() / 2 - BLASTER_WIDTH / 2, entity.getY() - BLASTER_HEIGHT, BLASTER_WIDTH, BLASTER_HEIGHT}));
+            Bullet *bullet = new Bullet(Entity(BULLET, {entity.getX() + entity.getW() / 2 - BLASTER_WIDTH / 2, entity.getY() - BLASTER_HEIGHT, BLASTER_WIDTH, BLASTER_HEIGHT}));
             bullet->getEntity()->setStep(0, -GUNDAM_BLASTER_SPEED);
+            bullet->getEntity()->setTexture(gallery->blasters[0]);
             bullet->setIsMove(true);
             bullets.insert(bullet);
         }

@@ -8,10 +8,15 @@
 
 using namespace std;
 
-const SDL_Color WHITE_COLOR = {255, 255, 255, 0};
+const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
 const SDL_Color BLACK_COLOR = {0, 0, 0, 0};
 const SDL_Color GREEN_COLOR = {0, 128, 0, 0};
 const SDL_Color RED_COLOR = {255, 0, 0, 0};
+
+struct Texture {
+    SDL_Texture *texture;
+    int w, h;
+};
 
 class Painter {
     double x;
@@ -65,7 +70,7 @@ class Painter {
             return renderer;
         }
 
-        SDL_Texture *loadTexture(string path);
+        Texture loadTexture(string path);
         bool createImage(SDL_Texture *texture, SDL_Rect *srcrect = nullptr, SDL_Rect *dstrect = nullptr);
 };
 

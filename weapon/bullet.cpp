@@ -12,7 +12,7 @@ void Bullet::setIsMove(const bool _isMove) {
     isMove = _isMove;
 }
 void Bullet::setEntity(SDL_Rect rect, int speed) {
-    entity = Entity(rect);
+    entity = Entity(BULLET, rect);
     entity.setStep(0, speed);
 //    cout << entity.getX() << " " << entity.getY() << " " << speed << "\n";
 }
