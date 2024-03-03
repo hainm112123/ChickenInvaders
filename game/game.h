@@ -35,7 +35,8 @@ class Game {
 
     Gundam gundam;
 
-    set<Chicken*> chickens;
+    vector<Chicken*> chickens;
+    int numberOfAliveChicken;
     Chicken *topChicken, *bottomChicken, *leftChicken, *rightChicken;
     vector<Bullet*>chickenBullets;
     EnemyMoveState enemyMoveState;

@@ -28,11 +28,12 @@ void Game::init() {
     chickenBullets.clear();
     chickens.clear();
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
+    numberOfAliveChicken = 0;
 
     int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
     int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
     int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
-    int numberOfBullet = perRow;
+    int numberOfBullet = (level ? perRow * 2 : perRow);
 
     enemyMoveState = {0, 1, 0, !level};
 
@@ -41,8 +42,9 @@ void Game::init() {
         int row = i / perRow, col = i % perRow;
         Chicken *chicken = new Chicken(col, row, level);
         chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
-        chickens.insert(chicken);
+        chickens.push_back(chicken);
     }
+    numberOfAliveChicken = numberOfEnemy;
 
 //    cout << "Init Successful\n";
 }
@@ -83,19 +85,21 @@ void Game::process() {
     }
 
     int chicken_step_x = 0, chicken_step_y = 0;
+    topChicken = bottomChicken = leftChicken = rightChicken = NULL;
 
     if (!chickens.empty()) {
-        topChicken = leftChicken = *chickens.begin();
-        bottomChicken = rightChicken = *chickens.rbegin();
-        for (Chicken *chicken: chickens) {
+//        topChicken = leftChicken = *chickens.begin();
+//        bottomChicken = rightChicken = *chickens.rbegin();
+        for (Chicken *chicken: chickens) if (chicken->isAlive()) {
+            if (topChicken == nullptr) {
+                topChicken = bottomChicken = leftChicken = rightChicken = chicken;
+                continue;
+            }
             if (chicken->getEntity()->getX() < leftChicken->getEntity()->getX()) leftChicken = chicken;
             if (chicken->getEntity()->getX() > rightChicken->getEntity()->getX()) rightChicken = chicken;
             if (chicken->getEntity()->getY() < topChicken->getEntity()->getY()) topChicken = chicken;
             if (chicken->getEntity()->getY() > bottomChicken->getEntity()->getY()) bottomChicken = chicken;
         }
-    }
-    else {
-        topChicken = bottomChicken = leftChicken = rightChicken = NULL;
     }
 
     if (topChicken != nullptr) {
@@ -106,18 +110,20 @@ void Game::process() {
     }
 
     for (Chicken *chicken: chickens) {
-        chicken->_move(chicken_step_x, chicken_step_y);
+        if (chicken->isAlive()) {
+            chicken->_move(chicken_step_x, chicken_step_y);
 
-        const int rate = chicken->getLevel() == 0 ? 1 : 100;
-        const int maxNumberOfBullet = chicken->getLevel() == 0 ? 1 : 3;
-        auto _now = CLOCK_NOW();
-        ElapsedTime elapsed = _now - chicken->getLastBullet();
-        if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && elapsed.count() > BULLET_DELAY) {
-            chicken->addBullet(chickenBullets.back());
-            chickenBullets.pop_back();
-            chicken->setLastBullet(_now);
+            const int rate = chicken->getLevel() == 0 ? 1 : 100;
+            const int maxNumberOfBullet = chicken->getLevel() == 0 ? 1 : 3;
+            auto _now = CLOCK_NOW();
+            ElapsedTime elapsed = _now - chicken->getLastBullet();
+            if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && elapsed.count() > BULLET_DELAY) {
+                chicken->addBullet(chickenBullets.back(), gallery);
+                chickenBullets.pop_back();
+                chicken->setLastBullet(_now);
+            }
+            chicken->render(renderer);
         }
-        chicken->render(renderer);
         chicken->handleBullet(renderer, chickenBullets);
     }
 
@@ -148,8 +154,10 @@ void Game::process() {
 
 void Game::handleGameEvent() {
     for (Chicken *chicken: chickens) {
-        if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
-            if (gundam.isAlive()) gundam.dead();
+        if (chicken->isAlive()) {
+            if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
+                if (gundam.isAlive()) gundam.dead();
+            }
         }
 
         set<Bullet*> currentChickenBullets = chicken->getBullets();
@@ -164,20 +172,23 @@ void Game::handleGameEvent() {
             }
         }
 
-        set<Bullet*> gundamBullets = gundam.getBullets();
-        for (Bullet *bullet: gundamBullets) {
-            if (chicken->getEntity()->collisionWith(*(bullet->getEntity()))) {
-                bool alive = chicken->receiveDamage(gundam.getBulletDamage());
-                gundam.removeBullet(bullet);
-                if (!alive) {
-                    chickens.erase(chicken);
-                    if (chickens.empty()) {
-                        roundWon = true;
-                        initStart = CLOCK_NOW();
-//                        cerr << "Round won\n";
-                        return;
+        if (chicken->isAlive()) {
+            set<Bullet*> gundamBullets = gundam.getBullets();
+            for (Bullet *bullet: gundamBullets) {
+                if (chicken->getEntity()->collisionWith(*(bullet->getEntity()))) {
+                    bool alive = chicken->receiveDamage(gundam.getBulletDamage());
+                    gundam.removeBullet(bullet);
+                    if (!alive) {
+    //                    chickens.erase(chicken);
+                        numberOfAliveChicken --;
+                        if (numberOfAliveChicken == 0) {
+                            roundWon = true;
+                            initStart = CLOCK_NOW();
+    //                        cerr << "Round won\n";
+                            return;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

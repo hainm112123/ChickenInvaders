@@ -17,7 +17,7 @@ const int CHICKEN_EGG_WIDTH[] = {15, 80};
 const int CHICKEN_EGG_HEIGHT[] = {15, 80};
 const int CHICKEN_EGG_SPEED[] = {2, 2};
 
-const double BULLET_DELAY = 0.8;
+const double BULLET_DELAY = 0.5;
 
 class Chicken {
     Entity entity;
@@ -54,13 +54,16 @@ public:
     Time getLastBullet() const {
         return lastBullet;
     }
+    bool isAlive() {
+        return hp > 0;
+    }
 
     void setLastBullet(Time _lastBullet);
 
     bool receiveDamage(int dmg);
     void _move(int step_x, int step_y);
     void render(SDL_Renderer *renderer);
-    void addBullet(Bullet *_bullet);
+    void addBullet(Bullet *_bullet, Gallery *gallery);
     void removeBullet(Bullet *bullet);
     void handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBullets);
 };

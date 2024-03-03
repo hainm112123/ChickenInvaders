@@ -34,8 +34,9 @@ bool Chicken::receiveDamage(int dmg) {
     return hp > 0;
 }
 
-void Chicken::addBullet(Bullet *bullet) {
+void Chicken::addBullet(Bullet *bullet, Gallery *gallery) {
     bullet->setEntity({entity.getX() + entity.getW()/2 - bulletWidth/2, entity.getY() + entity.getH(), bulletWidth, bulletHeight}, bulletSpeed);
+    bullet->getEntity()->setTexture(gallery->eggs[level]);
     bullet->setIsMove(true);
     bullets.insert(bullet);
 }
