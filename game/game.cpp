@@ -14,7 +14,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     enemyMoveState = {0, 1, 0, 0};
 
     background.setTexture(gallery->background);
-    gundam.getEntity()->setTexture(gallery->gundam);
+    gundam.getEntity()->setTexture(gallery->gundams[GUNDAM_BLASTER]);
 }
 
 void Game::setGameStatus(GameStatus newStatus) {
@@ -67,7 +67,7 @@ void Game::process() {
 
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
-    gundam.render(renderer);
+    gundam.render(renderer, gallery);
     gundam.handleBullet(renderer);
 
     if (roundWon) {

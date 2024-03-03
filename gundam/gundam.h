@@ -4,7 +4,6 @@
 #include<set>
 
 #include "../weapon/bullet.h"
-#include "../weapon/weapon.h"
 #include "../init.h"
 
 const int GUNDAM_WIDTH = 65;
@@ -30,10 +29,12 @@ const SDL_Keycode MoveKeyCode[] = {
 class Gundam {
     Entity entity;
     set<Bullet*>bullets;
-    Weapon weapon;
-    int bulletDmg;
     int lives;
     bool alive;
+
+    vector<WeaponType> weapons;
+    int currentWeaponID;
+    int level;
 
 public:
     Gundam();
@@ -44,14 +45,21 @@ public:
     Entity* getEntity() {
         return &entity;
     }
-    int getBulletDamage() const {
-        return bulletDmg;
-    }
+    int getBulletDamage();
     bool isAlive() const {
         return alive;
     }
+    WeaponType getCurrentWeapon() const {
+        return weapons[currentWeaponID];
+    }
+    int getLevel() const {
+        return level;
+    }
 
-    void render(SDL_Renderer *renderer);
+    void addWeapon(WeaponType newWeapon);
+    void changeWeapon();
+
+    void render(SDL_Renderer *renderer, Gallery *gallery);
 
     void _move();
     void control(SDL_Event event, Gallery *gallery);

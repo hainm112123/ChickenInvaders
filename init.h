@@ -24,15 +24,6 @@ const int SCREEN_HEIGHT = 720;
 const int GAME_WIDTH = 1200;
 const int GAME_HEIGHT = 4096;
 
-enum WeaponType {
-    GUNDAM_BLASTER = 0,
-    GUNDAM_BORON,
-    GUNDAM_NEUTRON,
-    GUNDAM_LASER,
-
-    CHICKEN_EGG,
-};
-
 enum EntityType {
     GUNDAM = 0,
     BACKGROUND,
@@ -86,8 +77,9 @@ public:
 class Gallery {
     Painter *painter;
 public:
-    vector<Texture> chickens, blasters, borons, neutrons, eggs;
-    Texture gundam, laser, rock, background;
+    vector<vector<Texture>> gundamWeapons;
+    vector<Texture> chickens, eggs, gundams;
+    Texture laser, rock, background, upgrade;
 
     Gallery(Painter *_painter);
     ~Gallery();

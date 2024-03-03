@@ -2,13 +2,18 @@
 #define BULLET_H_INCLUDED
 
 #include "../init.h"
-#include "weapon.h"
 
-const int GUNDAM_BLASTER_SPEED = 8;
-const int GUNDAM_BLASTER_DAMAGE = 5;
+enum WeaponType {
+    GUNDAM_BLASTER = 0,
+    GUNDAM_BORON,
+    GUNDAM_NEUTRON,
+    GUNDAM_LASER,
 
-const int BLASTER_HEIGHT = 15;
-const int BLASTER_WIDTH = 10;
+    CHICKEN_EGG,
+};
+
+const int GUNDAM_BULLET_DAMAGE[] = {5, 3, 8};
+const int GUNDAM_BULLET_SPEED[] = {8, 12, 5};
 
 class Bullet {
     Entity entity;
@@ -25,7 +30,7 @@ public:
     Entity* getEntity() {
         return &entity;
     }
-    void setEntity(SDL_Rect rect, int speed);
+    void setEntity(SDL_Rect rect, int speed, Texture texture);
 
     void render(SDL_Renderer *renderer);
     void handleGundamBullet();

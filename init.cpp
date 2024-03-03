@@ -64,10 +64,8 @@ Gallery::Gallery(Painter *_painter): painter(_painter) {
 }
 
 Gallery::~Gallery() {
+    for (auto textures: gundamWeapons) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (Texture texture: chickens) SDL_DestroyTexture(texture.texture);
-    for (Texture texture: blasters) SDL_DestroyTexture(texture.texture);
-    for (Texture texture: borons) SDL_DestroyTexture(texture.texture);
-    for (Texture texture: neutrons) SDL_DestroyTexture(texture.texture);
     for (Texture texture: eggs) SDL_DestroyTexture(texture.texture);
 }
 
@@ -76,30 +74,38 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/chicken.png"),
         painter->loadTexture("./graphics/boss.png"),
     };
-    blasters = {
-        painter->loadTexture("./graphics/blaster0.png"),
-        painter->loadTexture("./graphics/blaster1.png"),
-        painter->loadTexture("./graphics/blaster2.png"),
-        painter->loadTexture("./graphics/blaster3.png"),
-    };
-    borons = {
-        painter->loadTexture("./graphics/boron0.png"),
-        painter->loadTexture("./graphics/boron1.png"),
-        painter->loadTexture("./graphics/boron2.png"),
-        painter->loadTexture("./graphics/boron3.png"),
-    };
-    neutrons = {
-        painter->loadTexture("./graphics/neutron0.png"),
-        painter->loadTexture("./graphics/neutron1.png"),
-        painter->loadTexture("./graphics/neutron2.png"),
-        painter->loadTexture("./graphics/neutron3.png"),
+    gundamWeapons = {
+        {
+            painter->loadTexture("./graphics/blaster0.png"),
+            painter->loadTexture("./graphics/blaster1.png"),
+            painter->loadTexture("./graphics/blaster2.png"),
+            painter->loadTexture("./graphics/blaster3.png"),
+        },
+        {
+            painter->loadTexture("./graphics/boron0.png"),
+            painter->loadTexture("./graphics/boron1.png"),
+            painter->loadTexture("./graphics/boron2.png"),
+            painter->loadTexture("./graphics/boron3.png"),
+        },
+        {
+            painter->loadTexture("./graphics/neutron0.png"),
+            painter->loadTexture("./graphics/neutron1.png"),
+            painter->loadTexture("./graphics/neutron2.png"),
+            painter->loadTexture("./graphics/neutron3.png"),
+        },
     };
     eggs = {
         painter->loadTexture("./graphics/egg.png"),
         painter->loadTexture("./graphics/egg_boss.png"),
     };
+    gundams = {
+        painter->loadTexture("./graphics/player-red-1.png"),
+        painter->loadTexture("./graphics/player-blue-1.png"),
+        painter->loadTexture("./graphics/player-green-1.png"),
+    };
+
+    upgrade = painter->loadTexture("./graphics/upgrade.png");
     background = painter->loadTexture("./graphics/background-blue.png");
-    gundam = painter->loadTexture("./graphics/player-blue-1.png");
     rock = painter->loadTexture("./graphics/rock_round.png");
-//    laser = painter->loadTexture("./graphics/texture_laser.tif");
+    laser = painter->loadTexture("./graphics/texture_laser.png");
 }
