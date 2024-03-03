@@ -23,6 +23,10 @@ void Entity::_move(bool isInsideScreen) {
     rect.y += step_y;
 }
 
+bool Entity::isInsideScreen() {
+    return (rect.x >= 0 && rect.x <= SCREEN_WIDTH && rect.y >= 0 && rect.y <= SCREEN_HEIGHT);
+}
+
 bool Entity::collisionWith(const Entity &entity) {
     int x = max(rect.x, entity.rect.x), y = max(rect.y, entity.rect.y),
         u = min(rect.x + rect.w, entity.rect.x + entity.rect.w), v = min(rect.y + rect.h, entity.rect.y + entity.rect.h);
@@ -39,18 +43,31 @@ void Entity::render(SDL_Renderer *renderer) {
             SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
         }
     }
-    if (type == GUNDAM || type == BULLET) {
-        rect.w = texture.w; rect.h = texture.h;
-        SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
-    }
-    if (type == CHICKEN || type == CHICKEN_BOSS) {
-        int n = (type == CHICKEN) ? 18 : 10;
+    else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP) {
+        int n = 1;
+        switch(type) {
+            case CHICKEN:
+                n = 18;
+                break;
+            case CHICKEN_BOSS:
+                n = 10;
+                break;
+            case LEVEL_UP:
+                n = 25;
+                break;
+            default:
+                break;
+        }
         (frame += 1) %= (n * 5);
         int ind = frame / 5;
         int w = texture.w / n, h = texture.h;
         rect.w = w; rect.h = h;
         SDL_Rect src = {ind * w, 0, w, h};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
+    }
+    else {
+        rect.w = texture.w; rect.h = texture.h;
+        SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
 }
 
@@ -104,8 +121,14 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/player-green-1.png"),
     };
 
-    upgrade = painter->loadTexture("./graphics/upgrade.png");
     background = painter->loadTexture("./graphics/background-blue.png");
     rock = painter->loadTexture("./graphics/rock_round.png");
     laser = painter->loadTexture("./graphics/texture_laser.png");
+
+    levelUp = painter->loadTexture("./graphics/level_up.png");
+    newWeapons = {
+        painter->loadTexture("./graphics/gift0.png"),
+        painter->loadTexture("./graphics/gift1.png"),
+        painter->loadTexture("./graphics/gift2.png")
+    };
 }

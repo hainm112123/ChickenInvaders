@@ -58,6 +58,7 @@ public:
 
     void addWeapon(WeaponType newWeapon);
     void changeWeapon();
+    void levelUp();
 
     void render(SDL_Renderer *renderer, Gallery *gallery);
 

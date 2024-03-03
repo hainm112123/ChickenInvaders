@@ -5,9 +5,9 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     lives = 3;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
-    weapons.push_back(GUNDAM_BORON);
-    weapons.push_back(GUNDAM_NEUTRON);
-    level = 2;
+//    weapons.push_back(GUNDAM_BORON);
+//    weapons.push_back(GUNDAM_NEUTRON);
+    level = 0;
     currentWeaponID = 0;
 }
 
@@ -85,12 +85,15 @@ bool Gundam::revive() {
 }
 
 void Gundam::addWeapon(WeaponType newWeapon) {
+//    cout << "Add new weapon\n";
     for (int i = 0; i < int(weapons.size()); ++ i) if (weapons[i] == newWeapon) {
+//        cout << "Already had\n";
         currentWeaponID = i;
         return;
     }
     weapons.push_back(newWeapon);
     currentWeaponID = int(weapons.size()) - 1;
+//    cout << "New weapon added\n";
 }
 
 void Gundam::changeWeapon() {
@@ -99,4 +102,8 @@ void Gundam::changeWeapon() {
 
 int Gundam::getBulletDamage() {
     return GUNDAM_BULLET_DAMAGE[getCurrentWeapon()];
+}
+
+void Gundam::levelUp() {
+    level = min(level + 1, 3);
 }

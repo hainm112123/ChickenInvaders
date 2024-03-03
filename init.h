@@ -11,6 +11,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "Painter.h"
+#include "deque"
 
 #define CLOCK_NOW chrono::system_clock::now
 
@@ -30,9 +31,11 @@ enum EntityType {
     CHICKEN,
     CHICKEN_BOSS,
     BULLET,
+    LEVEL_UP,
+    NEW_WEAPON
 };
 
-struct EnemyMoveState {
+struct ChickenMoveState {
     bool goLeft, goRight, goUp, goDown;
 };
 
@@ -63,23 +66,28 @@ public:
     int getH() const {
         return rect.h;
     }
+    EntityType getType() const {
+        return type;
+    }
 
     void setStep(int _step_x, int _step_y);
     void updateStep(int det_x, int det_y);
 
+    bool isInsideScreen();
     void _move(bool isInsideScreen = false);
     bool collisionWith(const Entity &entity);
 
     void render(SDL_Renderer *renderer);
     void setTexture(Texture _texture);
+
 };
 
 class Gallery {
     Painter *painter;
 public:
     vector<vector<Texture>> gundamWeapons;
-    vector<Texture> chickens, eggs, gundams;
-    Texture laser, rock, background, upgrade;
+    vector<Texture> chickens, eggs, gundams, newWeapons;
+    Texture laser, rock, background, levelUp;
 
     Gallery(Painter *_painter);
     ~Gallery();

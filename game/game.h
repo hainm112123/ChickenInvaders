@@ -5,11 +5,13 @@
 #include "../gundam/gundam.h"
 #include "../Painter.h"
 #include "../enemy/chicken.h"
+#include "../gundam/upgrade.h"
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const int MINI_BOSS_ROUND = 3;
 const int BOSS_ROUND = 4;
+const int UPGRADE_SPEED = 1;
 
 const double INIT_DELAY = 1;
 
@@ -39,9 +41,12 @@ class Game {
     int numberOfAliveChicken;
     Chicken *topChicken, *bottomChicken, *leftChicken, *rightChicken;
     vector<Bullet*>chickenBullets;
-    EnemyMoveState enemyMoveState;
+    ChickenMoveState chickenMoveState;
 
     chrono::system_clock::time_point initStart, initEnd;
+
+    vector<int> killedChickenCount;
+    set<Upgrade*> upgrades;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
@@ -61,7 +66,7 @@ public:
     void handleGameEvent();
     void process();
 
-    void handleChicken();
+    void dropUpgrade(EntityType type);
 };
 
 #endif // GAME_H_INCLUDED

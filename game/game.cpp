@@ -11,10 +11,12 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     round = 0;
     roundWon = true;
 
-    enemyMoveState = {0, 1, 0, 0};
+    chickenMoveState = {0, 1, 0, 0};
 
     background.setTexture(gallery->background);
     gundam.getEntity()->setTexture(gallery->gundams[GUNDAM_BLASTER]);
+
+    killedChickenCount.assign(5, 0);
 }
 
 void Game::setGameStatus(GameStatus newStatus) {
@@ -35,7 +37,7 @@ void Game::init() {
     int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
     int numberOfBullet = (level ? perRow * 2 : perRow);
 
-    enemyMoveState = {0, 1, 0, !level};
+    chickenMoveState = {0, 1, 0, !level};
 
     for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
     for (int i = 0; i < numberOfEnemy; ++ i) {
@@ -65,11 +67,13 @@ void Game::process() {
 
     background.render(renderer);
 
+    // ............................gundam.......................................
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
     gundam.render(renderer, gallery);
     gundam.handleBullet(renderer);
 
+    //..............................round...........................................
     if (roundWon) {
         initEnd = CLOCK_NOW();
         ElapsedTime elapsed = initEnd - initStart;
@@ -84,6 +88,7 @@ void Game::process() {
         }
     }
 
+    //................................chicken.........................................
     int chicken_step_x = 0, chicken_step_y = 0;
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
 
@@ -103,10 +108,10 @@ void Game::process() {
     }
 
     if (topChicken != nullptr) {
-        if (enemyMoveState.goLeft) chicken_step_x = -topChicken->getSpeed();
-        if (enemyMoveState.goRight) chicken_step_x = topChicken->getSpeed();
-        if (enemyMoveState.goUp) chicken_step_y = -topChicken->getSpeed();
-        if (enemyMoveState.goDown) chicken_step_y = topChicken->getSpeed();
+        if (chickenMoveState.goLeft) chicken_step_x = -topChicken->getSpeed();
+        if (chickenMoveState.goRight) chicken_step_x = topChicken->getSpeed();
+        if (chickenMoveState.goUp) chicken_step_y = -topChicken->getSpeed();
+        if (chickenMoveState.goDown) chicken_step_y = topChicken->getSpeed();
     }
 
     for (Chicken *chicken: chickens) {
@@ -129,22 +134,30 @@ void Game::process() {
 
     if (topChicken != nullptr) {
         if (bottomChicken->getEntity()->getY() > bottomChicken->getEntity()->getH() * 5) {
-            enemyMoveState.goDown = 0;
-            enemyMoveState.goUp = 1;
+            chickenMoveState.goDown = 0;
+            chickenMoveState.goUp = 1;
         }
         if (topChicken->getEntity()->getY() < 0) {
-            enemyMoveState.goDown = 1;
-            enemyMoveState.goUp = 0;
+            chickenMoveState.goDown = 1;
+            chickenMoveState.goUp = 0;
         }
         if (rightChicken->getEntity()->getX() > SCREEN_WIDTH - rightChicken->getEntity()->getW()) {
-            enemyMoveState.goRight = 0;
-            enemyMoveState.goLeft = 1;
+            chickenMoveState.goRight = 0;
+            chickenMoveState.goLeft = 1;
         }
         if (leftChicken->getEntity()->getX() < 0) {
-            enemyMoveState.goRight = 1;
-            enemyMoveState.goLeft = 0;
+            chickenMoveState.goRight = 1;
+            chickenMoveState.goLeft = 0;
         }
     }
+
+    //................................upgrade................................................................
+    for (auto *upgrade: upgrades) {
+        upgrade->_move();
+        upgrade->render(renderer);
+        if (!upgrade->isInsideScreen()) upgrades.erase(upgrade);
+    }
+
 
     handleGameEvent();
 
@@ -152,7 +165,38 @@ void Game::process() {
     SDL_Delay(1);
 }
 
+void Game::dropUpgrade(EntityType eType) {
+    if (eType != LEVEL_UP && eType != NEW_WEAPON) return;
+
+    int x = (1ll * rand() * rand()) % SCREEN_WIDTH, y = -10;
+    UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(rand() % 3));
+    Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
+    upgrade->getEntity()->setStep(0, UPGRADE_SPEED);
+    if (uType == UPGRADE_LEVEL_UP) {
+        upgrade->getEntity()->setTexture(gallery->levelUp);
+    }
+    else {
+        upgrade->getEntity()->setTexture(gallery->newWeapons[uType]);
+    }
+    upgrades.insert(upgrade);
+}
+
 void Game::handleGameEvent() {
+    for (Upgrade *upgrade: upgrades) {
+        if (gundam.isAlive() && upgrade->getEntity()->collisionWith(*gundam.getEntity())) {
+//            cout << "Level Up\n";
+            if (upgrade->getType() == UPGRADE_LEVEL_UP) {
+                gundam.levelUp();
+            }
+            else {
+//                cout << upgrade->getType() << "\n";
+                gundam.addWeapon(WeaponType(upgrade->getType()));
+            }
+            upgrades.erase(upgrade);
+
+        }
+    }
+
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
             if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
@@ -180,6 +224,17 @@ void Game::handleGameEvent() {
                     gundam.removeBullet(bullet);
                     if (!alive) {
     //                    chickens.erase(chicken);
+
+
+                        int chickenLevel = chicken->getLevel();
+                        int killed = (++ killedChickenCount[chickenLevel]);
+                        if (chickenLevel == 0 && killed % 5 == 0) {
+                            dropUpgrade(LEVEL_UP);
+                        }
+                        if (chickenLevel == 1) {
+                            dropUpgrade(NEW_WEAPON);
+                        }
+
                         numberOfAliveChicken --;
                         if (numberOfAliveChicken == 0) {
                             roundWon = true;
