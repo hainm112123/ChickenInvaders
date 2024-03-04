@@ -25,6 +25,9 @@ const int SCREEN_HEIGHT = 720;
 const int GAME_WIDTH = 1200;
 const int GAME_HEIGHT = 4096;
 
+const int NUMBER_OF_EXPLOSION_PIC = 8;
+const int FRAME_PER_PICTURE = 5;
+
 enum EntityType {
     GUNDAM = 0,
     BACKGROUND,
@@ -32,7 +35,8 @@ enum EntityType {
     CHICKEN_BOSS,
     BULLET,
     LEVEL_UP,
-    NEW_WEAPON
+    NEW_WEAPON,
+    EXPLOSION
 };
 
 struct ChickenMoveState {
@@ -52,7 +56,7 @@ public:
     }
 
     Entity();
-    Entity(EntityType _type, SDL_Rect _rect = {0, 0, 0, 0});
+    Entity(EntityType _type, SDL_Rect _rect = {0, 0, 0, 0}, Texture _texture = {NULL, 0, 0});
 
     int getX() const {
         return rect.x;
@@ -66,8 +70,14 @@ public:
     int getH() const {
         return rect.h;
     }
+    SDL_Rect getRect() const {
+        return rect;
+    }
     EntityType getType() const {
         return type;
+    }
+    int getFrame() const {
+        return frame;
     }
 
     void setStep(int _step_x, int _step_y);
@@ -87,7 +97,7 @@ class Gallery {
 public:
     vector<vector<Texture>> gundamWeapons;
     vector<Texture> chickens, eggs, gundams, newWeapons;
-    Texture laser, rock, background, levelUp;
+    Texture laser, rock, background, levelUp, expolosion;
 
     Gallery(Painter *_painter);
     ~Gallery();

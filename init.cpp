@@ -4,9 +4,7 @@
 Entity::Entity() {
     texture = {NULL, 0, 0};
 }
-Entity::Entity(EntityType _type, SDL_Rect _rect): type(_type), rect(_rect) {
-    texture = {NULL, 0, 0};
-}
+Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type), rect(_rect), texture(_texture) {}
 
 void Entity::setStep(int _step_x, int _step_y) {
     step_x = _step_x;
@@ -43,7 +41,7 @@ void Entity::render(SDL_Renderer *renderer) {
             SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
         }
     }
-    else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP) {
+    else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP || type == EXPLOSION) {
         int n = 1;
         switch(type) {
             case CHICKEN:
@@ -55,11 +53,14 @@ void Entity::render(SDL_Renderer *renderer) {
             case LEVEL_UP:
                 n = 25;
                 break;
+            case EXPLOSION:
+                n = NUMBER_OF_EXPLOSION_PIC;
+                break;
             default:
                 break;
         }
-        (frame += 1) %= (n * 5);
-        int ind = frame / 5;
+        (frame += 1) %= (n * FRAME_PER_PICTURE);
+        int ind = frame / FRAME_PER_PICTURE;
         int w = texture.w / n, h = texture.h;
         rect.w = w; rect.h = h;
         SDL_Rect src = {ind * w, 0, w, h};
@@ -131,4 +132,6 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/gift1.png"),
         painter->loadTexture("./graphics/gift2.png")
     };
+
+    expolosion = painter->loadTexture("./graphics/explosion.png");
 }

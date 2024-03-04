@@ -158,6 +158,9 @@ void Game::process() {
         if (!upgrade->isInsideScreen()) upgrades.erase(upgrade);
     }
 
+    //.............................explosion..................................................................
+    while (!explosions.empty() && explosions.front()->getFrame() == NUMBER_OF_EXPLOSION_PIC * FRAME_PER_PICTURE - 1) explosions.pop_front();
+    for (auto *explosion: explosions) explosion->render(renderer);
 
     handleGameEvent();
 
@@ -200,7 +203,10 @@ void Game::handleGameEvent() {
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
             if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
-                if (gundam.isAlive()) gundam.dead();
+                if (gundam.isAlive()) {
+//                    gundam.dead();
+                    gundamDead();
+                }
             }
         }
 
@@ -210,7 +216,8 @@ void Game::handleGameEvent() {
                 if (bullet->getEntity()->collisionWith(*gundam.getEntity())) {
                     chickenBullets.push_back(bullet);
                     chicken->removeBullet(bullet);
-                    gundam.dead();
+//                    gundam.dead();
+                    gundamDead();
                     break;
                 }
             }
@@ -225,7 +232,7 @@ void Game::handleGameEvent() {
                     if (!alive) {
     //                    chickens.erase(chicken);
 
-
+                        addExplosion(chicken->getEntity()->getRect());
                         int chickenLevel = chicken->getLevel();
                         int killed = (++ killedChickenCount[chickenLevel]);
                         if (chickenLevel == 0 && killed % 5 == 0) {
@@ -248,4 +255,17 @@ void Game::handleGameEvent() {
             }
         }
     }
+}
+
+void Game::addExplosion(SDL_Rect rect) {
+    Texture texture = gallery->expolosion;
+    int w = texture.w / NUMBER_OF_EXPLOSION_PIC, h = texture.h;
+    int center_x = (rect.x + rect.w/2), center_y = (rect.y + rect.h/2);
+//    cout << center_x - w/2 << " " << center_y - h/2 << "\n";
+    explosions.push_back(new Entity(EXPLOSION, {center_x - w/2, center_y - h/2, w, h}, texture));
+}
+
+void Game::gundamDead() {
+    gundam.dead();
+    addExplosion(gundam.getEntity()->getRect());
 }

@@ -40,6 +40,8 @@
 		<Unit filename="game/game.h" />
 		<Unit filename="gundam/gundam.cpp" />
 		<Unit filename="gundam/gundam.h" />
+		<Unit filename="gundam/upgrade.cpp" />
+		<Unit filename="gundam/upgrade.h" />
 		<Unit filename="init.cpp" />
 		<Unit filename="init.h">
 			<Option target="&lt;{~None~}&gt;" />
@@ -49,8 +51,6 @@
 		<Unit filename="sdl_init.h" />
 		<Unit filename="weapon/bullet.cpp" />
 		<Unit filename="weapon/bullet.h" />
-		<Unit filename="weapon/weapon.cpp" />
-		<Unit filename="weapon/weapon.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

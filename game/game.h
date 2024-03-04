@@ -47,6 +47,7 @@ class Game {
 
     vector<int> killedChickenCount;
     set<Upgrade*> upgrades;
+    deque<Entity*> explosions;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
@@ -67,6 +68,8 @@ public:
     void process();
 
     void dropUpgrade(EntityType type);
+    void addExplosion(SDL_Rect rect);
+    void gundamDead();
 };
 
 #endif // GAME_H_INCLUDED
