@@ -1,5 +1,9 @@
 #include "init.h"
 
+int Rand(int l, int r) {
+    return l + (1ll * rand() * rand() % (r - l + 1));
+}
+
 //.............................Entity..............................................
 Entity::Entity() {
     texture = {NULL, 0, 0};
@@ -32,12 +36,19 @@ bool Entity::collisionWith(const Entity &entity) {
     return false;
 }
 
-void Entity::render(SDL_Renderer *renderer) {
+void Entity::render(SDL_Renderer *renderer, int arg) {
     if (type == BACKGROUND) {
-        int n = (SCREEN_WIDTH - 1) / texture.w + 1, m = (SCREEN_HEIGHT - 1) / texture.h + 1;
+//        cout << arg << "\n";
+        int n = (SCREEN_WIDTH - 1) / texture.w + 1, m = (SCREEN_HEIGHT - arg - 1) / texture.h + 1;
+        for (int i = 0; i < n; ++ i) {
+            SDL_Rect src = {0, texture.h - arg, texture.w, arg};
+            SDL_Rect dst = {texture.w * i, 0, texture.w, arg};
+            SDL_RenderCopy(renderer, texture.texture, &src, &dst);
+        }
         rect.w = texture.w; rect.h = texture.h;
         for (int i = 0; i < n; ++ i) for (int j = 0; j < m; ++ j) {
-            rect.x = rect.w * i; rect.y = rect.h * j;
+            rect.x = rect.w * i; rect.y = rect.h * j + arg;
+//            cout << rect.x << " " << rect.y << "\n";
             SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
         }
     }
@@ -62,7 +73,9 @@ void Entity::render(SDL_Renderer *renderer) {
         (frame += 1) %= (n * FRAME_PER_PICTURE);
         int ind = frame / FRAME_PER_PICTURE;
         int w = texture.w / n, h = texture.h;
-        rect.w = w; rect.h = h;
+        if (type != EXPLOSION) {
+            rect.w = w; rect.h = h;
+        }
         SDL_Rect src = {ind * w, 0, w, h};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
@@ -134,4 +147,5 @@ void Gallery::loadGamePictures() {
     };
 
     expolosion = painter->loadTexture("./graphics/explosion.png");
+    rock = painter->loadTexture("./graphics/rock_round.png");
 }

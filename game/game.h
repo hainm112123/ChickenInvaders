@@ -12,6 +12,8 @@ const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const int MINI_BOSS_ROUND = 3;
 const int BOSS_ROUND = 4;
 const int UPGRADE_SPEED = 1;
+const int SCREEN_SPEED = 2;
+const int BG_SIZE = 256;
 
 const double INIT_DELAY = 1;
 
@@ -34,6 +36,7 @@ class Game {
     GameStatus status;
 
     Entity background;
+    int scrolling = 0;
 
     Gundam gundam;
 

@@ -28,6 +28,8 @@ const int GAME_HEIGHT = 4096;
 const int NUMBER_OF_EXPLOSION_PIC = 8;
 const int FRAME_PER_PICTURE = 5;
 
+int Rand(int l, int r);
+
 enum EntityType {
     GUNDAM = 0,
     BACKGROUND,
@@ -36,7 +38,8 @@ enum EntityType {
     BULLET,
     LEVEL_UP,
     NEW_WEAPON,
-    EXPLOSION
+    EXPLOSION,
+    ROCK
 };
 
 struct ChickenMoveState {
@@ -87,7 +90,7 @@ public:
     void _move(bool isInsideScreen = false);
     bool collisionWith(const Entity &entity);
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer, int arg = 0);
     void setTexture(Texture _texture);
 
 };

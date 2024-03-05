@@ -11,7 +11,7 @@ Chicken::Chicken(int offsetX, int offsetY, int _level) {
     speed = CHICKEN_SPEED[level];
     bulletWidth = CHICKEN_EGG_WIDTH[level];
     bulletHeight = CHICKEN_EGG_HEIGHT[level];
-    bulletSpeed = CHICKEN_EGG_SPEED[level];
+    bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[level], MAX_CHICKEN_EGG_SPEED[level]);
 }
 
 void Chicken::setLastBullet(Time _lastBullet) {

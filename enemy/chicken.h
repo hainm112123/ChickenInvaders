@@ -15,7 +15,8 @@ const int CHICKENS_DISTANCE[] = {30, 100};
 
 const int CHICKEN_EGG_WIDTH[] = {15, 80};
 const int CHICKEN_EGG_HEIGHT[] = {15, 80};
-const int CHICKEN_EGG_SPEED[] = {2, 2};
+const int MIN_CHICKEN_EGG_SPEED[] = {1, 2};
+const int MAX_CHICKEN_EGG_SPEED[] = {3, 3};
 
 const double BULLET_DELAY = 0.5;
 

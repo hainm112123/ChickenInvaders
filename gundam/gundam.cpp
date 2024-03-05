@@ -73,6 +73,7 @@ void Gundam::removeBullet(Bullet *bullet) {
 void Gundam::dead() {
     alive = false;
     lives --;
+    level = max(level - 1, 0);
 //    cout << "dead " << lives << "\n" ;
 }
 bool Gundam::revive() {

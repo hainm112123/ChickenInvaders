@@ -65,7 +65,8 @@ void Game::process() {
     painter->clearWithBgColor(WHITE_COLOR);
 
 
-    background.render(renderer);
+    (scrolling += SCREEN_SPEED) %= BG_SIZE;
+    background.render(renderer, scrolling);
 
     // ............................gundam.......................................
     gundam._move();
@@ -235,7 +236,7 @@ void Game::handleGameEvent() {
                         addExplosion(chicken->getEntity()->getRect());
                         int chickenLevel = chicken->getLevel();
                         int killed = (++ killedChickenCount[chickenLevel]);
-                        if (chickenLevel == 0 && killed % 5 == 0) {
+                        if (chickenLevel == 0 && killed % 15 == 0) {
                             dropUpgrade(LEVEL_UP);
                         }
                         if (chickenLevel == 1) {
@@ -259,10 +260,11 @@ void Game::handleGameEvent() {
 
 void Game::addExplosion(SDL_Rect rect) {
     Texture texture = gallery->expolosion;
-    int w = texture.w / NUMBER_OF_EXPLOSION_PIC, h = texture.h;
-    int center_x = (rect.x + rect.w/2), center_y = (rect.y + rect.h/2);
+//    int w = texture.w / NUMBER_OF_EXPLOSION_PIC, h = texture.h;
+//    int center_x = (rect.x + rect.w/2), center_y = (rect.y + rect.h/2);
 //    cout << center_x - w/2 << " " << center_y - h/2 << "\n";
-    explosions.push_back(new Entity(EXPLOSION, {center_x - w/2, center_y - h/2, w, h}, texture));
+//    explosions.push_back(new Entity(EXPLOSION, {center_x - w/2, center_y - h/2, w, h}, texture));
+    explosions.push_back(new Entity(EXPLOSION, rect, texture));
 }
 
 void Game::gundamDead() {
