@@ -24,6 +24,7 @@ void Gundam::_move() {
 
 void Gundam::control(SDL_Event event, Gallery *gallery) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
+        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
                 entity.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
@@ -102,7 +103,7 @@ void Gundam::changeWeapon() {
 }
 
 int Gundam::getBulletDamage() {
-    return GUNDAM_BULLET_DAMAGE[getCurrentWeapon()];
+    return GUNDAM_BULLET_DAMAGE[getCurrentWeapon()] + level * GUNDAM_BULLET_UPGRADE[getCurrentWeapon()];
 }
 
 void Gundam::levelUp() {

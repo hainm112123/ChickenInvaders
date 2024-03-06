@@ -6,16 +6,24 @@
 #include "../Painter.h"
 #include "../enemy/chicken.h"
 #include "../gundam/upgrade.h"
+#include "../enemy/rock.h"
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
-const int MINI_BOSS_ROUND = 3;
-const int BOSS_ROUND = 4;
+const int ROCK_FALL_WAVE = 5;
+const int ROCK_SIDE_WAVE = 15;
+const int ROCK_WAVE_FRAME = 100;
+
+const int ROCK_FALL_ROUND = 5;
+const int ROCK_SIDE_ROUND = 3;
+const int MINI_BOSS_ROUND = 4;
+const int BOSS_ROUND = 6;
+
 const int UPGRADE_SPEED = 1;
 const int SCREEN_SPEED = 2;
 const int BG_SIZE = 256;
 
-const double INIT_DELAY = 1;
+const double INIT_DELAY = 2;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -37,6 +45,7 @@ class Game {
 
     Entity background;
     int scrolling = 0;
+    int frame = 0;
 
     Gundam gundam;
 
@@ -51,6 +60,8 @@ class Game {
     vector<int> killedChickenCount;
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
+
+    set<Rock*> rocks;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
@@ -69,6 +80,7 @@ public:
     void init();
     void handleGameEvent();
     void process();
+    void setRoundWon();
 
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect);

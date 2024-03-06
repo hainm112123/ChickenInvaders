@@ -14,6 +14,7 @@ enum WeaponType {
 
 const int GUNDAM_BULLET_DAMAGE[] = {5, 3, 8};
 const int GUNDAM_BULLET_SPEED[] = {8, 12, 5};
+const int GUNDAM_BULLET_UPGRADE[] = {3, 2, 5};
 
 class Bullet {
     Entity entity;

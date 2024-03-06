@@ -1,7 +1,7 @@
 #include "init.h"
 
 int Rand(int l, int r) {
-    return l + (1ll * rand() * rand() % (r - l + 1));
+    return l + (rand() % (r - l + 1));
 }
 
 //.............................Entity..............................................
@@ -51,6 +51,14 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
 //            cout << rect.x << " " << rect.y << "\n";
             SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
         }
+    }
+    else if (type == ROCK) {
+        int n = 3, m = 4;
+        (frame += 1) %= (n * m * FRAME_PER_PICTURE);
+        int index = frame / FRAME_PER_PICTURE;
+        int w = texture.w / m, h = texture.h / n;
+        SDL_Rect src = {(index % m) * w, (index / m) * h, w, h};
+        SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
     else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP || type == EXPLOSION) {
         int n = 1;

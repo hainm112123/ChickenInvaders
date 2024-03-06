@@ -26,27 +26,38 @@ void Game::setGameStatus(GameStatus newStatus) {
 
 
 void Game::init() {
+//    cout << round << "\n";
     roundWon = false;
     chickenBullets.clear();
     chickens.clear();
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
     numberOfAliveChicken = 0;
+    frame = 0;
 
-    int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
-    int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
-    int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
-    int numberOfBullet = (level ? perRow * 2 : perRow);
+    if (round == ROCK_SIDE_ROUND) {
 
-    chickenMoveState = {0, 1, 0, !level};
-
-    for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
-    for (int i = 0; i < numberOfEnemy; ++ i) {
-        int row = i / perRow, col = i % perRow;
-        Chicken *chicken = new Chicken(col, row, level);
-        chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
-        chickens.push_back(chicken);
     }
-    numberOfAliveChicken = numberOfEnemy;
+    else if (round == ROCK_FALL_ROUND) {
+
+    }
+    else {
+        int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
+        int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
+        int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
+        int numberOfBullet = (level ? perRow * 2 : perRow);
+
+        chickenMoveState = {0, 1, 0, !level};
+
+        for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
+        for (int i = 0; i < numberOfEnemy; ++ i) {
+            int row = i / perRow, col = i % perRow;
+            Chicken *chicken = new Chicken(col, row, level);
+            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
+            chickens.push_back(chicken);
+        }
+        numberOfAliveChicken = numberOfEnemy;
+    }
+
 
 //    cout << "Init Successful\n";
 }
@@ -86,6 +97,48 @@ void Game::process() {
 //            cerr << "Start init\n";
             round ++;
             init();
+        }
+    }
+
+    //...............................rock..............................................
+    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE;
+    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
+        if (frame % ROCK_WAVE_FRAME == 0) {
+            int n = 5;
+            int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : SCREEN_HEIGHT) / n;
+            for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
+                int x, y, step_x, step_y;
+                if (round == ROCK_FALL_ROUND) {
+                    x = Rand(L * i + 10, L * (i + 1) - 10) ;
+                    y = -50;
+                    step_x = 0;
+                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED);
+                }
+                else {
+                    x = -50;
+                    y = Rand(L * i + 10, L * (i + 1) - 10);
+                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X);
+                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y);
+                }
+                int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
+                Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rock);
+                rock->setStep(step_x, step_y);
+                rock->setActive(true);
+                rocks.insert(rock);
+//                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
+            }
+        }
+        frame ++;
+//        cout << frame << "\n";
+    }
+
+    for (Rock *rock: rocks) {
+        if (rock->isActive()) {
+            rock->handleMove();
+            rock->render(renderer);
+        }
+        else {
+            rocks.erase(rock);
         }
     }
 
@@ -185,7 +238,14 @@ void Game::dropUpgrade(EntityType eType) {
     upgrades.insert(upgrade);
 }
 
+void Game::setRoundWon() {
+    cout << "Round Won\n";
+    roundWon = true;
+    initStart = CLOCK_NOW();
+}
+
 void Game::handleGameEvent() {
+    //.............................upgrade.....................................................
     for (Upgrade *upgrade: upgrades) {
         if (gundam.isAlive() && upgrade->getEntity()->collisionWith(*gundam.getEntity())) {
 //            cout << "Level Up\n";
@@ -201,11 +261,11 @@ void Game::handleGameEvent() {
         }
     }
 
+    //............................chicken...................................................
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
             if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
                 if (gundam.isAlive()) {
-//                    gundam.dead();
                     gundamDead();
                 }
             }
@@ -217,7 +277,6 @@ void Game::handleGameEvent() {
                 if (bullet->getEntity()->collisionWith(*gundam.getEntity())) {
                     chickenBullets.push_back(bullet);
                     chicken->removeBullet(bullet);
-//                    gundam.dead();
                     gundamDead();
                     break;
                 }
@@ -245,8 +304,7 @@ void Game::handleGameEvent() {
 
                         numberOfAliveChicken --;
                         if (numberOfAliveChicken == 0) {
-                            roundWon = true;
-                            initStart = CLOCK_NOW();
+                            setRoundWon();
     //                        cerr << "Round won\n";
                             return;
                         }
@@ -255,6 +313,27 @@ void Game::handleGameEvent() {
                 }
             }
         }
+    }
+
+    //...............................rock..........................................
+    for (Rock *rock: rocks) if (rock->isActive()) {
+        if (gundam.isAlive() && rock->collisionWith(*gundam.getEntity())) {
+            gundamDead();
+        }
+        if (gundam.isAlive()) {
+            set<Bullet*> gundamBullets = gundam.getBullets();
+            for (Bullet *bullet: gundamBullets) {
+                if (rock->collisionWith(*(bullet->getEntity()))) {
+                    rock->receiveDamage(gundam.getBulletDamage());
+                    gundam.removeBullet(bullet);
+                }
+            }
+        }
+    }
+
+    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE;
+    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame > (rockWaveCount - 1) * ROCK_WAVE_FRAME && rocks.empty() && !roundWon) {
+        setRoundWon();
     }
 }
 
