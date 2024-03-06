@@ -6,7 +6,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT})
 {
     gallery = new Gallery(painter);
-    setGameStatus(GAME_RUNNING);
+    setGameStatus(GAME_STOP);
     score = 0;
     round = 0;
     roundWon = true;
@@ -349,4 +349,69 @@ void Game::addExplosion(SDL_Rect rect) {
 void Game::gundamDead() {
     gundam.dead();
     addExplosion(gundam.getEntity()->getRect());
+}
+
+void Game::renderMenu() {
+    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
+
+    vector<Text> texts = {
+        Text("Start", WHITE_COLOR),
+        Text("Quit", WHITE_COLOR),
+    };
+
+    texts[0].renderText(fontMenu, renderer);
+    texts[0].setRect(SCREEN_WIDTH/2 - texts[0].getW()/2, SCREEN_HEIGHT - 250);
+
+    texts[1].renderText(fontMenu, renderer);
+    texts[1].setRect(SCREEN_WIDTH/2 - texts[1].getW()/2, SCREEN_HEIGHT - 200);
+
+    bool menuRunning = true;
+    while (menuRunning) {
+        menu.render(renderer);
+        for (int i = 0; i < int(texts.size()); ++ i) {
+            texts[i].renderText(fontMenu, renderer);
+        }
+        while (SDL_PollEvent(event) != 0) {
+            if (event->type == SDL_QUIT) {
+                setGameStatus(GAME_STOP);
+                menuRunning = false;
+            }
+            else if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN) {
+                for (int i = 0; i < int(texts.size()); ++ i) {
+                    if (texts[i].getX() <= (event->motion).x && (event->motion).x <= texts[i].getX() + texts[i].getW() && texts[i].getY() <= (event->motion).y && (event->motion).y <= texts[i].getY() + texts[i].getH()) {
+                        if (event->type == SDL_MOUSEMOTION) {
+                            texts[i].setColor(RED_COLOR);
+                        }
+                        else {
+                            if (i == 0) {
+                                setGameStatus(GAME_RUNNING);
+                                menuRunning = false;
+                            }
+                            if (i == 1) {
+                                setGameStatus(GAME_STOP);
+                                menuRunning = false;
+                            }
+                        }
+                    }
+                    else {
+                        texts[i].setColor(WHITE_COLOR);
+                    }
+                }
+            }
+        }
+
+        SDL_RenderPresent(renderer);
+    }
+}
+
+void Game::load() {
+    TTF_Init();
+    fontMenu = TTF_OpenFont("font//font1.ttf", 50);
+    fontGame = TTF_OpenFont("font//font1.ttf", 24);
+
+    setGameStatus(GAME_RUNNING);
+}
+
+void Game::quit() {
+    TTF_Quit();
 }

@@ -32,7 +32,9 @@ int main(int agrc, char **argv)
     auto a = SDL_GetTicks();
     auto b = SDL_GetTicks();
 
-    renderSplashScreen();
+//    renderSplashScreen();
+    game.load();
+    game.renderMenu();
     while (game.getGameStatus() == GAME_RUNNING) {
         a = SDL_GetTicks();
         double delta = a - b;
@@ -44,8 +46,8 @@ int main(int agrc, char **argv)
 //        cout << (game.getGameStatus() == GAME_WON);
     }
 
-    waitUntilKeyPressed();
     quitSDL(window, renderer);
+    game.quit();
 
     return 0;
 }

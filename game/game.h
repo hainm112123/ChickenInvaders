@@ -7,6 +7,7 @@
 #include "../enemy/chicken.h"
 #include "../gundam/upgrade.h"
 #include "../enemy/rock.h"
+#include "text.h"
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
@@ -37,15 +38,16 @@ class Game {
     SDL_Event *event;
     Painter *painter;
     Gallery *gallery;
+    TTF_Font *fontMenu, *fontGame;
 
     bool roundWon;
     int width, height;
     int score, round;
     GameStatus status;
-
     Entity background;
     int scrolling = 0;
     int frame = 0;
+    chrono::system_clock::time_point initStart, initEnd;
 
     Gundam gundam;
 
@@ -54,14 +56,11 @@ class Game {
     Chicken *topChicken, *bottomChicken, *leftChicken, *rightChicken;
     vector<Bullet*>chickenBullets;
     ChickenMoveState chickenMoveState;
-
-    chrono::system_clock::time_point initStart, initEnd;
-
     vector<int> killedChickenCount;
+    set<Rock*> rocks;
+
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
-
-    set<Rock*> rocks;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
@@ -77,14 +76,18 @@ public:
     }
 
     void setGameStatus(GameStatus newStatus);
+    void load();
     void init();
+    void renderMenu();
     void handleGameEvent();
     void process();
-    void setRoundWon();
+    void quit();
 
+    void setRoundWon();
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect);
     void gundamDead();
+
 };
 
 #endif // GAME_H_INCLUDED

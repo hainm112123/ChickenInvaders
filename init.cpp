@@ -10,6 +10,9 @@ Entity::Entity() {
 }
 Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type), rect(_rect), texture(_texture) {}
 
+void Entity::setRect(int x, int y) {
+    rect.x = x; rect.y = y;
+}
 void Entity::setStep(int _step_x, int _step_y) {
     step_x = _step_x;
     step_y = _step_y;
@@ -37,6 +40,9 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
+    if (type == MENU) {
+        SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
+    }
     if (type == BACKGROUND) {
 //        cout << arg << "\n";
         int n = (SCREEN_WIDTH - 1) / texture.w + 1, m = (SCREEN_HEIGHT - arg - 1) / texture.h + 1;
@@ -156,4 +162,6 @@ void Gallery::loadGamePictures() {
 
     expolosion = painter->loadTexture("./graphics/explosion.png");
     rock = painter->loadTexture("./graphics/rock_round.png");
+
+    menu = painter->loadTexture("./graphics/menu.png");
 }

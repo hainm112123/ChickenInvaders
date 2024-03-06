@@ -7,11 +7,13 @@
 #include <chrono>
 #include <thread>
 #include <ctime>
+#include <deque>
+#include <string>
 
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "Painter.h"
-#include "deque"
 
 #define CLOCK_NOW chrono::system_clock::now
 
@@ -39,7 +41,9 @@ enum EntityType {
     LEVEL_UP,
     NEW_WEAPON,
     EXPLOSION,
-    ROCK
+    ROCK,
+    MENU,
+    TEXT,
 };
 
 struct ChickenMoveState {
@@ -47,6 +51,7 @@ struct ChickenMoveState {
 };
 
 class Entity {
+protected:
     EntityType type;
     SDL_Rect rect;
     Texture texture;
@@ -83,6 +88,7 @@ public:
         return frame;
     }
 
+    void setRect(int x, int y);
     void setStep(int _step_x, int _step_y);
     void updateStep(int det_x, int det_y);
 
@@ -100,7 +106,7 @@ class Gallery {
 public:
     vector<vector<Texture>> gundamWeapons;
     vector<Texture> chickens, eggs, gundams, newWeapons;
-    Texture laser, rock, background, levelUp, expolosion;
+    Texture laser, rock, background, levelUp, expolosion, menu;
 
     Gallery(Painter *_painter);
     ~Gallery();
