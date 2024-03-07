@@ -46,6 +46,7 @@ enum EntityType {
     ROCK,
     MENU,
     TEXT,
+    SHIELD
 };
 
 struct ChickenMoveState {
@@ -91,6 +92,7 @@ public:
     }
 
     void setRect(int x, int y);
+    void setRect(SDL_Rect _rect);
     void setStep(int _step_x, int _step_y);
     void updateStep(int det_x, int det_y);
 
@@ -99,7 +101,7 @@ public:
     bool collisionWith(const Entity &entity);
 
     void render(SDL_Renderer *renderer, int arg = 0);
-    void setTexture(Texture _texture);
+    void setTexture(Texture _texture, bool isSetRect = false);
 
 };
 
@@ -108,7 +110,7 @@ class Gallery {
 public:
     vector<vector<Texture>> gundamWeapons;
     vector<Texture> chickens, eggs, gundams, newWeapons, rocks;
-    Texture laser, background, levelUp, expolosion, menu;
+    Texture laser, background, levelUp, expolosion, menu, shield;
 
     Gallery(Painter *_painter);
     ~Gallery();
@@ -126,6 +128,18 @@ public:
     ~Media();
 
     void loadMedia();
+};
+
+class Timer {
+    Time st, ed;
+    double duration = 0;
+    bool active = false;
+public:
+    Timer(double duration = 0);
+
+    void setDuration(double _duration);
+    void startCountdown();
+    bool timeIsUp();
 };
 
 #endif // INIT_H_INCLUDED

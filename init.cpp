@@ -13,6 +13,9 @@ Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type),
 void Entity::setRect(int x, int y) {
     rect.x = x; rect.y = y;
 }
+void Entity::setRect(SDL_Rect _rect) {
+    rect = _rect;
+}
 void Entity::setStep(int _step_x, int _step_y) {
     step_x = _step_x;
     step_y = _step_y;
@@ -40,10 +43,10 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
-    if (type == MENU) {
+    if (type == MENU || type == SHIELD) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
-    if (type == BACKGROUND) {
+    else if (type == BACKGROUND) {
 //        cout << arg << "\n";
         int n = (SCREEN_WIDTH - 1) / texture.w + 1, m = (SCREEN_HEIGHT - arg - 1) / texture.h + 1;
         for (int i = 0; i < n; ++ i) {
@@ -101,8 +104,12 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     }
 }
 
-void Entity::setTexture(Texture _texture) {
+void Entity::setTexture(Texture _texture, bool isSetRect) {
     texture = _texture;
+    if (isSetRect) {
+        rect.w = texture.w;
+        rect.h = texture.h;
+    }
 }
 
 // ........................Galery...............................
@@ -114,6 +121,15 @@ Gallery::~Gallery() {
     for (auto textures: gundamWeapons) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (Texture texture: chickens) SDL_DestroyTexture(texture.texture);
     for (Texture texture: eggs) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: gundams) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: newWeapons) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: rocks) SDL_DestroyTexture(texture.texture);
+    SDL_DestroyTexture(laser.texture);
+    SDL_DestroyTexture(background.texture);
+    SDL_DestroyTexture(levelUp.texture);
+    SDL_DestroyTexture(expolosion.texture);
+    SDL_DestroyTexture(menu.texture);
+    SDL_DestroyTexture(shield.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -160,6 +176,7 @@ void Gallery::loadGamePictures() {
     laser = painter->loadTexture("./graphics/texture_laser.png");
     expolosion = painter->loadTexture("./graphics/explosion.png");
 
+    shield = painter->loadTexture("./graphics/spr_shield.png");
     levelUp = painter->loadTexture("./graphics/level_up.png");
     newWeapons = {
         painter->loadTexture("./graphics/gift0.png"),
@@ -206,4 +223,26 @@ void Media::loadMedia() {
     upgrade = Mix_LoadWAV("./sound/level_up.wav");
     music = Mix_LoadMUS("./sound/start.mp3");
     bulletRock = Mix_LoadWAV("./sound/whistle.wav");
+}
+
+//.........................timer........................................
+Timer::Timer(double _duration): duration(_duration) {}
+void Timer::setDuration(double _duration) {
+    duration = _duration;
+}
+
+void Timer::startCountdown() {
+    active = true;
+    st = CLOCK_NOW();
+}
+
+bool Timer::timeIsUp() {
+    if (!active) return true;
+    ed = CLOCK_NOW();
+    ElapsedTime elapsed = ed - st;
+    if (elapsed.count() > duration) {
+        active = false;
+        return true;
+    }
+    return false;
 }

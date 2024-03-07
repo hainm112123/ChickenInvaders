@@ -35,9 +35,10 @@ class Gundam {
     vector<WeaponType> weapons;
     int currentWeaponID;
     int level;
+    Entity shield;
 
 public:
-    Gundam();
+    Gundam(Gallery *gallery);
 
     set<Bullet*> getBullets() const {
         return bullets;
@@ -60,7 +61,7 @@ public:
     void changeWeapon();
     void levelUp();
 
-    void render(SDL_Renderer *renderer, Gallery *gallery);
+    void render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield = false);
 
     void _move();
     void control(SDL_Event event, Gallery *gallery, Media *media);

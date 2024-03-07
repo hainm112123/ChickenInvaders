@@ -2,11 +2,14 @@
 
 Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height):
     renderer(_renderer), event(_event), painter(_painter),
+    gallery(new Gallery(painter)),
     width(_width), height(_height),
-    background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT})
+    background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
+    initTimer(INIT_DELAY), gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION),
+    gundam(gallery)
 {
     media = new Media();
-    gallery = new Gallery(painter);
+
     setGameStatus(GAME_STOP);
     score = 0;
     round = 0;
@@ -15,7 +18,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     chickenMoveState = {0, 1, 0, 0};
 
     background.setTexture(gallery->background);
-    gundam.getEntity()->setTexture(gallery->gundams[GUNDAM_BLASTER]);
+//    gundam.getEntity()->setTexture(gallery->gundams[gundam.getCurrentWeapon()]);
 
     killedChickenCount.assign(5, 0);
 }
@@ -83,16 +86,24 @@ void Game::process() {
     background.render(renderer, scrolling);
 
     // ............................gundam.......................................
+    if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
+        if (!gundam.revive()) {
+            setGameStatus(GAME_OVER);
+            return;
+        }
+        else {
+            gundamShieldTimer.startCountdown();
+        }
+    }
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
-    gundam.render(renderer, gallery);
+    gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp());
     gundam.handleBullet(renderer);
 
     //..............................round...........................................
     if (roundWon) {
-        initEnd = CLOCK_NOW();
-        ElapsedTime elapsed = initEnd - initStart;
-        if (elapsed.count() > INIT_DELAY) {
+//        cout << initTimer.timeIsUp() << "\n";
+        if (initTimer.timeIsUp()) {
             if (round == BOSS_ROUND) {
                 setGameStatus(GAME_WON);
                 return;
@@ -244,7 +255,7 @@ void Game::dropUpgrade(EntityType eType) {
 void Game::setRoundWon() {
     cout << "Round Won\n";
     roundWon = true;
-    initStart = CLOCK_NOW();
+    initTimer.startCountdown();
 }
 
 void Game::handleGameEvent() {
@@ -355,9 +366,14 @@ void Game::addExplosion(SDL_Rect rect) {
 }
 
 void Game::gundamDead() {
+    if (!gundamShieldTimer.timeIsUp()) {
+        Mix_PlayChannel(-1, media->bulletRock, 0);
+        return;
+    }
     gundam.dead();
     addExplosion(gundam.getEntity()->getRect());
     Mix_PlayChannel(-1, media->explosions[0], 0);
+    gundamReviveTimer.startCountdown();
 }
 
 void Game::renderMenu() {

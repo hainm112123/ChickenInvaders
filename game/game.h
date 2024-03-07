@@ -24,7 +24,9 @@ const int UPGRADE_SPEED = 1;
 const int SCREEN_SPEED = 2;
 const int BG_SIZE = 256;
 
-const double INIT_DELAY = 2;
+const double INIT_DELAY = 3;
+const double GUNDAM_REVIVE_TIME = 2;
+const double GUNDAM_SHIELD_DURATION = 3;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -48,7 +50,7 @@ class Game {
     Entity background;
     int scrolling = 0;
     int frame = 0;
-    chrono::system_clock::time_point initStart, initEnd;
+    Timer initTimer, gundamReviveTimer, gundamShieldTimer;
 
     Gundam gundam;
 
