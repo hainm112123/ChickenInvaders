@@ -22,7 +22,7 @@ void Gundam::_move() {
     entity._move(true);
 }
 
-void Gundam::control(SDL_Event event, Gallery *gallery) {
+void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
         if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
@@ -43,6 +43,7 @@ void Gundam::control(SDL_Event event, Gallery *gallery) {
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
             bullets.insert(bullet);
+            Mix_PlayChannel(-1, media->bullets[getCurrentWeapon()], 0);
         }
         if (event.key.keysym.sym == SDLK_e && !alive) {
             revive();

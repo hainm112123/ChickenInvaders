@@ -13,9 +13,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include "Painter.h"
 
 #define CLOCK_NOW chrono::system_clock::now
+#define _size(x) (int((x).size()))
 
 using namespace std;
 
@@ -105,13 +107,25 @@ class Gallery {
     Painter *painter;
 public:
     vector<vector<Texture>> gundamWeapons;
-    vector<Texture> chickens, eggs, gundams, newWeapons;
-    Texture laser, rock, background, levelUp, expolosion, menu;
+    vector<Texture> chickens, eggs, gundams, newWeapons, rocks;
+    Texture laser, background, levelUp, expolosion, menu;
 
     Gallery(Painter *_painter);
     ~Gallery();
 
     void loadGamePictures();
+};
+
+class Media {
+public:
+    vector<Mix_Chunk*> bullets, explosions, chickens;
+    Mix_Chunk *upgrade, *bulletRock;
+    Mix_Music *music;
+
+    Media();
+    ~Media();
+
+    void loadMedia();
 };
 
 #endif // INIT_H_INCLUDED

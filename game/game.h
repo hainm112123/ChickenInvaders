@@ -38,6 +38,7 @@ class Game {
     SDL_Event *event;
     Painter *painter;
     Gallery *gallery;
+    Media *media;
     TTF_Font *fontMenu, *fontGame;
 
     bool roundWon;
@@ -64,6 +65,7 @@ class Game {
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
+    ~Game();
 
     int getWidth() const {
         return width;

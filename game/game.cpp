@@ -5,6 +5,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT})
 {
+    media = new Media();
     gallery = new Gallery(painter);
     setGameStatus(GAME_STOP);
     score = 0;
@@ -18,7 +19,9 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     killedChickenCount.assign(5, 0);
 }
-
+Game::~Game() {
+    quit();
+}
 void Game::setGameStatus(GameStatus newStatus) {
     status = newStatus;
 //    cout << newStatus << " " << getGameStatus() << "\n";
@@ -69,7 +72,7 @@ void Game::process() {
             return;
         }
         if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-            gundam.control(*event, gallery);
+            gundam.control(*event, gallery, media);
         }
     }
 
@@ -121,7 +124,7 @@ void Game::process() {
                     step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y);
                 }
                 int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
-                Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rock);
+                Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
                 rock->setStep(step_x, step_y);
                 rock->setActive(true);
                 rocks.insert(rock);
@@ -257,7 +260,7 @@ void Game::handleGameEvent() {
                 gundam.addWeapon(WeaponType(upgrade->getType()));
             }
             upgrades.erase(upgrade);
-
+            Mix_PlayChannel(-1, media->upgrade, 0);
         }
     }
 
@@ -291,6 +294,7 @@ void Game::handleGameEvent() {
                     gundam.removeBullet(bullet);
                     if (!alive) {
     //                    chickens.erase(chicken);
+                        Mix_PlayChannel(-1, chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1], 0);
 
                         addExplosion(chicken->getEntity()->getRect());
                         int chickenLevel = chicken->getLevel();
@@ -310,6 +314,9 @@ void Game::handleGameEvent() {
                         }
                         break;
                     }
+                    else {
+                        Mix_PlayChannel(-1, media->chickens[Rand(0, 1)], 0);
+                    }
                 }
             }
         }
@@ -326,6 +333,7 @@ void Game::handleGameEvent() {
                 if (rock->collisionWith(*(bullet->getEntity()))) {
                     rock->receiveDamage(gundam.getBulletDamage());
                     gundam.removeBullet(bullet);
+                    Mix_PlayChannel(-1, media->bulletRock, 0);
                 }
             }
         }
@@ -349,6 +357,7 @@ void Game::addExplosion(SDL_Rect rect) {
 void Game::gundamDead() {
     gundam.dead();
     addExplosion(gundam.getEntity()->getRect());
+    Mix_PlayChannel(-1, media->explosions[0], 0);
 }
 
 void Game::renderMenu() {
@@ -366,6 +375,7 @@ void Game::renderMenu() {
     texts[1].setRect(SCREEN_WIDTH/2 - texts[1].getW()/2, SCREEN_HEIGHT - 200);
 
     bool menuRunning = true;
+    Mix_PlayMusic(media->music, -1);
     while (menuRunning) {
         menu.render(renderer);
         for (int i = 0; i < int(texts.size()); ++ i) {
@@ -383,6 +393,7 @@ void Game::renderMenu() {
                             texts[i].setColor(RED_COLOR);
                         }
                         else {
+                            Mix_PlayChannel(-1, media->upgrade, 0);
                             if (i == 0) {
                                 setGameStatus(GAME_RUNNING);
                                 menuRunning = false;
@@ -402,12 +413,13 @@ void Game::renderMenu() {
 
         SDL_RenderPresent(renderer);
     }
+    Mix_PauseMusic();
 }
 
 void Game::load() {
     TTF_Init();
-    fontMenu = TTF_OpenFont("font//font1.ttf", 50);
-    fontGame = TTF_OpenFont("font//font1.ttf", 24);
+    fontMenu = TTF_OpenFont("./font/font1.ttf", 50);
+    fontGame = TTF_OpenFont("./font/font1.ttf", 24);
 
     setGameStatus(GAME_RUNNING);
 }

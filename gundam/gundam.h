@@ -63,7 +63,7 @@ public:
     void render(SDL_Renderer *renderer, Gallery *gallery);
 
     void _move();
-    void control(SDL_Event event, Gallery *gallery);
+    void control(SDL_Event event, Gallery *gallery, Media *media);
     void handleBullet(SDL_Renderer *renderer);
     void removeBullet(Bullet *bullet);
     void dead();

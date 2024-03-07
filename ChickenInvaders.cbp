@@ -40,6 +40,8 @@
 		<Unit filename="enemy/rock.h" />
 		<Unit filename="game/game.cpp" />
 		<Unit filename="game/game.h" />
+		<Unit filename="game/text.cpp" />
+		<Unit filename="game/text.h" />
 		<Unit filename="gundam/gundam.cpp" />
 		<Unit filename="gundam/gundam.h" />
 		<Unit filename="gundam/upgrade.cpp" />

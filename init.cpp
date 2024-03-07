@@ -59,11 +59,13 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         }
     }
     else if (type == ROCK) {
-        int n = 3, m = 4;
-        (frame += 1) %= (n * m * FRAME_PER_PICTURE);
+        int n = 7, m = 7;
+        int cnt = 48;
+        (frame += 1) %= (cnt * FRAME_PER_PICTURE);
         int index = frame / FRAME_PER_PICTURE;
         int w = texture.w / m, h = texture.h / n;
-        SDL_Rect src = {(index % m) * w, (index / m) * h, w, h};
+        int offsetX = 15, offsetY = 18;
+        SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
     else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP || type == EXPLOSION) {
@@ -148,10 +150,15 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/player-blue-1.png"),
         painter->loadTexture("./graphics/player-green-1.png"),
     };
+    rocks = {
+        painter->loadTexture("./graphics/asteroid1.png"),
+        painter->loadTexture("./graphics/asteroid2.png"),
+        painter->loadTexture("./graphics/asteroid3.png"),
+    };
 
     background = painter->loadTexture("./graphics/background-blue.png");
-    rock = painter->loadTexture("./graphics/rock_round.png");
     laser = painter->loadTexture("./graphics/texture_laser.png");
+    expolosion = painter->loadTexture("./graphics/explosion.png");
 
     levelUp = painter->loadTexture("./graphics/level_up.png");
     newWeapons = {
@@ -160,8 +167,43 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/gift2.png")
     };
 
-    expolosion = painter->loadTexture("./graphics/explosion.png");
-    rock = painter->loadTexture("./graphics/rock_round.png");
-
     menu = painter->loadTexture("./graphics/menu.png");
+}
+
+//.............................Media............................................
+Media::Media() {
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+        cout << "Failed to open audio\n";
+        return;
+    }
+    loadMedia();
+}
+
+Media::~Media() {
+    for (Mix_Chunk *bullet: bullets) Mix_FreeChunk(bullet);
+    for (Mix_Chunk *chicken: chickens) Mix_FreeChunk(chicken);
+    for (Mix_Chunk *explosion: explosions) Mix_FreeChunk(explosion);
+    Mix_FreeMusic(music);
+    Mix_FreeChunk(upgrade);
+    Mix_CloseAudio();
+}
+
+void Media::loadMedia() {
+    bullets = {
+        Mix_LoadWAV("./sound/blaster.wav"),
+        Mix_LoadWAV("./sound/boron.wav"),
+        Mix_LoadWAV("./sound/neutron.wav"),
+    };
+    chickens = {
+        Mix_LoadWAV("./sound/ChickenHit.wav"),
+        Mix_LoadWAV("./sound/ChickenHit2.wav"),
+        Mix_LoadWAV("./sound/ChickenHit3.wav"),
+    };
+    explosions = {
+        Mix_LoadWAV("./sound/exp.wav"),
+        Mix_LoadWAV("./sound/exp_uco.wav"),
+    };
+    upgrade = Mix_LoadWAV("./sound/level_up.wav");
+    music = Mix_LoadMUS("./sound/start.mp3");
+    bulletRock = Mix_LoadWAV("./sound/whistle.wav");
 }
