@@ -43,7 +43,15 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
-    if (type == CHICKEN || type == CHICKEN_BOSS) {
+    if (type == LASER) {
+        int n = 3, m = 4;
+        (frame += 1) %= (n * m * FRAME_PER_PICTURE);
+        int index = frame / 5;
+        int i = index % m, j = index / m;
+        int w = texture.w / m, h = texture.h / n;
+        SDL_Rect src = {w*i + w/2 - GUNDAM_LASER_WIDTH/2, h*j, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT};
+        SDL_RenderCopy(renderer, texture.texture, &src, &rect);
+    } else if (type == CHICKEN || type == CHICKEN_BOSS) {
         int n = textures.size();
         (frame += 1) %= (n * FRAME_PER_PICTURE_MORE);
         SDL_RenderCopy(renderer, textures[frame / FRAME_PER_PICTURE_MORE].texture, NULL, &rect);
@@ -204,8 +212,8 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/asteroid3.png"),
     };
 
-    background = painter->loadTexture("./graphics/CI1Space_1.png");
     laser = painter->loadTexture("./graphics/texture_laser.png");
+    background = painter->loadTexture("./graphics/CI1Space_1.png");
     expolosion = painter->loadTexture("./graphics/explosion.png");
 
     shield = painter->loadTexture("./graphics/spr_shield.png");

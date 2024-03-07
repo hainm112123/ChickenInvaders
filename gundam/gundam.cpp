@@ -1,7 +1,7 @@
 #include "gundam.h"
 #include "../weapon/bullet.h"
 
-Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD) {
+Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
     lives = 3;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
@@ -15,13 +15,16 @@ Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGH
     int shieldSize = max(entity.getW(), entity.getH()) + 20;
 //    cout << entity.getX() << " " << entity.getW() << " " << shieldSize << "\n";
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
+    laser.setTexture(gallery->laser);
+    laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 }
 
-void Gundam::render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield) {
+void Gundam::render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield, bool hasLaser) {
     if (!alive) return;
     entity.setTexture(gallery->gundams[getCurrentWeapon()]);
     entity.render(renderer);
     if (hasShield) shield.render(renderer);
+    if (hasLaser && laserOn) laser.render(renderer);
 }
 
 void Gundam::_move() {
@@ -29,10 +32,11 @@ void Gundam::_move() {
     entity._move(true);
     int shieldSize = max(entity.getW(), entity.getH()) + 20;
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
+    laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 //    shield._move();
 }
 
-void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
+void Gundam::control(SDL_Event event, Gallery *gallery, Media *media, Timer &gundamLaserTimer) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
         if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
@@ -49,7 +53,7 @@ void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
         }
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-        if (event.key.keysym.sym == SDLK_SPACE && alive) {
+        if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
             Bullet *bullet = new Bullet();
             Texture texture = gallery->gundamWeapons[getCurrentWeapon()][level];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
@@ -63,6 +67,14 @@ void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
 //        }
         if (event.key.keysym.sym == SDLK_q && alive) {
             changeWeapon();
+        }
+    }
+    if (!gundamLaserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
+        if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
+            laserOn = true;
+        }
+        if (event.type == SDL_KEYUP && event.key.repeat == 0) {
+            laserOn = false;
         }
     }
 }
@@ -85,6 +97,7 @@ void Gundam::removeBullet(Bullet *bullet) {
 }
 
 void Gundam::dead() {
+    laserOn = false;
     alive = false;
     lives --;
     level = max(level - 1, 0);

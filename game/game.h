@@ -27,6 +27,7 @@ const int BG_SIZE = 762;
 const double INIT_DELAY = 3;
 const double GUNDAM_REVIVE_TIME = 2;
 const double GUNDAM_SHIELD_DURATION = 3;
+const double GUNDAM_LASER_DURATION = 10;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -50,7 +51,7 @@ class Game {
     Entity background;
     int scrolling = 0;
     int frame = 0;
-    Timer initTimer, gundamReviveTimer, gundamShieldTimer;
+    Timer initTimer, gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
 
     Gundam gundam;
 
@@ -91,7 +92,7 @@ public:
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect);
     void gundamDead();
-
+    void chickenDead(Chicken *chicken);
 };
 
 #endif // GAME_H_INCLUDED

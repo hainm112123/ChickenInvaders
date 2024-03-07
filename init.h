@@ -33,6 +33,10 @@ const int NUMBER_OF_EXPLOSION_PIC = 8;
 const int FRAME_PER_PICTURE = 5;
 const int FRAME_PER_PICTURE_MORE = 15;
 
+const int GUNDAM_LASER_WIDTH = 80;
+const int GUNDAM_LASER_HIGHT = 682;
+const int GUNDAM_LASER_DAMAGE = 1;
+
 int Rand(int l, int r);
 
 enum EntityType {
@@ -41,6 +45,7 @@ enum EntityType {
     CHICKEN,
     CHICKEN_BOSS,
     BULLET,
+    LASER,
     LEVEL_UP,
     NEW_WEAPON,
     EXPLOSION,

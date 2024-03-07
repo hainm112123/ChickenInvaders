@@ -36,6 +36,8 @@ class Gundam {
     int currentWeaponID;
     int level;
     Entity shield;
+    Entity laser;
+    bool laserOn = false;
 
 public:
     Gundam(Gallery *gallery);
@@ -56,15 +58,21 @@ public:
     int getLevel() const {
         return level;
     }
+    bool isLaserOn() const {
+        return laserOn;
+    }
+    Entity getLaser() const {
+        return laser;
+    }
 
     void addWeapon(WeaponType newWeapon);
     void changeWeapon();
     void levelUp();
 
-    void render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield = false);
+    void render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield = false, bool hasLaser = false);
 
     void _move();
-    void control(SDL_Event event, Gallery *gallery, Media *media);
+    void control(SDL_Event event, Gallery *gallery, Media *media, Timer &gundamLaserTimer);
     void handleBullet(SDL_Renderer *renderer);
     void removeBullet(Bullet *bullet);
     void dead();

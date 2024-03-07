@@ -5,7 +5,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gallery(new Gallery(painter)),
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
-    initTimer(INIT_DELAY), gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION),
+    initTimer(INIT_DELAY), gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     gundam(gallery)
 {
     media = new Media();
@@ -70,7 +70,7 @@ void Game::init() {
         numberOfAliveChicken = numberOfEnemy;
     }
 
-
+    gundamLaserTimer.startCountdown();
 //    cout << "Init Successful\n";
 }
 
@@ -81,7 +81,7 @@ void Game::process() {
             return;
         }
         if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-            gundam.control(*event, gallery, media);
+            gundam.control(*event, gallery, media, gundamLaserTimer);
         }
     }
 
@@ -103,7 +103,7 @@ void Game::process() {
     }
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
-    gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp());
+    gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
     gundam.handleBullet(renderer);
 
     //..............................round...........................................
@@ -310,31 +310,18 @@ void Game::handleGameEvent() {
                     bool alive = chicken->receiveDamage(gundam.getBulletDamage());
                     gundam.removeBullet(bullet);
                     if (!alive) {
-    //                    chickens.erase(chicken);
-                        Mix_PlayChannel(-1, chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1], 0);
-
-                        addExplosion(chicken->getEntity()->getRect());
-                        int chickenLevel = chicken->getLevel();
-                        int killed = (++ killedChickenCount[chickenLevel]);
-                        if (chickenLevel == 0 && killed % 15 == 0) {
-                            dropUpgrade(LEVEL_UP);
-                        }
-                        if (chickenLevel == 1) {
-                            dropUpgrade(NEW_WEAPON);
-                        }
-
-                        numberOfAliveChicken --;
-                        if (numberOfAliveChicken == 0) {
-                            setRoundWon();
-    //                        cerr << "Round won\n";
-                            return;
-                        }
+                        chickenDead(chicken);
                         break;
                     }
                     else {
                         Mix_PlayChannel(-1, media->chickens[Rand(0, 1)], 0);
                     }
                 }
+            }
+
+            if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
+                bool alive = chicken->receiveDamage(GUNDAM_LASER_DAMAGE);
+                if (!alive) chickenDead(chicken);
             }
         }
     }
@@ -344,15 +331,19 @@ void Game::handleGameEvent() {
         if (gundam.isAlive() && rock->collisionWith(*gundam.getEntity())) {
             gundamDead();
         }
-        if (gundam.isAlive()) {
-            set<Bullet*> gundamBullets = gundam.getBullets();
-            for (Bullet *bullet: gundamBullets) {
-                if (rock->collisionWith(*(bullet->getEntity()))) {
-                    rock->receiveDamage(gundam.getBulletDamage());
-                    gundam.removeBullet(bullet);
-                    Mix_PlayChannel(-1, media->bulletRock, 0);
-                }
+
+        set<Bullet*> gundamBullets = gundam.getBullets();
+        for (Bullet *bullet: gundamBullets) {
+            if (rock->collisionWith(*(bullet->getEntity()))) {
+                rock->receiveDamage(gundam.getBulletDamage());
+                gundam.removeBullet(bullet);
+                Mix_PlayChannel(-1, media->bulletRock, 0);
             }
+        }
+
+        if (gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
+            rock->receiveDamage(GUNDAM_LASER_DAMAGE);
+            Mix_PlayChannel(-1, media->bulletRock, 0);
         }
     }
 
@@ -380,6 +371,27 @@ void Game::gundamDead() {
     addExplosion(gundam.getEntity()->getRect());
     Mix_PlayChannel(-1, media->explosions[0], 0);
     gundamReviveTimer.startCountdown();
+}
+
+void Game::chickenDead(Chicken *chicken) {
+//                    chickens.erase(chicken);
+    Mix_PlayChannel(-1, chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1], 0);
+
+    addExplosion(chicken->getEntity()->getRect());
+    int chickenLevel = chicken->getLevel();
+    int killed = (++ killedChickenCount[chickenLevel]);
+    if (chickenLevel == 0 && killed % 15 == 0) {
+        dropUpgrade(LEVEL_UP);
+    }
+    if (chickenLevel == 1) {
+        dropUpgrade(NEW_WEAPON);
+    }
+
+    numberOfAliveChicken --;
+    if (numberOfAliveChicken == 0) {
+        setRoundWon();
+//                        cerr << "Round won\n";
+    }
 }
 
 void Game::renderMenu() {
