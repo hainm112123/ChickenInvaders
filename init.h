@@ -24,13 +24,14 @@ using namespace std;
 typedef chrono::system_clock::time_point Time;
 typedef chrono::duration<double> ElapsedTime;
 
-const int SCREEN_WIDTH = 1200;
+const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
-const int GAME_WIDTH = 1200;
+const int GAME_WIDTH = 1280;
 const int GAME_HEIGHT = 4096;
 
 const int NUMBER_OF_EXPLOSION_PIC = 8;
 const int FRAME_PER_PICTURE = 5;
+const int FRAME_PER_PICTURE_MORE = 15;
 
 int Rand(int l, int r);
 
@@ -58,6 +59,7 @@ protected:
     EntityType type;
     SDL_Rect rect;
     Texture texture;
+    vector<Texture> textures;
     int step_x = 0, step_y = 0;
     int frame = 0;
 
@@ -102,14 +104,14 @@ public:
 
     void render(SDL_Renderer *renderer, int arg = 0);
     void setTexture(Texture _texture, bool isSetRect = false);
-
+    void setTextures(vector< Texture > _textures);
 };
 
 class Gallery {
     Painter *painter;
 public:
-    vector<vector<Texture>> gundamWeapons;
-    vector<Texture> chickens, eggs, gundams, newWeapons, rocks;
+    vector<vector<Texture>> gundamWeapons, chickens;
+    vector<Texture> eggs, gundams, newWeapons, rocks;
     Texture laser, background, levelUp, expolosion, menu, shield;
 
     Gallery(Painter *_painter);

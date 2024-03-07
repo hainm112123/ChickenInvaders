@@ -58,7 +58,13 @@ void Game::init() {
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
             Chicken *chicken = new Chicken(col, row, level);
-            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
+//            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
+            if (round == BOSS_ROUND) {
+                chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel() + i]);
+            }
+            else {
+                chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel()]);
+            }
             chickens.push_back(chicken);
         }
         numberOfAliveChicken = numberOfEnemy;

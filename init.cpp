@@ -43,23 +43,19 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
-    if (type == MENU || type == SHIELD) {
+    if (type == CHICKEN || type == CHICKEN_BOSS) {
+        int n = textures.size();
+        (frame += 1) %= (n * FRAME_PER_PICTURE_MORE);
+        SDL_RenderCopy(renderer, textures[frame / FRAME_PER_PICTURE_MORE].texture, NULL, &rect);
+    }
+    else if (type == MENU || type == SHIELD) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {
-//        cout << arg << "\n";
-        int n = (SCREEN_WIDTH - 1) / texture.w + 1, m = (SCREEN_HEIGHT - arg - 1) / texture.h + 1;
-        for (int i = 0; i < n; ++ i) {
-            SDL_Rect src = {0, texture.h - arg, texture.w, arg};
-            SDL_Rect dst = {texture.w * i, 0, texture.w, arg};
-            SDL_RenderCopy(renderer, texture.texture, &src, &dst);
-        }
-        rect.w = texture.w; rect.h = texture.h;
-        for (int i = 0; i < n; ++ i) for (int j = 0; j < m; ++ j) {
-            rect.x = rect.w * i; rect.y = rect.h * j + arg;
-//            cout << rect.x << " " << rect.y << "\n";
-            SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
-        }
+        SDL_Rect src = {0, texture.h - arg - SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT};
+//            cout << src.y << " " << src.y + src.h << "\n";
+        SDL_Rect dst = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+        SDL_RenderCopy(renderer, texture.texture, &src, &dst);
     }
     else if (type == ROCK) {
         int n = 7, m = 7;
@@ -71,15 +67,9 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == CHICKEN || type == CHICKEN_BOSS || type == LEVEL_UP || type == EXPLOSION) {
+    else if (type == LEVEL_UP || type == EXPLOSION) {
         int n = 1;
         switch(type) {
-            case CHICKEN:
-                n = 18;
-                break;
-            case CHICKEN_BOSS:
-                n = 10;
-                break;
             case LEVEL_UP:
                 n = 25;
                 break;
@@ -112,6 +102,10 @@ void Entity::setTexture(Texture _texture, bool isSetRect) {
     }
 }
 
+void Entity::setTextures(vector< Texture > _textures) {
+    textures = _textures;
+}
+
 // ........................Galery...............................
 Gallery::Gallery(Painter *_painter): painter(_painter) {
     loadGamePictures();
@@ -119,7 +113,7 @@ Gallery::Gallery(Painter *_painter): painter(_painter) {
 
 Gallery::~Gallery() {
     for (auto textures: gundamWeapons) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
-    for (Texture texture: chickens) SDL_DestroyTexture(texture.texture);
+    for (auto textures: chickens) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (Texture texture: eggs) SDL_DestroyTexture(texture.texture);
     for (Texture texture: gundams) SDL_DestroyTexture(texture.texture);
     for (Texture texture: newWeapons) SDL_DestroyTexture(texture.texture);
@@ -134,8 +128,46 @@ Gallery::~Gallery() {
 
 void Gallery::loadGamePictures() {
     chickens = {
-        painter->loadTexture("./graphics/chicken.png"),
-        painter->loadTexture("./graphics/boss.png"),
+        {
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (4).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_.png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (1).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (2).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (3).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (2).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_ (1).png"),
+            painter->loadTexture("./graphics/phoenix/Phoenix_Chicken_.png"),
+        },
+        {
+            painter->loadTexture("./graphics/boss1/Militarychicken (0).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (1).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (2).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (3).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (4).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (3).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (2).png"),
+            painter->loadTexture("./graphics/boss1/Militarychicken (1).png"),
+        },
+        {
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (0).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (1).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (2).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (3).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (4).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (3).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (2).png"),
+            painter->loadTexture("./graphics/boss2/Henperorsapprentice (1).png"),
+        },
+        {
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (0).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (1).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (2).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (3).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (4).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (3).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (2).png"),
+            painter->loadTexture("./graphics/boss3/CI4_InfiniChick (1).png"),
+        }
     };
     gundamWeapons = {
         {
@@ -172,7 +204,7 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./graphics/asteroid3.png"),
     };
 
-    background = painter->loadTexture("./graphics/background-blue.png");
+    background = painter->loadTexture("./graphics/CI1Space_1.png");
     laser = painter->loadTexture("./graphics/texture_laser.png");
     expolosion = painter->loadTexture("./graphics/explosion.png");
 

@@ -4,8 +4,8 @@
 #include "../init.h"
 #include "../weapon/bullet.h"
 
-const int CHICKEN_WIDTH[] = {40, 120};
-const int CHICKEN_HEIGHT[] = {40, 120};
+const int CHICKEN_WIDTH[] = {80, 200};
+const int CHICKEN_HEIGHT[] = {60, 200};
 
 const int CHICKEN_SPEED[] = {1, 3};
 

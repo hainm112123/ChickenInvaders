@@ -27,7 +27,9 @@ void Gundam::render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield) {
 void Gundam::_move() {
     if (!alive) return;
     entity._move(true);
-    shield._move();
+    int shieldSize = max(entity.getW(), entity.getH()) + 20;
+    shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
+//    shield._move();
 }
 
 void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
@@ -36,12 +38,12 @@ void Gundam::control(SDL_Event event, Gallery *gallery, Media *media) {
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
                 entity.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
-                shield.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
+//                shield.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Down\n";
             }
             else if (event.type == SDL_KEYUP && event.key.repeat == 0) {
                 entity.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
-                shield.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
+//                shield.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Up\n";
             }
         }

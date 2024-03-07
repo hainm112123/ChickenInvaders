@@ -21,8 +21,8 @@ const int MINI_BOSS_ROUND = 4;
 const int BOSS_ROUND = 6;
 
 const int UPGRADE_SPEED = 1;
-const int SCREEN_SPEED = 2;
-const int BG_SIZE = 256;
+const int SCREEN_SPEED = 1;
+const int BG_SIZE = 762;
 
 const double INIT_DELAY = 3;
 const double GUNDAM_REVIVE_TIME = 2;
