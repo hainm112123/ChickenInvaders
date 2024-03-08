@@ -7,8 +7,11 @@ enum UpgradeType {
     UPGRADE_ADD_BLASTER = 0,
     UPGRADE_ADD_BORON,
     UPGRADE_ADD_NEUTRON,
+    UPGRADE_ADD_LASER,
     UPGRADE_LEVEL_UP,
 };
+
+const int NUMBER_OF_UPGRADE = 5;
 
 class Upgrade {
     Entity entity;

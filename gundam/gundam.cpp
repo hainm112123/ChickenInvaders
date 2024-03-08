@@ -71,10 +71,10 @@ void Gundam::control(SDL_Event event, Gallery *gallery, Media *media, Timer &gun
     }
     if (!gundamLaserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-            laserOn = true;
+            setLaserOn(true);
         }
         if (event.type == SDL_KEYUP && event.key.repeat == 0) {
-            laserOn = false;
+            setLaserOn(false);
         }
     }
 }
@@ -97,7 +97,7 @@ void Gundam::removeBullet(Bullet *bullet) {
 }
 
 void Gundam::dead() {
-    laserOn = false;
+    setLaserOn(false);
     alive = false;
     lives --;
     level = max(level - 1, 0);
@@ -134,4 +134,8 @@ int Gundam::getBulletDamage() {
 
 void Gundam::levelUp() {
     level = min(level + 1, 3);
+}
+
+void Gundam::setLaserOn(bool _laserOn) {
+    laserOn = _laserOn;
 }

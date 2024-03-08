@@ -70,7 +70,7 @@ void Game::init() {
         numberOfAliveChicken = numberOfEnemy;
     }
 
-    gundamLaserTimer.startCountdown();
+//    gundamLaserTimer.startCountdown();
 //    cout << "Init Successful\n";
 }
 
@@ -92,6 +92,7 @@ void Game::process() {
     background.render(renderer, scrolling);
 
     // ............................gundam.......................................
+    if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
     if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
         if (!gundam.revive()) {
             setGameStatus(GAME_OVER);
@@ -246,7 +247,7 @@ void Game::dropUpgrade(EntityType eType) {
     if (eType != LEVEL_UP && eType != NEW_WEAPON) return;
 
     int x = (1ll * rand() * rand()) % SCREEN_WIDTH, y = -10;
-    UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(rand() % 3));
+    UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(Rand(0, NUMBER_OF_UPGRADE - 2)));
     Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
     upgrade->getEntity()->setStep(0, UPGRADE_SPEED);
     if (uType == UPGRADE_LEVEL_UP) {
@@ -274,7 +275,14 @@ void Game::handleGameEvent() {
             }
             else {
 //                cout << upgrade->getType() << "\n";
-                gundam.addWeapon(WeaponType(upgrade->getType()));
+                UpgradeType uType = upgrade->getType();
+                if (uType == UPGRADE_ADD_LASER) {
+//                    cout << "GET LASER\n";
+                    gundamLaserTimer.startCountdown();
+                }
+                else {
+                    gundam.addWeapon(WeaponType(uType));
+                }
             }
             upgrades.erase(upgrade);
             Mix_PlayChannel(-1, media->upgrade, 0);

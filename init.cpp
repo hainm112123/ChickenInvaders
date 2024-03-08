@@ -221,7 +221,8 @@ void Gallery::loadGamePictures() {
     newWeapons = {
         painter->loadTexture("./graphics/gift0.png"),
         painter->loadTexture("./graphics/gift1.png"),
-        painter->loadTexture("./graphics/gift2.png")
+        painter->loadTexture("./graphics/gift2.png"),
+        painter->loadTexture("./graphics/gift_laser.png")
     };
 
     menu = painter->loadTexture("./graphics/menu.png");

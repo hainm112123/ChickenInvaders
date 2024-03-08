@@ -65,6 +65,7 @@ public:
         return laser;
     }
 
+    void setLaserOn(bool _laserOn);
     void addWeapon(WeaponType newWeapon);
     void changeWeapon();
     void levelUp();
