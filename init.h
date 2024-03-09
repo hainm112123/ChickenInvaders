@@ -117,7 +117,7 @@ class Gallery {
 public:
     vector<vector<Texture>> gundamWeapons, chickens;
     vector<Texture> eggs, gundams, newWeapons, rocks;
-    Texture laser, background, levelUp, expolosion, menu, shield;
+    Texture laser, background, levelUp, expolosion, menu, shield, menu_settings;
 
     Gallery(Painter *_painter);
     ~Gallery();

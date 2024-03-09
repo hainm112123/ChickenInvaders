@@ -1,4 +1,5 @@
 #include "gundam.h"
+#include "../game/game.h"
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
@@ -19,6 +20,10 @@ Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGH
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 }
 
+void Gundam::setGame(Game *_game) {
+    game = _game;
+}
+
 void Gundam::render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield, bool hasLaser) {
     if (!alive) return;
     entity.setTexture(gallery->gundams[getCurrentWeapon()]);
@@ -36,7 +41,7 @@ void Gundam::_move() {
 //    shield._move();
 }
 
-void Gundam::control(SDL_Event event, Gallery *gallery, Media *media, Timer &gundamLaserTimer) {
+void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
         if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
@@ -55,11 +60,11 @@ void Gundam::control(SDL_Event event, Gallery *gallery, Media *media, Timer &gun
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
             Bullet *bullet = new Bullet();
-            Texture texture = gallery->gundamWeapons[getCurrentWeapon()][level];
+            Texture texture = game->getGallery()->gundamWeapons[getCurrentWeapon()][level];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
             bullets.insert(bullet);
-            Mix_PlayChannel(-1, media->bullets[getCurrentWeapon()], 0);
+            game->playChunk(game->getMedia()->bullets[getCurrentWeapon()]);
         }
 //        if (event.key.keysym.sym == SDLK_e && !alive) {
 //            revive();

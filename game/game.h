@@ -36,6 +36,37 @@ enum GameStatus {
     GAME_WON,
 };
 
+enum GameDifficulty {
+    GAME_EASY = 0,
+    GAME_NORMAL,
+    GAME_HARD,
+    GAME_DIFFICULTY_COUNT,
+};
+const string GAME_DIFFICULTY[] = {"Easy", "Normal", "Hard"};
+
+enum GameAudio {
+    AUDIO_UNMUTED = 0,
+    AUDIO_MUTED,
+    AUDIO_COUNT,
+};
+const string GAME_AUDIO[] = {"Unmuted", "Muted"};
+
+enum MenuState {
+    MENU_MAIN = 0,
+    MENU_SETTINGS,
+};
+
+enum MainMenuTab {
+    MAIN_MENU_START = 0,
+    MAIN_MENU_SETTINGS,
+    MAIN_MENU_QUIT,
+};
+
+enum SettingsMenuTab {
+    SETTING_MENU_AUDIO = 0,
+    SETTING_MENU_DIFFICULTY
+};
+
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
@@ -48,6 +79,8 @@ class Game {
     int width, height;
     int score, round;
     GameStatus status;
+    GameDifficulty difficultyState;
+    GameAudio audioState;
     Entity background;
     int scrolling = 0;
     int frame = 0;
@@ -79,6 +112,12 @@ public:
     int getGameStatus() const {
         return status;
     }
+    Gallery* getGallery() const {
+        return gallery;
+    }
+    Media* getMedia() const {
+        return media;
+    }
 
     void setGameStatus(GameStatus newStatus);
     void load();
@@ -93,6 +132,8 @@ public:
     void addExplosion(SDL_Rect rect);
     void gundamDead();
     void chickenDead(Chicken *chicken);
+    void playChunk(Mix_Chunk *chunk);
+    void playMusic(Mix_Music *music);
 };
 
 #endif // GAME_H_INCLUDED

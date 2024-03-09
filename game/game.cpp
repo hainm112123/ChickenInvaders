@@ -11,6 +11,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     media = new Media();
 
     setGameStatus(GAME_STOP);
+    difficultyState = GAME_EASY;
+    audioState = AUDIO_UNMUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -21,6 +23,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 //    gundam.getEntity()->setTexture(gallery->gundams[gundam.getCurrentWeapon()]);
 
     killedChickenCount.assign(5, 0);
+
+    gundam.setGame(this);
 }
 Game::~Game() {
     quit();
@@ -81,7 +85,7 @@ void Game::process() {
             return;
         }
         if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-            gundam.control(*event, gallery, media, gundamLaserTimer);
+            gundam.control(*event, gundamLaserTimer);
         }
     }
 
@@ -285,7 +289,7 @@ void Game::handleGameEvent() {
                 }
             }
             upgrades.erase(upgrade);
-            Mix_PlayChannel(-1, media->upgrade, 0);
+            playChunk(media->upgrade);
         }
     }
 
@@ -322,7 +326,7 @@ void Game::handleGameEvent() {
                         break;
                     }
                     else {
-                        Mix_PlayChannel(-1, media->chickens[Rand(0, 1)], 0);
+                        playChunk(media->chickens[Rand(0, 1)]);
                     }
                 }
             }
@@ -345,13 +349,13 @@ void Game::handleGameEvent() {
             if (rock->collisionWith(*(bullet->getEntity()))) {
                 rock->receiveDamage(gundam.getBulletDamage());
                 gundam.removeBullet(bullet);
-                Mix_PlayChannel(-1, media->bulletRock, 0);
+                playChunk(media->bulletRock);
             }
         }
 
         if (gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
             rock->receiveDamage(GUNDAM_LASER_DAMAGE);
-            Mix_PlayChannel(-1, media->bulletRock, 0);
+            playChunk(media->bulletRock);
         }
     }
 
@@ -372,18 +376,18 @@ void Game::addExplosion(SDL_Rect rect) {
 
 void Game::gundamDead() {
     if (!gundamShieldTimer.timeIsUp()) {
-        Mix_PlayChannel(-1, media->bulletRock, 0);
+        playChunk(media->bulletRock);
         return;
     }
     gundam.dead();
     addExplosion(gundam.getEntity()->getRect());
-    Mix_PlayChannel(-1, media->explosions[0], 0);
+    playChunk(media->explosions[0]);
     gundamReviveTimer.startCountdown();
 }
 
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
-    Mix_PlayChannel(-1, chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1], 0);
+    playChunk(chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1]);
 
     addExplosion(chicken->getEntity()->getRect());
     int chickenLevel = chicken->getLevel();
@@ -403,51 +407,136 @@ void Game::chickenDead(Chicken *chicken) {
 }
 
 void Game::renderMenu() {
-    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
+    static int menuState = MENU_MAIN;
 
-    vector<Text> texts = {
+    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
+    Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, gallery->menu_settings);
+
+    const int mainMenuTextCount = 3;
+    Text mainMenuText[] = {
+        Text("", WHITE_COLOR),
+        Text("", WHITE_COLOR),
+        Text("", WHITE_COLOR),
+    };
+    const int mainMenuChoiceCount = 3;
+    Text mainMenuChoice[] = {
         Text("Start", WHITE_COLOR),
+        Text("Settings", WHITE_COLOR),
         Text("Quit", WHITE_COLOR),
     };
 
-    texts[0].renderText(fontMenu, renderer);
-    texts[0].setRect(SCREEN_WIDTH/2 - texts[0].getW()/2, SCREEN_HEIGHT - 250);
+    const int settingsMenuTextCount = 2;
+    Text settingsMenuText[] = {
+        Text("Audio", WHITE_COLOR),
+        Text("Difficulty", WHITE_COLOR)
+    };
+    const int settingsMenuChoiceCount = 3;
+    Text settingsMenuChoice[] = {
+        Text("", WHITE_COLOR),
+        Text("", WHITE_COLOR),
+        Text("Back", WHITE_COLOR),
+    };
 
-    texts[1].renderText(fontMenu, renderer);
-    texts[1].setRect(SCREEN_WIDTH/2 - texts[1].getW()/2, SCREEN_HEIGHT - 200);
+
+    for (int i = 0; i < mainMenuChoiceCount; ++ i) {
+        mainMenuChoice[i].renderText(fontMenu, renderer);
+        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 250 + i * 80);
+    }
+    for (int i = 0; i < settingsMenuTextCount; ++ i) {
+        settingsMenuText[i].renderText(fontMenu, renderer);
+        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + i * 80);
+    }
+    settingsMenuChoice[settingsMenuChoiceCount - 1].renderText(fontMenu, renderer);
+    settingsMenuChoice[settingsMenuChoiceCount - 1].setRect(SCREEN_WIDTH - settingsMenuChoice[settingsMenuChoiceCount - 1].getW() - 50, SCREEN_HEIGHT - settingsMenuChoice[settingsMenuChoiceCount - 1].getH() - 50);
 
     bool menuRunning = true;
-    Mix_PlayMusic(media->music, -1);
+    playMusic(media->music);
+    Text *texts, *choices;
     while (menuRunning) {
-        menu.render(renderer);
-        for (int i = 0; i < int(texts.size()); ++ i) {
+        int textCount, choiceCount;
+        for (int i = 0; i < settingsMenuChoiceCount - 1; ++ i) {
+            if (i == SETTING_MENU_AUDIO) {
+                settingsMenuChoice[i].setText(GAME_AUDIO[audioState]);
+            }
+            if (i == SETTING_MENU_DIFFICULTY) {
+                settingsMenuChoice[i].setText(GAME_DIFFICULTY[difficultyState]);
+            }
+            settingsMenuChoice[i].renderText(fontMenu, renderer);
+            settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + i * 80);
+        }
+//        cout << textCount << " " << choiceCount << "\n";
+
+        if (menuState == MENU_MAIN) {
+            texts = mainMenuText;
+            choices = mainMenuChoice;
+            textCount = mainMenuTextCount;
+            choiceCount = mainMenuChoiceCount;
+            menu.render(renderer);
+        }
+        else {
+            texts = settingsMenuText;
+            choices = settingsMenuChoice;
+            textCount = settingsMenuTextCount;
+            choiceCount = settingsMenuChoiceCount;
+            menu_settings.render(renderer);
+        }
+
+        for (int i = 0; i < textCount; ++ i) {
+            if (menuState == MENU_MAIN);
             texts[i].renderText(fontMenu, renderer);
         }
+        for (int i = 0; i < choiceCount; ++ i) {
+            choices[i].renderText(fontMenu, renderer);
+        }
+
+
         while (SDL_PollEvent(event) != 0) {
             if (event->type == SDL_QUIT) {
                 setGameStatus(GAME_STOP);
                 menuRunning = false;
             }
             else if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN) {
-                for (int i = 0; i < int(texts.size()); ++ i) {
-                    if (texts[i].getX() <= (event->motion).x && (event->motion).x <= texts[i].getX() + texts[i].getW() && texts[i].getY() <= (event->motion).y && (event->motion).y <= texts[i].getY() + texts[i].getH()) {
+                for (int i = 0; i < choiceCount; ++ i) {
+                    if (choices[i].getX() <= (event->motion).x && (event->motion).x <= choices[i].getX() + choices[i].getW() && choices[i].getY() <= (event->motion).y && (event->motion).y <= choices[i].getY() + choices[i].getH()) {
                         if (event->type == SDL_MOUSEMOTION) {
-                            texts[i].setColor(RED_COLOR);
+                            choices[i].setColor(RED_COLOR);
                         }
                         else {
-                            Mix_PlayChannel(-1, media->upgrade, 0);
-                            if (i == 0) {
-                                setGameStatus(GAME_RUNNING);
-                                menuRunning = false;
+                            playChunk(media->upgrade);
+                            if (menuState == MENU_MAIN) {
+                                if (i == MAIN_MENU_START) {
+                                    setGameStatus(GAME_RUNNING);
+                                    menuRunning = false;
+                                }
+                                if (i == MAIN_MENU_SETTINGS) {
+                                    menuState = MENU_SETTINGS;
+                                }
+                                if (i == MAIN_MENU_QUIT) {
+                                    setGameStatus(GAME_STOP);
+                                    menuRunning = false;
+                                }
                             }
-                            if (i == 1) {
-                                setGameStatus(GAME_STOP);
-                                menuRunning = false;
+                            else {
+                                if (i == SETTING_MENU_AUDIO) {
+                                    audioState = GameAudio((audioState + 1) % AUDIO_COUNT);
+                                    if (audioState == AUDIO_MUTED) {
+                                        Mix_PauseMusic();
+                                    }
+                                    else {
+                                        Mix_ResumeMusic();
+                                    }
+                                }
+                                else if (i == SETTING_MENU_DIFFICULTY) {
+                                    difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
+                                }
+                                else {
+                                    menuState = MENU_MAIN;
+                                }
                             }
                         }
                     }
                     else {
-                        texts[i].setColor(WHITE_COLOR);
+                        choices[i].setColor(WHITE_COLOR);
                     }
                 }
             }
@@ -468,4 +557,14 @@ void Game::load() {
 
 void Game::quit() {
     TTF_Quit();
+}
+
+void Game::playChunk(Mix_Chunk *chunk) {
+    if (audioState == AUDIO_MUTED) return;
+    Mix_PlayChannel(-1, chunk, 0);
+}
+
+void Game::playMusic(Mix_Music *music) {
+    if (audioState == AUDIO_MUTED) return;
+    Mix_PlayMusic(music, -1);
 }

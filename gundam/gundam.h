@@ -26,7 +26,10 @@ const SDL_Keycode MoveKeyCode[] = {
     SDLK_d,
 };
 
+class Game;
+
 class Gundam {
+    Game *game;
     Entity entity;
     set<Bullet*>bullets;
     int lives;
@@ -65,6 +68,7 @@ public:
         return laser;
     }
 
+    void setGame(Game *_game);
     void setLaserOn(bool _laserOn);
     void addWeapon(WeaponType newWeapon);
     void changeWeapon();
@@ -73,7 +77,7 @@ public:
     void render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield = false, bool hasLaser = false);
 
     void _move();
-    void control(SDL_Event event, Gallery *gallery, Media *media, Timer &gundamLaserTimer);
+    void control(SDL_Event event, Timer &gundamLaserTimer);
     void handleBullet(SDL_Renderer *renderer);
     void removeBullet(Bullet *bullet);
     void dead();

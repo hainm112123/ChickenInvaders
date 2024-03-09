@@ -226,6 +226,7 @@ void Gallery::loadGamePictures() {
     };
 
     menu = painter->loadTexture("./graphics/menu.png");
+    menu_settings = painter->loadTexture("./graphics/CI1Space.png");
 }
 
 //.............................Media............................................
