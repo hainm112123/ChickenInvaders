@@ -68,12 +68,12 @@ enum SettingsMenuTab {
 
 const string ROUND_TEXT[] = {
     "",
-    "Round 1 text",
-    "Round 2 text",
-    "Round 3 text",
-    "Round 4 text",
-    "Round 5 text",
-    "Round 6 text",
+    "Warm up!",
+    "Get ready!",
+    "Asteroid is coming!",
+    "Get ready",
+    "High-speed asteroid!",
+    "Be careful!",
 };
 
 class Game {
@@ -142,7 +142,7 @@ public:
     void addExplosion(SDL_Rect rect);
     void gundamDead();
     void chickenDead(Chicken *chicken);
-    void playChunk(Mix_Chunk *chunk);
+    void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
 };
 

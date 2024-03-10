@@ -9,7 +9,8 @@ const int CHICKEN_HEIGHT[] = {60, 200};
 
 const int CHICKEN_SPEED[] = {1, 3};
 
-const int CHICKEN_HP[] = {10, 50};
+const int CHICKEN_HP[] = {100, 500};
+const int CHICKEN_HP_UPGRADE[] = {50, 200};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
@@ -30,7 +31,7 @@ class Chicken {
     Time lastBullet = CLOCK_NOW();
 
 public:
-    Chicken(int offsetX = 0, int offsetY = 0, int _level = 0);
+    Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int NG = 0);
 
     Entity* getEntity() {
         return &entity;

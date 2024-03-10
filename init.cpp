@@ -244,6 +244,8 @@ Media::~Media() {
     for (Mix_Chunk *explosion: explosions) Mix_FreeChunk(explosion);
     Mix_FreeMusic(music);
     Mix_FreeChunk(upgrade);
+    Mix_FreeChunk(laser);
+    Mix_FreeChunk(bulletRock);
     Mix_CloseAudio();
 }
 
@@ -265,6 +267,7 @@ void Media::loadMedia() {
     upgrade = Mix_LoadWAV("./sound/level_up.wav");
     music = Mix_LoadMUS("./sound/start.mp3");
     bulletRock = Mix_LoadWAV("./sound/whistle.wav");
+    laser = Mix_LoadWAV("./sound/laser8.wav");
 }
 
 //.........................timer........................................

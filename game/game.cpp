@@ -13,7 +13,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_MUTED;
+    audioState = AUDIO_UNMUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -26,6 +26,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     killedChickenCount.assign(5, 0);
 
     gundam.setGame(this);
+//    gundamLaserTimer.startCountdown();
 }
 Game::~Game() {
     quit();
@@ -62,7 +63,7 @@ void Game::init() {
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
-            Chicken *chicken = new Chicken(col, row, level);
+            Chicken *chicken = new Chicken(col, row, level, NG);
 //            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
             if (round == BOSS_ROUND) {
                 chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel() + i]);
@@ -112,35 +113,8 @@ void Game::process() {
     gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
     gundam.handleBullet(renderer);
 
-    //..............................round...........................................
-    if (roundWon) {
-//        cout << initTimer.timeIsUp() << "\n";
-        if (initTimer.timeIsUp()) {
-            if (round == BOSS_ROUND) {
-//                setGameStatus(GAME_WON);
-//                return;
-                NG ++;
-            }
-//            cerr << "Start init\n";
-            round = (round % ROUND_COUNT) + 1;
-            init();
-        }
-        else {
-            int nextRound = NG * ROUND_COUNT + round + 1;
-            roundTitle.setText("Wave " + to_string(nextRound) + ": ");
-            roundTitle.renderText(fontRoundTitle, renderer);
-            roundText.setText(ROUND_TEXT[nextRound]);
-            roundText.renderText(fontRoundText, renderer);
 
-            int W = roundTitle.getW() + roundText.getW();
-            roundTitle.setRect(SCREEN_WIDTH/2 - W/2, SCREEN_HEIGHT/2 - roundTitle.getH()/2 - 100);
-            roundText.setRect(roundTitle.getX() + roundTitle.getW(), SCREEN_HEIGHT/2 - roundText.getH()/2 - 100);
-            roundTitle.renderText(fontRoundTitle, renderer);
-            roundText.renderText(fontRoundText, renderer);
-        }
-    }
-
-    //...............................rock..............................................
+    //...............................rock init..............................................
     int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE;
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
         if (frame % ROCK_WAVE_FRAME == 0) {
@@ -163,6 +137,7 @@ void Game::process() {
                 int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
                 Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
                 rock->setStep(step_x, step_y);
+                rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * NG);
                 rock->setActive(true);
                 rocks.insert(rock);
 //                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
@@ -172,6 +147,35 @@ void Game::process() {
 //        cout << frame << "\n";
     }
 
+    //..............................round...........................................
+    if (roundWon) {
+//        cout << initTimer.timeIsUp() << "\n";
+        if (initTimer.timeIsUp()) {
+            if (round == BOSS_ROUND) {
+//                setGameStatus(GAME_WON);
+//                return;
+                NG ++;
+            }
+//            cerr << "Start init\n";
+            round = (round % ROUND_COUNT) + 1;
+            init();
+        }
+        else {
+            int nextRound = NG * ROUND_COUNT + round + 1;
+            roundTitle.setText("Wave " + to_string(nextRound) + ": ");
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.setText(ROUND_TEXT[(round % ROUND_COUNT) + 1]);
+            roundText.renderText(fontRoundText, renderer);
+
+            int W = roundTitle.getW() + roundText.getW();
+            roundTitle.setRect(SCREEN_WIDTH/2 - W/2, SCREEN_HEIGHT/2 - roundTitle.getH()/2 - 100);
+            roundText.setRect(roundTitle.getX() + roundTitle.getW(), SCREEN_HEIGHT/2 - roundText.getH()/2 - 100);
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.renderText(fontRoundText, renderer);
+        }
+    }
+
+    //......................................rock....................................................................................
     for (Rock *rock: rocks) {
         if (rock->isActive()) {
             rock->handleMove();
@@ -347,7 +351,7 @@ void Game::handleGameEvent() {
             }
 
             if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
-                bool alive = chicken->receiveDamage(GUNDAM_LASER_DAMAGE);
+                bool alive = chicken->receiveDamage(GUNDAM_LASER_DAMAGE + gundam.getLevel()/2);
                 if (!alive) chickenDead(chicken);
             }
         }
@@ -369,7 +373,7 @@ void Game::handleGameEvent() {
         }
 
         if (gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
-            rock->receiveDamage(GUNDAM_LASER_DAMAGE);
+            rock->receiveDamage(GUNDAM_LASER_DAMAGE + gundam.getLevel()/2);
             playChunk(media->bulletRock);
         }
     }
@@ -577,9 +581,9 @@ void Game::quit() {
     TTF_Quit();
 }
 
-void Game::playChunk(Mix_Chunk *chunk) {
+void Game::playChunk(Mix_Chunk *chunk, int channel, int loop) {
     if (audioState == AUDIO_MUTED) return;
-    Mix_PlayChannel(-1, chunk, 0);
+    Mix_PlayChannel(channel, chunk, loop);
 }
 
 void Game::playMusic(Mix_Music *music) {

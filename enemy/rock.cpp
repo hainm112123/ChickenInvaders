@@ -3,6 +3,9 @@
 void Rock::setActive(bool _active) {
     active = _active;
 }
+void Rock::setHP(int _hp) {
+    hp = _hp;
+}
 
 void Rock::receiveDamage(int dmg) {
     hp -= dmg;

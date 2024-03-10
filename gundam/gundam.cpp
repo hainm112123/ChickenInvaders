@@ -143,4 +143,10 @@ void Gundam::levelUp() {
 
 void Gundam::setLaserOn(bool _laserOn) {
     laserOn = _laserOn;
+    if (!laserOn) {
+        Mix_HaltChannel(1);
+    }
+    else {
+        game->playChunk(game->getMedia()->laser, 1, -1);
+    }
 }

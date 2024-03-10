@@ -3,7 +3,8 @@
 
 #include "../init.h"
 
-const int ROCK_HP = 30;
+const int ROCK_HP = 120;
+const int ROCK_HP_UPGRADE = 80;
 
 const int MIN_ROCK_FALL_SPEED = 4;
 const int MAX_ROCK_FALL_SPEED = 6;
@@ -22,10 +23,10 @@ class Rock : public Entity{
 
 public:
     using Entity::Entity;
-    void setActive(bool _active);
     bool isActive() {
         return active;
     }
+    void setActive(bool _active);    void setHP(int _hp);
 
     void receiveDamage(int dmg);
     void handleMove();

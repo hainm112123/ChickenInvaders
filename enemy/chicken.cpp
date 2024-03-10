@@ -1,13 +1,13 @@
 #include "chicken.h"
 
-Chicken::Chicken(int offsetX, int offsetY, int _level) {
+Chicken::Chicken(int offsetX, int offsetY, int _level, int NG) {
     level = _level;
     int width = CHICKEN_WIDTH[level];
     int height = CHICKEN_HEIGHT[level];
     int distance = CHICKENS_DISTANCE[level];
     entity = Entity((level == 0 ? CHICKEN : CHICKEN_BOSS), {offsetX * (width + distance), offsetY * (height + distance), width, height});
 
-    hp = CHICKEN_HP[level];
+    hp = CHICKEN_HP[level] + CHICKEN_HP_UPGRADE[level] * NG;
     speed = CHICKEN_SPEED[level];
     bulletWidth = CHICKEN_EGG_WIDTH[level];
     bulletHeight = CHICKEN_EGG_HEIGHT[level];

@@ -12,9 +12,9 @@ enum WeaponType {
     CHICKEN_EGG,
 };
 
-const int GUNDAM_BULLET_DAMAGE[] = {5, 3, 8};
+const int GUNDAM_BULLET_DAMAGE[] = {50, 30, 80};
 const int GUNDAM_BULLET_SPEED[] = {8, 12, 5};
-const int GUNDAM_BULLET_UPGRADE[] = {3, 2, 5};
+const int GUNDAM_BULLET_UPGRADE[] = {30, 20, 50};
 
 class Bullet {
     Entity entity;

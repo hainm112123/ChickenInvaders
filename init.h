@@ -128,7 +128,7 @@ public:
 class Media {
 public:
     vector<Mix_Chunk*> bullets, explosions, chickens;
-    Mix_Chunk *upgrade, *bulletRock;
+    Mix_Chunk *upgrade, *bulletRock, *laser;
     Mix_Music *music;
 
     Media();
