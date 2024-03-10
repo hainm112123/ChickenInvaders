@@ -97,6 +97,12 @@ void Game::process() {
     (scrolling += SCREEN_SPEED) %= BG_SIZE;
     background.render(renderer, scrolling);
 
+    //...................heart and score........................................
+    for (auto &heart: hearts) heart.render(renderer);
+    scoreText.renderText(fontGame, renderer);
+    scoreValue.setText(to_string(score));
+    scoreValue.renderText(fontRoundText, renderer);
+
     // ............................gundam.......................................
     if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
     if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
@@ -286,6 +292,7 @@ void Game::setRoundWon() {
     cout << "Round Won\n";
     roundWon = true;
     initTimer.startCountdown();
+    score += ROUND_SCORE[round - 1] + NG_ROUND_SCORE[round - 1] * NG;
 }
 
 void Game::handleGameEvent() {
@@ -402,6 +409,7 @@ void Game::gundamDead() {
     addExplosion(gundam.getEntity()->getRect());
     playChunk(media->explosions[0]);
     gundamReviveTimer.startCountdown();
+    hearts.pop_back();
 }
 
 void Game::chickenDead(Chicken *chicken) {
@@ -423,6 +431,8 @@ void Game::chickenDead(Chicken *chicken) {
         setRoundWon();
 //                        cerr << "Round won\n";
     }
+
+    score += CHICKEN_SCORE[chicken->getLevel()] + NG_CHICKEN_SCORE[chicken->getLevel()] * NG;
 }
 
 void Game::renderMenu() {
@@ -573,6 +583,20 @@ void Game::load() {
     fontGame = TTF_OpenFont("./font/font1.ttf", 24);
     fontRoundTitle = TTF_OpenFont("./font/font1.ttf", 32);
     fontRoundText = TTF_OpenFont("./font/font1.ttf", 20);
+
+    for (int i = 0; i < gundam.getLives(); ++ i) {
+        hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
+        hearts.back().setTexture(gallery->heart);
+    }
+    scoreText.setText("Score: ");
+    scoreText.setColor(WHITE_COLOR);
+    scoreText.renderText(fontGame, renderer);
+    scoreText.setRect(10, 10 + hearts.back().getH() + 5);
+    scoreValue.setText("0");
+    scoreValue.setColor(WHITE_COLOR);
+    scoreValue.renderText(fontRoundText, renderer);
+//    cout << scoreText.getW() << "\n";
+    scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
 
     setGameStatus(GAME_RUNNING);
 }

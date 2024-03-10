@@ -67,6 +67,9 @@ public:
     Entity getLaser() const {
         return laser;
     }
+    int getLives() const {
+        return lives;
+    }
 
     void setGame(Game *_game);
     void setLaserOn(bool _laserOn);

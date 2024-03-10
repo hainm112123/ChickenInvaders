@@ -9,8 +9,8 @@ const int CHICKEN_HEIGHT[] = {60, 200};
 
 const int CHICKEN_SPEED[] = {1, 3};
 
-const int CHICKEN_HP[] = {100, 500};
-const int CHICKEN_HP_UPGRADE[] = {50, 200};
+const int CHICKEN_HP[] = {100, 1600};
+const int CHICKEN_HP_UPGRADE[] = {50, 360};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
@@ -18,6 +18,9 @@ const int CHICKEN_EGG_WIDTH[] = {15, 80};
 const int CHICKEN_EGG_HEIGHT[] = {15, 80};
 const int MIN_CHICKEN_EGG_SPEED[] = {1, 2};
 const int MAX_CHICKEN_EGG_SPEED[] = {3, 3};
+
+const int CHICKEN_SCORE[] = {10, 200};
+const int NG_CHICKEN_SCORE[] = {6, 121};
 
 const double BULLET_DELAY = 0.5;
 

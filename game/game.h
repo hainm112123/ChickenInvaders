@@ -20,6 +20,8 @@ const int ROCK_SIDE_ROUND = 3;
 const int MINI_BOSS_ROUND = 4;
 const int BOSS_ROUND = 6;
 const int ROUND_COUNT = 6;
+const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
+const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
 
 const int UPGRADE_SPEED = 1;
 const int SCREEN_SPEED = 1;
@@ -108,6 +110,10 @@ class Game {
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
+
+    map<string, int> scores;
+    vector<Entity> hearts;
+    Text scoreText, scoreValue;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);

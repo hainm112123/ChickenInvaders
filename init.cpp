@@ -56,7 +56,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         (frame += 1) %= (n * FRAME_PER_PICTURE_MORE);
         SDL_RenderCopy(renderer, textures[frame / FRAME_PER_PICTURE_MORE].texture, NULL, &rect);
     }
-    else if (type == MENU || type == SHIELD) {
+    else if (type == MENU || type == SHIELD || type == HEART) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {
@@ -132,6 +132,8 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(expolosion.texture);
     SDL_DestroyTexture(menu.texture);
     SDL_DestroyTexture(shield.texture);
+    SDL_DestroyTexture(menu_settings.texture);
+    SDL_DestroyTexture(heart.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -227,6 +229,7 @@ void Gallery::loadGamePictures() {
 
     menu = painter->loadTexture("./graphics/menu.png");
     menu_settings = painter->loadTexture("./graphics/CI1Space.png");
+    heart = painter->loadTexture("./graphics/heart.png");
 }
 
 //.............................Media............................................

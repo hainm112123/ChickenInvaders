@@ -9,6 +9,7 @@
 #include <ctime>
 #include <deque>
 #include <string>
+#include <map>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -31,7 +32,7 @@ const int GAME_HEIGHT = 4096;
 
 const int NUMBER_OF_EXPLOSION_PIC = 8;
 const int FRAME_PER_PICTURE = 5;
-const int FRAME_PER_PICTURE_MORE = 15;
+const int FRAME_PER_PICTURE_MORE = 10;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
@@ -52,7 +53,8 @@ enum EntityType {
     ROCK,
     MENU,
     TEXT,
-    SHIELD
+    SHIELD,
+    HEART
 };
 
 struct ChickenMoveState {
@@ -117,7 +119,7 @@ class Gallery {
 public:
     vector<vector<Texture>> gundamWeapons, chickens;
     vector<Texture> eggs, gundams, newWeapons, rocks;
-    Texture laser, background, levelUp, expolosion, menu, shield, menu_settings;
+    Texture laser, background, levelUp, expolosion, menu, shield, menu_settings, heart;
 
     Gallery(Painter *_painter);
     ~Gallery();
