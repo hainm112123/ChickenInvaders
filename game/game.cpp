@@ -6,13 +6,14 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
     initTimer(INIT_DELAY), gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
+    roundTitle("", WHITE_COLOR), roundText("", WHITE_COLOR),
     gundam(gallery)
 {
     media = new Media();
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_UNMUTED;
+    audioState = AUDIO_MUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -116,12 +117,26 @@ void Game::process() {
 //        cout << initTimer.timeIsUp() << "\n";
         if (initTimer.timeIsUp()) {
             if (round == BOSS_ROUND) {
-                setGameStatus(GAME_WON);
-                return;
+//                setGameStatus(GAME_WON);
+//                return;
+                NG ++;
             }
 //            cerr << "Start init\n";
-            round ++;
+            round = (round % ROUND_COUNT) + 1;
             init();
+        }
+        else {
+            int nextRound = NG * ROUND_COUNT + round + 1;
+            roundTitle.setText("Wave " + to_string(nextRound) + ": ");
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.setText(ROUND_TEXT[nextRound]);
+            roundText.renderText(fontRoundText, renderer);
+
+            int W = roundTitle.getW() + roundText.getW();
+            roundTitle.setRect(SCREEN_WIDTH/2 - W/2, SCREEN_HEIGHT/2 - roundTitle.getH()/2 - 100);
+            roundText.setRect(roundTitle.getX() + roundTitle.getW(), SCREEN_HEIGHT/2 - roundText.getH()/2 - 100);
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.renderText(fontRoundText, renderer);
         }
     }
 
@@ -482,7 +497,7 @@ void Game::renderMenu() {
         }
 
         for (int i = 0; i < textCount; ++ i) {
-            if (menuState == MENU_MAIN);
+            if (menuState == MENU_MAIN) continue;
             texts[i].renderText(fontMenu, renderer);
         }
         for (int i = 0; i < choiceCount; ++ i) {
@@ -506,6 +521,7 @@ void Game::renderMenu() {
                             if (menuState == MENU_MAIN) {
                                 if (i == MAIN_MENU_START) {
                                     setGameStatus(GAME_RUNNING);
+                                    initTimer.startCountdown();
                                     menuRunning = false;
                                 }
                                 if (i == MAIN_MENU_SETTINGS) {
@@ -551,6 +567,8 @@ void Game::load() {
     TTF_Init();
     fontMenu = TTF_OpenFont("./font/font1.ttf", 50);
     fontGame = TTF_OpenFont("./font/font1.ttf", 24);
+    fontRoundTitle = TTF_OpenFont("./font/font1.ttf", 32);
+    fontRoundText = TTF_OpenFont("./font/font1.ttf", 20);
 
     setGameStatus(GAME_RUNNING);
 }

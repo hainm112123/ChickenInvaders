@@ -19,6 +19,7 @@ const int ROCK_FALL_ROUND = 5;
 const int ROCK_SIDE_ROUND = 3;
 const int MINI_BOSS_ROUND = 4;
 const int BOSS_ROUND = 6;
+const int ROUND_COUNT = 6;
 
 const int UPGRADE_SPEED = 1;
 const int SCREEN_SPEED = 1;
@@ -55,16 +56,24 @@ enum MenuState {
     MENU_MAIN = 0,
     MENU_SETTINGS,
 };
-
 enum MainMenuTab {
     MAIN_MENU_START = 0,
     MAIN_MENU_SETTINGS,
     MAIN_MENU_QUIT,
 };
-
 enum SettingsMenuTab {
     SETTING_MENU_AUDIO = 0,
     SETTING_MENU_DIFFICULTY
+};
+
+const string ROUND_TEXT[] = {
+    "",
+    "Round 1 text",
+    "Round 2 text",
+    "Round 3 text",
+    "Round 4 text",
+    "Round 5 text",
+    "Round 6 text",
 };
 
 class Game {
@@ -73,11 +82,11 @@ class Game {
     Painter *painter;
     Gallery *gallery;
     Media *media;
-    TTF_Font *fontMenu, *fontGame;
+    TTF_Font *fontMenu, *fontGame, *fontRoundTitle, *fontRoundText;
 
     bool roundWon;
     int width, height;
-    int score, round;
+    int score, round, NG = 0;
     GameStatus status;
     GameDifficulty difficultyState;
     GameAudio audioState;
@@ -85,6 +94,7 @@ class Game {
     int scrolling = 0;
     int frame = 0;
     Timer initTimer, gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
+    Text roundTitle, roundText;
 
     Gundam gundam;
 
