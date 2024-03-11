@@ -3,7 +3,7 @@
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
-    lives = 3;
+    lives = 1;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_BORON);
@@ -106,6 +106,7 @@ void Gundam::dead() {
     alive = false;
     lives --;
     level = max(level - 1, 0);
+    entity.setStep(0, 0);
 //    cout << "dead " << lives << "\n" ;
 }
 bool Gundam::revive() {
@@ -149,4 +150,19 @@ void Gundam::setLaserOn(bool _laserOn) {
     else {
         game->playChunk(game->getMedia()->laser, 1, -1);
     }
+}
+
+void Gundam::reset() {
+    lives = 3;
+    alive = true;
+    weapons.clear();
+    bullets.clear();
+    weapons.push_back(GUNDAM_BLASTER);
+    level = 0;
+    currentWeaponID = 0;
+    laserOn = false;
+
+    int shieldSize = max(entity.getW(), entity.getH()) + 20;
+    shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
+    laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 }

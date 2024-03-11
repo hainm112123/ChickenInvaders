@@ -32,7 +32,7 @@ const int GAME_HEIGHT = 4096;
 
 const int NUMBER_OF_EXPLOSION_PIC = 8;
 const int FRAME_PER_PICTURE = 5;
-const int FRAME_PER_PICTURE_MORE = 10;
+const int FRAME_PER_PICTURE_MORE = 8;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
@@ -149,6 +149,7 @@ public:
     void setDuration(double _duration);
     void startCountdown();
     bool timeIsUp();
+    void deactive();
 };
 
 #endif // INIT_H_INCLUDED

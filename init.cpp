@@ -294,3 +294,7 @@ bool Timer::timeIsUp() {
     }
     return false;
 }
+
+void Timer::deactive() {
+    active = false;
+}

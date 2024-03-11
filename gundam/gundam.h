@@ -85,6 +85,8 @@ public:
     void removeBullet(Bullet *bullet);
     void dead();
     bool revive();
+
+    void reset();
 };
 
 #endif // GUNDAM_H_INCLUDED

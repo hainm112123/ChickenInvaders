@@ -15,7 +15,7 @@ public:
     void setText(const string &_text);
     void setColor(const SDL_Color &_color);
 
-    void renderText(TTF_Font *font, SDL_Renderer *renderer);
+    void renderText(TTF_Font *font, SDL_Renderer *renderer, bool init = false);
     void release();
 };
 

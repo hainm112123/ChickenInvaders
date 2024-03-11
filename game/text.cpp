@@ -17,7 +17,7 @@ void Text::setColor(const SDL_Color &_color) {
     color = _color;
 }
 
-void Text::renderText(TTF_Font *font, SDL_Renderer *renderer) {
+void Text::renderText(TTF_Font *font, SDL_Renderer *renderer, bool init) {
     release();
     SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), color);
     if (surface != NULL) {
@@ -28,7 +28,7 @@ void Text::renderText(TTF_Font *font, SDL_Renderer *renderer) {
         }
         SDL_FreeSurface(surface);
     }
-    render(renderer);
+    if (!init) render(renderer);
 }
 
 void Text::release() {

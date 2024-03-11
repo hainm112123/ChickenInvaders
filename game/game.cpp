@@ -5,7 +5,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gallery(new Gallery(painter)),
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
-    initTimer(INIT_DELAY), gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
+    initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY),
+    gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", WHITE_COLOR), roundText("", WHITE_COLOR),
     gundam(gallery)
 {
@@ -106,13 +107,7 @@ void Game::process() {
     // ............................gundam.......................................
     if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
     if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
-        if (!gundam.revive()) {
-            setGameStatus(GAME_OVER);
-            return;
-        }
-        else {
-            gundamShieldTimer.startCountdown();
-        }
+        if (gundam.revive()) gundamShieldTimer.startCountdown();
     }
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
@@ -268,6 +263,10 @@ void Game::process() {
 
     handleGameEvent();
 
+    if (gundam.getLives() <= 0) {
+        gameOver();
+    }
+
     SDL_RenderPresent(renderer);
     SDL_Delay(1);
 }
@@ -333,8 +332,8 @@ void Game::handleGameEvent() {
         if (gundam.isAlive()) {
             for (Bullet *bullet: currentChickenBullets) {
                 if (bullet->getEntity()->collisionWith(*gundam.getEntity())) {
-                    chickenBullets.push_back(bullet);
-                    chicken->removeBullet(bullet);
+//                    chickenBullets.push_back(bullet);
+//                    chicken->removeBullet(bullet);
                     gundamDead();
                     break;
                 }
@@ -410,6 +409,9 @@ void Game::gundamDead() {
     playChunk(media->explosions[0]);
     gundamReviveTimer.startCountdown();
     hearts.pop_back();
+    if (hearts.empty()) {
+        gameEndTimer.startCountdown();
+    }
 }
 
 void Game::chickenDead(Chicken *chicken) {
@@ -468,11 +470,11 @@ void Game::renderMenu() {
 
 
     for (int i = 0; i < mainMenuChoiceCount; ++ i) {
-        mainMenuChoice[i].renderText(fontMenu, renderer);
+        mainMenuChoice[i].renderText(fontMenu, renderer, true);
         mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 250 + i * 80);
     }
     for (int i = 0; i < settingsMenuTextCount; ++ i) {
-        settingsMenuText[i].renderText(fontMenu, renderer);
+        settingsMenuText[i].renderText(fontMenu, renderer, true);
         settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + i * 80);
     }
     settingsMenuChoice[settingsMenuChoiceCount - 1].renderText(fontMenu, renderer);
@@ -490,7 +492,7 @@ void Game::renderMenu() {
             if (i == SETTING_MENU_DIFFICULTY) {
                 settingsMenuChoice[i].setText(GAME_DIFFICULTY[difficultyState]);
             }
-            settingsMenuChoice[i].renderText(fontMenu, renderer);
+            settingsMenuChoice[i].renderText(fontMenu, renderer, true);
             settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + i * 80);
         }
 //        cout << textCount << " " << choiceCount << "\n";
@@ -598,7 +600,7 @@ void Game::load() {
 //    cout << scoreText.getW() << "\n";
     scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
 
-    setGameStatus(GAME_RUNNING);
+//    setGameStatus(GAME_RUNNING);
 }
 
 void Game::quit() {
@@ -613,4 +615,116 @@ void Game::playChunk(Mix_Chunk *chunk, int channel, int loop) {
 void Game::playMusic(Mix_Music *music) {
     if (audioState == AUDIO_MUTED) return;
     Mix_PlayMusic(music, -1);
+}
+
+void Game::gameOver() {
+    if (gameEndTimer.timeIsUp()) {
+        setGameStatus(GAME_OVER);
+        enterYourName();
+    }
+    else {
+        Text gameover("Game Over!", WHITE_COLOR_2ND);
+        gameover.renderText(fontMenu, renderer, true);
+        gameover.setRect(SCREEN_WIDTH/2 - gameover.getW()/2, SCREEN_HEIGHT/3);
+        gameover.renderText(fontMenu, renderer);
+    }
+}
+
+void Game::enterYourName() {
+    scoreText.setRect(SCREEN_WIDTH/2 - (scoreText.getW() + scoreValue.getW())/2, SCREEN_HEIGHT/3);
+    scoreValue.setRect(scoreText.getX() + scoreText.getW(), SCREEN_HEIGHT/3 + scoreText.getH() - scoreValue.getH());
+
+    Text placeholder("Enter your name!", WHITE_COLOR_2ND);
+    placeholder.renderText(fontMenu, renderer, true);
+    placeholder.setRect(SCREEN_WIDTH/2 - placeholder.getW()/2, SCREEN_HEIGHT/3 + 50);
+
+    Text input("", WHITE_COLOR);
+    input.setRect(SCREEN_WIDTH/2 - placeholder.getW()/2, SCREEN_HEIGHT/3);
+    string username = "";
+
+    Text nextButton("Next", WHITE_COLOR);
+    nextButton.renderText(fontRoundTitle, renderer, true);
+    nextButton.setRect(SCREEN_WIDTH/2 - nextButton.getW()/2, SCREEN_HEIGHT/3 + 150);
+
+    bool summarizing = true;
+    SDL_Event e;
+    while (summarizing) {
+        (scrolling += SCREEN_SPEED) %= BG_SIZE;
+        background.render(renderer, scrolling);
+
+        scoreText.renderText(fontGame, renderer);
+        scoreValue.renderText(fontRoundText, renderer);
+
+        input.setText(username);
+        input.renderText(fontMenu, renderer, true);
+        input.setRect(SCREEN_WIDTH/2 - input.getW()/2, placeholder.getY());
+
+        if (_size(username) == 0) {
+            placeholder.renderText(fontMenu, renderer);
+        }
+        else {
+            input.renderText(fontMenu, renderer);
+        }
+        nextButton.renderText(fontRoundTitle, renderer);
+
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
+                if (nextButton.getX() <= e.motion.x && e.motion.x <= nextButton.getX() + nextButton.getW() && nextButton.getY() <= e.motion.y && e.motion.y <= nextButton.getY() + nextButton.getH()) {
+                    if (e.type == SDL_MOUSEMOTION) {
+                        nextButton.setColor(RED_COLOR);
+                    }
+                    if (e.type == SDL_MOUSEBUTTONDOWN) {
+                        summarizing = false;
+                        break;
+                    }
+                }
+                else {
+                    nextButton.setColor(WHITE_COLOR);
+                }
+            }
+            if (e.type == SDL_KEYDOWN) {
+                for (int i = 0; i < NUM_KEYCODES; ++ i) if (e.key.keysym.sym == KEYCODES[i] && _size(username) < MAX_NAME_LENGTH) {
+                    char c = (i < 26) ? char('a' + i) : char('0' + i - 26);
+                    username += c;
+                    break;
+                }
+                if (e.key.keysym.sym == SDLK_BACKSPACE && _size(username) > 0) {
+                    username.pop_back();
+                }
+            }
+        }
+
+        SDL_RenderPresent(renderer);
+    }
+}
+
+void Game::playAgain() {
+    renderMenu();
+}
+
+void Game::reset() {
+    setGameStatus(GAME_STOP);
+    difficultyState = GAME_EASY;
+    audioState = AUDIO_UNMUTED;
+    score = round = NG = 0;
+    frame = scrolling = 0;
+    roundWon = true;
+    gundamLaserTimer.deactive();
+    gundamReviveTimer.deactive();
+    gundamShieldTimer.deactive();
+    initTimer.deactive();
+
+    killedChickenCount.assign(5, 0);
+    chickens.clear(); chickenBullets.clear();
+    rocks.clear();
+    upgrades.clear();
+    explosions.clear();
+    hearts.clear();
+
+    gundam.reset();
+
+    for (int i = 0; i < gundam.getLives(); ++ i) {
+        hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
+        hearts.back().setTexture(gallery->heart);
+    }
 }

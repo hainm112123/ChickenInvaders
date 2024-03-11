@@ -28,6 +28,7 @@ const int SCREEN_SPEED = 1;
 const int BG_SIZE = 762;
 
 const double INIT_DELAY = 3;
+const double GAME_END_DELAY = 3;
 const double GUNDAM_REVIVE_TIME = 2;
 const double GUNDAM_SHIELD_DURATION = 3;
 const double GUNDAM_LASER_DURATION = 10;
@@ -78,6 +79,47 @@ const string ROUND_TEXT[] = {
     "Be careful!",
 };
 
+const SDL_Keycode KEYCODES[] = {
+    SDLK_a,
+    SDLK_b,
+    SDLK_c,
+    SDLK_d,
+    SDLK_e,
+    SDLK_f,
+    SDLK_g,
+    SDLK_h,
+    SDLK_i,
+    SDLK_j,
+    SDLK_k,
+    SDLK_l,
+    SDLK_m,
+    SDLK_n,
+    SDLK_o,
+    SDLK_p,
+    SDLK_q,
+    SDLK_r,
+    SDLK_s,
+    SDLK_t,
+    SDLK_u,
+    SDLK_v,
+    SDLK_w,
+    SDLK_x,
+    SDLK_y,
+    SDLK_z,
+    SDLK_0,
+    SDLK_1,
+    SDLK_2,
+    SDLK_3,
+    SDLK_4,
+    SDLK_5,
+    SDLK_6,
+    SDLK_7,
+    SDLK_8,
+    SDLK_9,
+};
+const int NUM_KEYCODES = 36;
+const int MAX_NAME_LENGTH = 16;
+
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
@@ -95,7 +137,8 @@ class Game {
     Entity background;
     int scrolling = 0;
     int frame = 0;
-    Timer initTimer, gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
+    Timer initTimer, gameEndTimer;
+    Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
     Text roundTitle, roundText;
 
     Gundam gundam;
@@ -150,6 +193,11 @@ public:
     void chickenDead(Chicken *chicken);
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
+
+    void gameOver();
+    void enterYourName();
+    void playAgain();
+    void reset();
 };
 
 #endif // GAME_H_INCLUDED

@@ -9,6 +9,7 @@
 using namespace std;
 
 const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
+const SDL_Color WHITE_COLOR_2ND = {255, 255, 255, 0};
 const SDL_Color BLACK_COLOR = {0, 0, 0, 0};
 const SDL_Color GREEN_COLOR = {0, 128, 0, 0};
 const SDL_Color RED_COLOR = {255, 0, 0, 0};
