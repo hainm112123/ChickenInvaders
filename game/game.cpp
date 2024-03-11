@@ -443,49 +443,58 @@ void Game::renderMenu() {
     Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
     Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, gallery->menu_settings);
 
-    const int mainMenuTextCount = 3;
+    const int mainMenuTextCount = 4;
     Text mainMenuText[] = {
         Text("", WHITE_COLOR),
         Text("", WHITE_COLOR),
         Text("", WHITE_COLOR),
+        Text("", WHITE_COLOR),
     };
-    const int mainMenuChoiceCount = 3;
+    const int mainMenuChoiceCount = 4;
     Text mainMenuChoice[] = {
         Text("Start", WHITE_COLOR),
         Text("Settings", WHITE_COLOR),
+        Text("Ranking", WHITE_COLOR),
         Text("Quit", WHITE_COLOR),
     };
 
-    const int settingsMenuTextCount = 2;
+    Text backButton("Back", WHITE_COLOR);
+    backButton.renderText(fontRoundTitle, renderer);
+    backButton.setRect(SCREEN_WIDTH - backButton.getW() - 100, SCREEN_HEIGHT - backButton.getH() - 50);
+
+    const int settingsMenuTextCount = 3;
     Text settingsMenuText[] = {
+        Text("", WHITE_COLOR),
         Text("Audio", WHITE_COLOR),
         Text("Difficulty", WHITE_COLOR)
     };
     const int settingsMenuChoiceCount = 3;
     Text settingsMenuChoice[] = {
+        backButton,
         Text("", WHITE_COLOR),
         Text("", WHITE_COLOR),
-        Text("Back", WHITE_COLOR),
     };
+
+    const int rankingMenuTextCount = 0;
+    const int rankingMenuChoiceCount = 1;
+    Text rankingMenuChoice[] = {backButton};
 
 
     for (int i = 0; i < mainMenuChoiceCount; ++ i) {
         mainMenuChoice[i].renderText(fontMenu, renderer, true);
-        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 250 + i * 80);
+        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 360 + i * 80);
     }
-    for (int i = 0; i < settingsMenuTextCount; ++ i) {
+    for (int i = 1; i < settingsMenuTextCount; ++ i) {
         settingsMenuText[i].renderText(fontMenu, renderer, true);
-        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + i * 80);
+        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + (i - 1) * 80);
     }
-    settingsMenuChoice[settingsMenuChoiceCount - 1].renderText(fontMenu, renderer);
-    settingsMenuChoice[settingsMenuChoiceCount - 1].setRect(SCREEN_WIDTH - settingsMenuChoice[settingsMenuChoiceCount - 1].getW() - 50, SCREEN_HEIGHT - settingsMenuChoice[settingsMenuChoiceCount - 1].getH() - 50);
 
     bool menuRunning = true;
     playMusic(media->music);
     Text *texts, *choices;
     while (menuRunning) {
         int textCount, choiceCount;
-        for (int i = 0; i < settingsMenuChoiceCount - 1; ++ i) {
+        for (int i = 1; i < settingsMenuChoiceCount; ++ i) {
             if (i == SETTING_MENU_AUDIO) {
                 settingsMenuChoice[i].setText(GAME_AUDIO[audioState]);
             }
@@ -493,7 +502,7 @@ void Game::renderMenu() {
                 settingsMenuChoice[i].setText(GAME_DIFFICULTY[difficultyState]);
             }
             settingsMenuChoice[i].renderText(fontMenu, renderer, true);
-            settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + i * 80);
+            settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + (i - 1) * 80);
         }
 //        cout << textCount << " " << choiceCount << "\n";
 
@@ -504,12 +513,19 @@ void Game::renderMenu() {
             choiceCount = mainMenuChoiceCount;
             menu.render(renderer);
         }
-        else {
+        else if (menuState == MENU_SETTINGS) {
             texts = settingsMenuText;
             choices = settingsMenuChoice;
             textCount = settingsMenuTextCount;
             choiceCount = settingsMenuChoiceCount;
             menu_settings.render(renderer);
+        }
+        else {
+            textCount = rankingMenuTextCount;
+            choiceCount = rankingMenuChoiceCount;
+            choices = rankingMenuChoice;
+            menu_settings.render(renderer);
+            showRanking();
         }
 
         for (int i = 0; i < textCount; ++ i) {
@@ -542,6 +558,9 @@ void Game::renderMenu() {
                                 }
                                 if (i == MAIN_MENU_SETTINGS) {
                                     menuState = MENU_SETTINGS;
+                                }
+                                if (i == MAIN_MENU_RANKING) {
+                                    menuState = MENU_RANKING;
                                 }
                                 if (i == MAIN_MENU_QUIT) {
                                     setGameStatus(GAME_STOP);
@@ -579,6 +598,42 @@ void Game::renderMenu() {
     Mix_PauseMusic();
 }
 
+void Game::initData() {
+    score = round = NG = 0;
+    frame = scrolling = 0;
+    roundWon = true;
+
+    killedChickenCount.assign(5, 0);
+    chickens.clear(); chickenBullets.clear();
+    rocks.clear();
+    upgrades.clear();
+    explosions.clear();
+    hearts.clear();
+
+    for (int i = 0; i < gundam.getLives(); ++ i) {
+        hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
+        hearts.back().setTexture(gallery->heart);
+    }
+}
+
+vector<pair<int, string>> Game::getRanking() {
+    vector<pair<int, string>> v;
+    for (auto tmp: scores) v.push_back(make_pair(tmp.second, tmp.first));
+    sort(v.begin(), v.end(), greater<pair<int, string>>());
+    while (_size(v) > NUMBER_SHOWED_PLAYER) v.pop_back();
+    return v;
+}
+
+void Game::saveData() {
+    ofstream fout("./data/players.txt");
+
+    auto v = getRanking();
+    fout << _size(v) << "\n";
+    for (auto tmp: v) fout << tmp.second << " " << tmp.first << "\n";
+
+    fout.close();
+}
+
 void Game::load() {
     TTF_Init();
     fontMenu = TTF_OpenFont("./font/font1.ttf", 50);
@@ -586,10 +641,8 @@ void Game::load() {
     fontRoundTitle = TTF_OpenFont("./font/font1.ttf", 32);
     fontRoundText = TTF_OpenFont("./font/font1.ttf", 20);
 
-    for (int i = 0; i < gundam.getLives(); ++ i) {
-        hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
-        hearts.back().setTexture(gallery->heart);
-    }
+    initData();
+
     scoreText.setText("Score: ");
     scoreText.setColor(WHITE_COLOR);
     scoreText.renderText(fontGame, renderer);
@@ -601,9 +654,23 @@ void Game::load() {
     scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
 
 //    setGameStatus(GAME_RUNNING);
+
+    ifstream fin("./data/players.txt");
+
+    string playerName;
+    int playScore;
+    int numPlayers;
+    fin >> numPlayers;
+    for (int i = 0; i < numPlayers; ++ i) {
+        fin >> playerName >> playScore;
+        scores[playerName] = playScore;
+    }
+
+    fin.close();
 }
 
 void Game::quit() {
+    saveData();
     TTF_Quit();
 }
 
@@ -617,10 +684,46 @@ void Game::playMusic(Mix_Music *music) {
     Mix_PlayMusic(music, -1);
 }
 
+bool isHover(const SDL_Event &event, const Entity &entity) {
+    return entity.getX() <= event.motion.x && event.motion.x <= entity.getX() + entity.getW() && entity.getY() <= event.motion.y && event.motion.y <= entity.getY() + entity.getH();
+}
+
 void Game::gameOver() {
     if (gameEndTimer.timeIsUp()) {
         setGameStatus(GAME_OVER);
         enterYourName();
+
+        Text nextButton("Next", WHITE_COLOR);
+        nextButton.renderText(fontRoundTitle, renderer, true);
+        nextButton.setRect(SCREEN_WIDTH - nextButton.getW() - 100, SCREEN_HEIGHT - nextButton.getH() - 50);
+
+        SDL_Event e;
+        bool rankShowing = true;
+        while (rankShowing) {
+            (scrolling += SCREEN_SPEED) %= BG_SIZE;
+            background.render(renderer, scrolling);
+            showRanking();
+            nextButton.renderText(fontRoundTitle, renderer);
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
+                    if (isHover(e, nextButton)) {
+                        if (e.type == SDL_MOUSEMOTION) {
+                            nextButton.setColor(RED_COLOR);
+                        }
+                        if (e.type == SDL_MOUSEBUTTONDOWN) {
+                            rankShowing = false;
+                            break;
+                        }
+                    }
+                    else {
+                        nextButton.setColor(WHITE_COLOR);
+                    }
+                }
+            }
+            SDL_RenderPresent(renderer);
+        }
+
+        playAgain();
     }
     else {
         Text gameover("Game Over!", WHITE_COLOR_2ND);
@@ -669,12 +772,18 @@ void Game::enterYourName() {
 
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
-                if (nextButton.getX() <= e.motion.x && e.motion.x <= nextButton.getX() + nextButton.getW() && nextButton.getY() <= e.motion.y && e.motion.y <= nextButton.getY() + nextButton.getH()) {
+                if (isHover(e, nextButton)) {
                     if (e.type == SDL_MOUSEMOTION) {
                         nextButton.setColor(RED_COLOR);
                     }
                     if (e.type == SDL_MOUSEBUTTONDOWN) {
                         summarizing = false;
+                        if (!scores.count(username)) {
+                            scores.insert({username, score});
+                        }
+                        else {
+                            if (score > scores[username]) scores[username] = score;
+                        }
                         break;
                     }
                 }
@@ -698,33 +807,46 @@ void Game::enterYourName() {
     }
 }
 
+void Game::showRanking() {
+    vector<pair<int,string>> v = getRanking();
+    for (int i = 0; i < NUMBER_SHOWED_PLAYER; ++ i) {
+        playerNames[i].setColor(WHITE_COLOR);
+        playerScores[i].setColor(WHITE_COLOR);
+        if (i < _size(v)) {
+            playerNames[i].setText(v[i].second);
+            playerScores[i].setText(to_string(v[i].first));
+        }
+        else {
+            playerNames[i].setText("Empty...");
+            playerScores[i].setText("0");
+        }
+        playerNames[i].renderText(fontGame, renderer, true);
+        playerNames[i].setRect(SCREEN_WIDTH/4, 100 + i * 50);
+        playerScores[i].renderText(fontGame, renderer, true);
+        playerScores[i].setRect(SCREEN_WIDTH*3/4 - playerScores[i].getW(), 100 + i * 50);
+
+        playerNames[i].renderText(fontGame, renderer);
+        playerScores[i].renderText(fontGame, renderer);
+    }
+}
+
 void Game::playAgain() {
+    reset();
     renderMenu();
 }
 
 void Game::reset() {
     setGameStatus(GAME_STOP);
-    difficultyState = GAME_EASY;
-    audioState = AUDIO_UNMUTED;
-    score = round = NG = 0;
-    frame = scrolling = 0;
-    roundWon = true;
+
     gundamLaserTimer.deactive();
     gundamReviveTimer.deactive();
     gundamShieldTimer.deactive();
     initTimer.deactive();
 
-    killedChickenCount.assign(5, 0);
-    chickens.clear(); chickenBullets.clear();
-    rocks.clear();
-    upgrades.clear();
-    explosions.clear();
-    hearts.clear();
-
     gundam.reset();
 
-    for (int i = 0; i < gundam.getLives(); ++ i) {
-        hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
-        hearts.back().setTexture(gallery->heart);
-    }
+    initData();
+
+    scoreText.setRect(10, 10 + hearts.back().getH() + 5);
+    scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
 }

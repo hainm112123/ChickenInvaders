@@ -41,6 +41,7 @@ class Gundam {
     Entity shield;
     Entity laser;
     bool laserOn = false;
+    bool keydown[4];
 
 public:
     Gundam(Gallery *gallery);

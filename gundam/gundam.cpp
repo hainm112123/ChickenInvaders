@@ -3,7 +3,7 @@
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
-    lives = 1;
+    lives = 3;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_BORON);
@@ -18,6 +18,8 @@ Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGH
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
     laser.setTexture(gallery->laser);
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
+
+    memset(keydown, 0, sizeof(keydown));
 }
 
 void Gundam::setGame(Game *_game) {
@@ -46,14 +48,18 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
         if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
+//                entity.setStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
                 entity.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
 //                shield.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Down\n";
+                keydown[type] = 1;
             }
-            else if (event.type == SDL_KEYUP && event.key.repeat == 0) {
+            else if (event.type == SDL_KEYUP && event.key.repeat == 0 && keydown[type]) {
+//                entity.setStep(0, 0);
                 entity.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
 //                shield.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Up\n";
+                keydown[type] = 0;
             }
         }
     }
@@ -106,7 +112,6 @@ void Gundam::dead() {
     alive = false;
     lives --;
     level = max(level - 1, 0);
-    entity.setStep(0, 0);
 //    cout << "dead " << lives << "\n" ;
 }
 bool Gundam::revive() {
@@ -162,7 +167,11 @@ void Gundam::reset() {
     currentWeaponID = 0;
     laserOn = false;
 
+    entity.setRect(SCREEN_WIDTH/2, SCREEN_HEIGHT - 100);
+    entity.setStep(0, 0);
     int shieldSize = max(entity.getW(), entity.getH()) + 20;
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
+
+    memset(keydown, 0, sizeof(keydown));
 }

@@ -46,8 +46,8 @@ int main(int agrc, char **argv)
 //        cout << (game.getGameStatus() == GAME_WON);
     }
 
-    quitSDL(window, renderer);
     game.quit();
+    quitSDL(window, renderer);
 
     return 0;
 }

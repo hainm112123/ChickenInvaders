@@ -58,14 +58,16 @@ const string GAME_AUDIO[] = {"Unmuted", "Muted"};
 enum MenuState {
     MENU_MAIN = 0,
     MENU_SETTINGS,
+    MENU_RANKING,
 };
 enum MainMenuTab {
     MAIN_MENU_START = 0,
     MAIN_MENU_SETTINGS,
+    MAIN_MENU_RANKING,
     MAIN_MENU_QUIT,
 };
 enum SettingsMenuTab {
-    SETTING_MENU_AUDIO = 0,
+    SETTING_MENU_AUDIO = 1,
     SETTING_MENU_DIFFICULTY
 };
 
@@ -119,6 +121,7 @@ const SDL_Keycode KEYCODES[] = {
 };
 const int NUM_KEYCODES = 36;
 const int MAX_NAME_LENGTH = 16;
+const int NUMBER_SHOWED_PLAYER = 10;
 
 class Game {
     SDL_Renderer *renderer;
@@ -140,6 +143,7 @@ class Game {
     Timer initTimer, gameEndTimer;
     Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
     Text roundTitle, roundText;
+    Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];
 
     Gundam gundam;
 
@@ -198,6 +202,10 @@ public:
     void enterYourName();
     void playAgain();
     void reset();
+    void initData();
+    void saveData();
+    void showRanking();
+    vector<pair<int, string>> getRanking();
 };
 
 #endif // GAME_H_INCLUDED

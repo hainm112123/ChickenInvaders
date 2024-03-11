@@ -10,6 +10,8 @@
 #include <deque>
 #include <string>
 #include <map>
+#include <fstream>
+#include <algorithm>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -36,7 +38,7 @@ const int FRAME_PER_PICTURE_MORE = 8;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
-const int GUNDAM_LASER_DAMAGE = 1;
+const int GUNDAM_LASER_DAMAGE = 2;
 
 int Rand(int l, int r);
 
