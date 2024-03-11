@@ -35,9 +35,9 @@ const double GUNDAM_LASER_DURATION = 10;
 
 enum GameStatus {
     GAME_STOP = 0,
-    GAME_RUNNING,
+    GAME_INITALIZING,
+    GAME_PLAYING,
     GAME_OVER,
-    GAME_WON,
 };
 
 enum GameDifficulty {
@@ -174,6 +174,9 @@ public:
     }
     int getGameStatus() const {
         return status;
+    }
+    bool isRunning() const {
+        return status != GAME_STOP;
     }
     Gallery* getGallery() const {
         return gallery;

@@ -82,6 +82,8 @@ void Game::init() {
 }
 
 void Game::process() {
+    if (status != GAME_PLAYING) return;
+
     while (SDL_PollEvent(event)) {
         if (event->type == SDL_QUIT) {
             setGameStatus(GAME_STOP);
@@ -264,7 +266,13 @@ void Game::process() {
     handleGameEvent();
 
     if (gundam.getLives() <= 0) {
-        gameOver();
+        Text gameover("Game Over!", WHITE_COLOR_2ND);
+        gameover.renderText(fontMenu, renderer, true);
+        gameover.setRect(SCREEN_WIDTH/2 - gameover.getW()/2, SCREEN_HEIGHT/3);
+        gameover.renderText(fontMenu, renderer);
+        if (gameEndTimer.timeIsUp()) {
+            setGameStatus(GAME_OVER);
+        }
     }
 
     SDL_RenderPresent(renderer);
@@ -351,7 +359,7 @@ void Game::handleGameEvent() {
                         break;
                     }
                     else {
-                        playChunk(media->chickens[Rand(0, 1)]);
+                        if (Rand(0, 100) < 15) playChunk(media->chickens[Rand(0, 1)]);
                     }
                 }
             }
@@ -416,7 +424,12 @@ void Game::gundamDead() {
 
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
-    playChunk(chicken->getLevel() == 0 ? media->chickens[2] : media->explosions[1]);
+    if (chicken->getLevel() == 0) {
+        if (Rand(0, 100) < 20) playChunk(media->chickens[2]);
+    }
+    else {
+        playChunk(media->explosions[1]);
+    }
 
     addExplosion(chicken->getEntity()->getRect());
     int chickenLevel = chicken->getLevel();
@@ -438,6 +451,8 @@ void Game::chickenDead(Chicken *chicken) {
 }
 
 void Game::renderMenu() {
+    if (status != GAME_INITALIZING) return;
+
     static int menuState = MENU_MAIN;
 
     Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
@@ -552,7 +567,7 @@ void Game::renderMenu() {
                             playChunk(media->upgrade);
                             if (menuState == MENU_MAIN) {
                                 if (i == MAIN_MENU_START) {
-                                    setGameStatus(GAME_RUNNING);
+                                    setGameStatus(GAME_PLAYING);
                                     initTimer.startCountdown();
                                     menuRunning = false;
                                 }
@@ -635,6 +650,7 @@ void Game::saveData() {
 }
 
 void Game::load() {
+    setGameStatus(GAME_INITALIZING);
     TTF_Init();
     fontMenu = TTF_OpenFont("./font/font1.ttf", 50);
     fontGame = TTF_OpenFont("./font/font1.ttf", 24);
@@ -676,6 +692,7 @@ void Game::quit() {
 
 void Game::playChunk(Mix_Chunk *chunk, int channel, int loop) {
     if (audioState == AUDIO_MUTED) return;
+//    cout << channel << " " << loop << "\n";
     Mix_PlayChannel(channel, chunk, loop);
 }
 
@@ -689,48 +706,43 @@ bool isHover(const SDL_Event &event, const Entity &entity) {
 }
 
 void Game::gameOver() {
-    if (gameEndTimer.timeIsUp()) {
-        setGameStatus(GAME_OVER);
-        enterYourName();
+    if (status != GAME_OVER) return;
 
-        Text nextButton("Next", WHITE_COLOR);
-        nextButton.renderText(fontRoundTitle, renderer, true);
-        nextButton.setRect(SCREEN_WIDTH - nextButton.getW() - 100, SCREEN_HEIGHT - nextButton.getH() - 50);
+    enterYourName();
 
-        SDL_Event e;
-        bool rankShowing = true;
-        while (rankShowing) {
-            (scrolling += SCREEN_SPEED) %= BG_SIZE;
-            background.render(renderer, scrolling);
-            showRanking();
-            nextButton.renderText(fontRoundTitle, renderer);
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
-                    if (isHover(e, nextButton)) {
-                        if (e.type == SDL_MOUSEMOTION) {
-                            nextButton.setColor(RED_COLOR);
-                        }
-                        if (e.type == SDL_MOUSEBUTTONDOWN) {
-                            rankShowing = false;
-                            break;
-                        }
+    Text nextButton("Next", WHITE_COLOR);
+    nextButton.renderText(fontRoundTitle, renderer, true);
+    nextButton.setRect(SCREEN_WIDTH - nextButton.getW() - 100, SCREEN_HEIGHT - nextButton.getH() - 50);
+
+    SDL_Event e;
+    bool rankShowing = true;
+    while (rankShowing) {
+        (scrolling += SCREEN_SPEED) %= BG_SIZE;
+        background.render(renderer, scrolling);
+        showRanking();
+        nextButton.renderText(fontRoundTitle, renderer);
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
+                if (isHover(e, nextButton)) {
+                    if (e.type == SDL_MOUSEMOTION) {
+                        nextButton.setColor(RED_COLOR);
                     }
-                    else {
-                        nextButton.setColor(WHITE_COLOR);
+                    if (e.type == SDL_MOUSEBUTTONDOWN) {
+                        playChunk(media->upgrade);
+                        rankShowing = false;
+                        break;
                     }
                 }
+                else {
+                    nextButton.setColor(WHITE_COLOR);
+                }
             }
-            SDL_RenderPresent(renderer);
         }
+        SDL_RenderPresent(renderer);
+        SDL_Delay(1);
+    }
 
-        playAgain();
-    }
-    else {
-        Text gameover("Game Over!", WHITE_COLOR_2ND);
-        gameover.renderText(fontMenu, renderer, true);
-        gameover.setRect(SCREEN_WIDTH/2 - gameover.getW()/2, SCREEN_HEIGHT/3);
-        gameover.renderText(fontMenu, renderer);
-    }
+    playAgain();
 }
 
 void Game::enterYourName() {
@@ -778,6 +790,7 @@ void Game::enterYourName() {
                     }
                     if (e.type == SDL_MOUSEBUTTONDOWN) {
                         summarizing = false;
+                        playChunk(media->upgrade);
                         if (!scores.count(username)) {
                             scores.insert({username, score});
                         }
@@ -792,6 +805,7 @@ void Game::enterYourName() {
                 }
             }
             if (e.type == SDL_KEYDOWN) {
+                playChunk(media->bulletRock);
                 for (int i = 0; i < NUM_KEYCODES; ++ i) if (e.key.keysym.sym == KEYCODES[i] && _size(username) < MAX_NAME_LENGTH) {
                     char c = (i < 26) ? char('a' + i) : char('0' + i - 26);
                     username += c;
@@ -804,6 +818,7 @@ void Game::enterYourName() {
         }
 
         SDL_RenderPresent(renderer);
+        SDL_Delay(1);
     }
 }
 
@@ -832,7 +847,7 @@ void Game::showRanking() {
 
 void Game::playAgain() {
     reset();
-    renderMenu();
+    setGameStatus(GAME_INITALIZING);
 }
 
 void Game::reset() {

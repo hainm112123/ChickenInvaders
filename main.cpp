@@ -8,14 +8,6 @@
 
 using namespace std;
 
-void renderSplashScreen() {
-    SDL_Event e;
-    while (true) {
-        if (SDL_WaitEvent(&e) != 0 && (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN)) return;
-        SDL_Delay(100);
-    }
-}
-
 int main(int agrc, char **argv)
 {
     srand(time(NULL));
@@ -32,18 +24,17 @@ int main(int agrc, char **argv)
     auto a = SDL_GetTicks();
     auto b = SDL_GetTicks();
 
-//    renderSplashScreen();
     game.load();
-    game.renderMenu();
-    while (game.getGameStatus() == GAME_RUNNING) {
+    while (game.isRunning()) {
         a = SDL_GetTicks();
         double delta = a - b;
         if (delta > (double)(1000)/144) {
 //            cout << "FPS: " << 1000 / delta << "\n";
             b = a;
+            game.renderMenu();
             game.process();
+            game.gameOver();
         }
-//        cout << (game.getGameStatus() == GAME_WON);
     }
 
     game.quit();

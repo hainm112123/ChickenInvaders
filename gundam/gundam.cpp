@@ -3,7 +3,7 @@
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
-    lives = 3;
+    lives = 1;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_BORON);
@@ -150,10 +150,10 @@ void Gundam::levelUp() {
 void Gundam::setLaserOn(bool _laserOn) {
     laserOn = _laserOn;
     if (!laserOn) {
-        Mix_HaltChannel(1);
+        Mix_HaltChannel(10000);
     }
     else {
-        game->playChunk(game->getMedia()->laser, 1, -1);
+        game->playChunk(game->getMedia()->laser, 10000, -1);
     }
 }
 
