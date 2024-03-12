@@ -57,7 +57,7 @@ void Game::init() {
         int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
         int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
         int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
-        int numberOfBullet = (level ? perRow * 2 : perRow);
+        int numberOfBullet = (level ? perRow * 2: perRow) * (NG * 2 + 1);
 
         chickenMoveState = {0, 1, 0, !level};
 
@@ -118,7 +118,7 @@ void Game::process() {
 
 
     //...............................rock init..............................................
-    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE;
+    int rockWaveCount = (round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE) + NG * NG_ROCK_WAVE;
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
         if (frame % ROCK_WAVE_FRAME == 0) {
             int n = 5;
@@ -126,16 +126,16 @@ void Game::process() {
             for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
                 int x, y, step_x, step_y;
                 if (round == ROCK_FALL_ROUND) {
-                    x = Rand(L * i + 10, L * (i + 1) - 10) ;
+                    x = Rand(L * i - 10, L * (i + 1) - 10) ;
                     y = -50;
                     step_x = 0;
-                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED);
+                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * 2;
                 }
                 else {
                     x = -50;
-                    y = Rand(L * i + 10, L * (i + 1) - 10);
-                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X);
-                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y);
+                    y = Rand(L * i - 150, L * (i + 1) - 10);
+                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * 2;
+                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * 2;
                 }
                 int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
                 Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
@@ -303,6 +303,8 @@ void Game::setRoundWon() {
 }
 
 void Game::handleGameEvent() {
+    const int gundamLaserDamage = GUNDAM_LASER_DAMAGE + gundam.getLevel() * 2;
+
     //.............................upgrade.....................................................
     for (Upgrade *upgrade: upgrades) {
         if (gundam.isAlive() && upgrade->getEntity()->collisionWith(*gundam.getEntity())) {
@@ -365,7 +367,7 @@ void Game::handleGameEvent() {
             }
 
             if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
-                bool alive = chicken->receiveDamage(GUNDAM_LASER_DAMAGE + gundam.getLevel()/2);
+                bool alive = chicken->receiveDamage(gundamLaserDamage);
                 if (!alive) chickenDead(chicken);
             }
         }
@@ -387,12 +389,12 @@ void Game::handleGameEvent() {
         }
 
         if (gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
-            rock->receiveDamage(GUNDAM_LASER_DAMAGE + gundam.getLevel()/2);
+            rock->receiveDamage(gundamLaserDamage);
             playChunk(media->bulletRock);
         }
     }
 
-    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE;
+    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE + NG * NG_ROCK_WAVE;
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame > (rockWaveCount - 1) * ROCK_WAVE_FRAME && rocks.empty() && !roundWon) {
         setRoundWon();
     }
@@ -434,7 +436,7 @@ void Game::chickenDead(Chicken *chicken) {
     addExplosion(chicken->getEntity()->getRect());
     int chickenLevel = chicken->getLevel();
     int killed = (++ killedChickenCount[chickenLevel]);
-    if (chickenLevel == 0 && killed % 15 == 0) {
+    if (chickenLevel == 0 && killed % 30 == 0) {
         dropUpgrade(LEVEL_UP);
     }
     if (chickenLevel == 1) {
@@ -640,7 +642,7 @@ vector<pair<int, string>> Game::getRanking() {
 }
 
 void Game::saveData() {
-    ofstream fout("./data/players.txt");
+    ofstream fout("./assets/data/players.txt");
 
     auto v = getRanking();
     fout << _size(v) << "\n";
@@ -652,10 +654,10 @@ void Game::saveData() {
 void Game::load() {
     setGameStatus(GAME_INITALIZING);
     TTF_Init();
-    fontMenu = TTF_OpenFont("./assets/font/font1.ttf", 50);
-    fontGame = TTF_OpenFont("./assets/font/font1.ttf", 24);
-    fontRoundTitle = TTF_OpenFont("./assets/font/font1.ttf", 32);
-    fontRoundText = TTF_OpenFont("./assets/font/font1.ttf", 20);
+    fontMenu = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 50);
+    fontGame = TTF_OpenFont("./assets/font/Zebulon.otf", 24);
+    fontRoundTitle = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 32);
+    fontRoundText = TTF_OpenFont("./assets/font/Zebulon.otf", 20);
 
     initData();
 

@@ -34,7 +34,7 @@ const int FRAME_PER_PICTURE_MORE = 8;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
-const int GUNDAM_LASER_DAMAGE = 2;
+const int GUNDAM_LASER_DAMAGE = 3;
 
 int Rand(int l, int r);
 

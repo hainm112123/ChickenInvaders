@@ -4,8 +4,8 @@
 #include "../common/common.h"
 #include "../common/entity.h"
 
-const int ROCK_HP = 120;
-const int ROCK_HP_UPGRADE = 80;
+const int ROCK_HP = 320;
+const int ROCK_HP_UPGRADE = 200;
 
 const int MIN_ROCK_FALL_SPEED = 4;
 const int MAX_ROCK_FALL_SPEED = 6;

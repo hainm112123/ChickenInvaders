@@ -11,8 +11,9 @@
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
-const int ROCK_FALL_WAVE = 5;
+const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 15;
+const int NG_ROCK_WAVE = 10;
 const int ROCK_WAVE_FRAME = 100;
 
 const int ROCK_FALL_ROUND = 5;
