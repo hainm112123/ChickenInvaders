@@ -121,21 +121,22 @@ void Game::process() {
     int rockWaveCount = (round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE) + NG * NG_ROCK_WAVE;
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
         if (frame % ROCK_WAVE_FRAME == 0) {
-            int n = 5;
-            int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : SCREEN_HEIGHT) / n;
+            int n = 10 + NG * 10;
+            int H_OFFSET = 700;
+            int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
             for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
                 int x, y, step_x, step_y;
                 if (round == ROCK_FALL_ROUND) {
-                    x = Rand(L * i - 10, L * (i + 1) - 10) ;
+                    x = Rand(L * i - 100, L * (i + 1) + 100) ;
                     y = -50;
                     step_x = 0;
-                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * 2;
+                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * NG_ROCK_SPEED;
                 }
                 else {
                     x = -50;
-                    y = Rand(L * i - 150, L * (i + 1) - 10);
-                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * 2;
-                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * 2;
+                    y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
+                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * NG_ROCK_SPEED;
+                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * NG_ROCK_SPEED;
                 }
                 int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
                 Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
@@ -190,7 +191,7 @@ void Game::process() {
     }
 
     //................................chicken.........................................
-    int chicken_step_x = 0, chicken_step_y = 0;
+    float chicken_step_x = 0, chicken_step_y = 0;
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
 
     if (!chickens.empty()) {
@@ -711,6 +712,7 @@ void Game::gameOver() {
     if (status != GAME_OVER) return;
 
     enterYourName();
+    if (!isRunning()) return;
 
     Text nextButton("Next", WHITE_COLOR);
     nextButton.renderText(fontRoundTitle, renderer, true);
@@ -724,6 +726,11 @@ void Game::gameOver() {
         showRanking();
         nextButton.renderText(fontRoundTitle, renderer);
         while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                setGameStatus(GAME_STOP);
+                rankShowing = false;
+                return;
+            }
             if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
                 if (isHover(e, nextButton)) {
                     if (e.type == SDL_MOUSEMOTION) {
@@ -785,6 +792,11 @@ void Game::enterYourName() {
         nextButton.renderText(fontRoundTitle, renderer);
 
         while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                setGameStatus(GAME_STOP);
+                summarizing = false;
+                return;
+            }
             if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
                 if (isHover(e, nextButton)) {
                     if (e.type == SDL_MOUSEMOTION) {

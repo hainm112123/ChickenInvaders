@@ -11,7 +11,7 @@ Bullet::Bullet(Entity _entity, WeaponType _type): entity(_entity), type(_type) {
 void Bullet::setIsMove(const bool _isMove) {
     isMove = _isMove;
 }
-void Bullet::setEntity(SDL_Rect rect, int speed, Texture texture) {
+void Bullet::setEntity(SDL_Rect rect, double speed, Texture texture) {
     entity = Entity(BULLET, rect);
     entity.setStep(0, speed);
     entity.setTexture(texture);

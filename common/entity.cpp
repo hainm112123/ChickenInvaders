@@ -1,30 +1,39 @@
 #include "entity.h"
+#include "time.h"
 
 //.............................Entity..............................................
 Entity::Entity() {
     texture = {NULL, 0, 0};
 }
-Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type), rect(_rect), texture(_texture) {}
+Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type), rect(_rect), texture(_texture) {
+    x = rect.x; y = rect.y;
+}
 
-void Entity::setRect(int x, int y) {
+void Entity::setRect(int _x, int _y) {
+    x = _x; y = _y;
     rect.x = x; rect.y = y;
 }
 void Entity::setRect(SDL_Rect _rect) {
     rect = _rect;
 }
-void Entity::setStep(int _step_x, int _step_y) {
+void Entity::setStep(double _step_x, double _step_y) {
     step_x = _step_x;
     step_y = _step_y;
 }
-void Entity::updateStep(int det_x, int det_y) {
+void Entity::updateStep(double det_x, double det_y) {
     step_x += det_x;
     step_y += det_y;
 }
 void Entity::_move(bool isInsideScreen) {
-    if (isInsideScreen && (rect.x + step_x < 0 || rect.x + step_x > SCREEN_WIDTH - rect.w || rect.y + step_y < 0 || rect.y + step_y > SCREEN_HEIGHT - rect.h)) return;
-//    cout << step_x << " " << step_y << "\n";
-    rect.x += step_x;
-    rect.y += step_y;
+    double det_x = step_x * TimeManager::Instance()->getElapsedTime();
+    double det_y = step_y * TimeManager::Instance()->getElapsedTime();
+    x += det_x; y += det_y;
+    if (isInsideScreen && (x < 0 || x > SCREEN_WIDTH - rect.w || y < 0 || y > SCREEN_HEIGHT - rect.h)) {
+        x -= det_x; y -= det_y;
+        return;
+    }
+    rect.x = x;
+    rect.y = y;
 }
 
 bool Entity::isInsideScreen() {

@@ -5,6 +5,7 @@
 #include "Painter.h"
 #include "common/common.h"
 #include "game/game.h"
+#include "time.h"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ int main(int agrc, char **argv)
         a = SDL_GetTicks();
         double delta = a - b;
         if (delta > (double)(1000)/144) {
+            TimeManager::Instance()->process();
 //            cout << "FPS: " << 1000 / delta << "\n";
             b = a;
             game.renderMenu();

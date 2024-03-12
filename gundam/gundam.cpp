@@ -3,7 +3,7 @@
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
-    lives = 1;
+    lives = 3;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_BORON);
@@ -49,14 +49,14 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
 //                entity.setStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
-                entity.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
+                entity.updateStep(GUNDAM_SPEED * gundam_step_x[type], GUNDAM_SPEED * gundam_step_y[type]);
 //                shield.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Down\n";
                 keydown[type] = 1;
             }
             else if (event.type == SDL_KEYUP && event.key.repeat == 0 && keydown[type]) {
 //                entity.setStep(0, 0);
-                entity.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
+                entity.updateStep(-GUNDAM_SPEED * gundam_step_x[type], -GUNDAM_SPEED * gundam_step_y[type]);
 //                shield.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Up\n";
                 keydown[type] = 0;

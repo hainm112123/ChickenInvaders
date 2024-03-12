@@ -7,11 +7,11 @@
 #include "../common/common.h"
 #include "../common/entity.h"
 #include "../game/media.h"
-#include "../game/time.h"
+#include "../common/time.h"
 
 const int GUNDAM_WIDTH = 65;
 const int GUNDAM_HEIGHT = 67;
-const int GUNDAM_SPEED = 4;
+const double GUNDAM_SPEED = 600;
 
 enum GundamMove {
     GUNDAM_MOVE_UP = 0,

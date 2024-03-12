@@ -34,22 +34,26 @@
 		</Compiler>
 		<Unit filename="Painter.cpp" />
 		<Unit filename="Painter.h" />
+		<Unit filename="common/common.cpp" />
+		<Unit filename="common/common.h" />
+		<Unit filename="common/entity.cpp" />
+		<Unit filename="common/entity.h" />
+		<Unit filename="common/time.cpp" />
+		<Unit filename="common/time.h" />
 		<Unit filename="enemy/chicken.cpp" />
 		<Unit filename="enemy/chicken.h" />
 		<Unit filename="enemy/rock.cpp" />
 		<Unit filename="enemy/rock.h" />
 		<Unit filename="game/game.cpp" />
 		<Unit filename="game/game.h" />
+		<Unit filename="game/media.cpp" />
+		<Unit filename="game/media.h" />
 		<Unit filename="game/text.cpp" />
 		<Unit filename="game/text.h" />
 		<Unit filename="gundam/gundam.cpp" />
 		<Unit filename="gundam/gundam.h" />
 		<Unit filename="gundam/upgrade.cpp" />
 		<Unit filename="gundam/upgrade.h" />
-		<Unit filename="init.cpp" />
-		<Unit filename="init.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="main.cpp" />
 		<Unit filename="sdl_init.cpp" />
 		<Unit filename="sdl_init.h" />

@@ -12,6 +12,7 @@
 #include <map>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
 
 #include <SDL.h>
 
@@ -37,10 +38,6 @@ const int GUNDAM_LASER_HIGHT = 682;
 const int GUNDAM_LASER_DAMAGE = 3;
 
 int Rand(int l, int r);
-
-struct ChickenMoveState {
-    bool goLeft, goRight, goUp, goDown;
-};
 
 struct Texture {
     SDL_Texture *texture;

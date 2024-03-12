@@ -9,7 +9,7 @@
 #include "../enemy/rock.h"
 #include "text.h"
 
-const int NUMBER_OF_CHICKEN = 30;
+const int NUMBER_OF_CHICKEN = 20;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 15;
@@ -24,7 +24,6 @@ const int ROUND_COUNT = 6;
 const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
 const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
 
-const int UPGRADE_SPEED = 1;
 const int SCREEN_SPEED = 1;
 const int BG_SIZE = 762;
 
@@ -123,6 +122,10 @@ const SDL_Keycode KEYCODES[] = {
 const int NUM_KEYCODES = 36;
 const int MAX_NAME_LENGTH = 16;
 const int NUMBER_SHOWED_PLAYER = 10;
+
+struct ChickenMoveState {
+    bool goLeft, goRight, goUp, goDown;
+};
 
 class Game {
     SDL_Renderer *renderer;

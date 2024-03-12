@@ -8,10 +8,10 @@ Chicken::Chicken(int offsetX, int offsetY, int _level, int NG) {
     entity = Entity((level == 0 ? CHICKEN : CHICKEN_BOSS), {offsetX * (width + distance), offsetY * (height + distance), width, height});
 
     hp = CHICKEN_HP[level] + CHICKEN_HP_UPGRADE[level] * NG;
-    speed = CHICKEN_SPEED[level];
+    speed = CHICKEN_SPEED[level] + NG_CHICKEN_SPEED * NG;
     bulletWidth = CHICKEN_EGG_WIDTH[level];
     bulletHeight = CHICKEN_EGG_HEIGHT[level];
-    bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[level], MAX_CHICKEN_EGG_SPEED[level]);
+    bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[level], MAX_CHICKEN_EGG_SPEED[level]) + NG * NG_CHICKEN_EGG_SPEED;
 }
 
 void Chicken::setLastBullet(Time _lastBullet) {
@@ -23,7 +23,7 @@ void Chicken::render(SDL_Renderer *renderer) {
     entity.render(renderer);
 }
 
-void Chicken::_move(int step_x, int step_y) {
+void Chicken::_move(double step_x, double step_y) {
     entity.setStep(step_x, step_y);
     entity._move();
 }

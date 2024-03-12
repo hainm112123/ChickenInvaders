@@ -13,8 +13,8 @@ enum WeaponType {
     CHICKEN_EGG,
 };
 
-const int GUNDAM_BULLET_DAMAGE[] = {50, 30, 80};
-const int GUNDAM_BULLET_SPEED[] = {8, 12, 5};
+const int GUNDAM_BULLET_DAMAGE[] = {56, 40, 80};
+const double GUNDAM_BULLET_SPEED[] = {800, 1500, 600};
 const int GUNDAM_BULLET_UPGRADE[] = {25, 16, 49};
 
 class Bullet {
@@ -32,7 +32,7 @@ public:
     Entity* getEntity() {
         return &entity;
     }
-    void setEntity(SDL_Rect rect, int speed, Texture texture);
+    void setEntity(SDL_Rect rect, double speed, Texture texture);
 
     void render(SDL_Renderer *renderer);
     void handleGundamBullet();

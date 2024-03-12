@@ -27,8 +27,16 @@ void Timer::deactive() {
 }
 
 //.......................TimeManager..............................................
-TimeManager::TimeManager() {}
+TimeManager *TimeManager::instance = nullptr;
+TimeManager::TimeManager(): currentTicks(SDL_GetPerformanceCounter()), lastFrameTicks(SDL_GetPerformanceCounter()), elapsedTicks(SDL_GetPerformanceCounter()), elapsedTime(0), FPS(0) {}
+TimeManager::~TimeManager() {
+    instance = nullptr;
+}
 
 void TimeManager::process() {
-
+    currentTicks = SDL_GetPerformanceCounter();
+    elapsedTicks = currentTicks - lastFrameTicks;
+    lastFrameTicks = currentTicks;
+    elapsedTime = elapsedTicks / double(SDL_GetPerformanceFrequency());
+    FPS = (elapsedTime != 0) ? double(1) / elapsedTime : 0;
 }

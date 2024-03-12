@@ -9,17 +9,19 @@
 const int CHICKEN_WIDTH[] = {80, 200};
 const int CHICKEN_HEIGHT[] = {60, 200};
 
-const int CHICKEN_SPEED[] = {1, 3};
+const double CHICKEN_SPEED[] = {100, 300};
+const double NG_CHICKEN_SPEED = 60;
 
-const int CHICKEN_HP[] = {100, 1600};
-const int CHICKEN_HP_UPGRADE[] = {50, 360};
+const int CHICKEN_HP[] = {200, 2500};
+const int CHICKEN_HP_UPGRADE[] = {150, 2000};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
 const int CHICKEN_EGG_WIDTH[] = {15, 80};
 const int CHICKEN_EGG_HEIGHT[] = {15, 80};
-const int MIN_CHICKEN_EGG_SPEED[] = {1, 2};
-const int MAX_CHICKEN_EGG_SPEED[] = {3, 3};
+const int MIN_CHICKEN_EGG_SPEED[] = {150, 200};
+const int MAX_CHICKEN_EGG_SPEED[] = {400, 400};
+const double NG_CHICKEN_EGG_SPEED = 150;
 
 const int CHICKEN_SCORE[] = {10, 200};
 const int NG_CHICKEN_SCORE[] = {6, 121};
@@ -31,7 +33,7 @@ class Chicken {
     int hp;
     set<Bullet*> bullets;
     int level;
-    int speed, bulletSpeed;
+    double speed, bulletSpeed;
     int bulletWidth, bulletHeight;
     Time lastBullet = CLOCK_NOW();
 
@@ -55,7 +57,7 @@ public:
     int getLevel() const {
         return level;
     }
-    int getSpeed() const {
+    double getSpeed() const {
         return speed;
     }
     Time getLastBullet() const {
@@ -68,7 +70,7 @@ public:
     void setLastBullet(Time _lastBullet);
 
     bool receiveDamage(int dmg);
-    void _move(int step_x, int step_y);
+    void _move(double step_x, double step_y);
     void render(SDL_Renderer *renderer);
     void addBullet(Bullet *_bullet, Gallery *gallery);
     void removeBullet(Bullet *bullet);

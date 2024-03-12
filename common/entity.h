@@ -27,6 +27,7 @@ protected:
     Texture texture;
     vector<Texture> textures;
     double step_x = 0, step_y = 0;
+    double x, y;
     int frame = 0;
 
 public:
@@ -59,10 +60,10 @@ public:
         return frame;
     }
 
-    void setRect(int x, int y);
+    void setRect(int _x, int _y);
     void setRect(SDL_Rect _rect);
-    void setStep(int _step_x, int _step_y);
-    void updateStep(int det_x, int det_y);
+    void setStep(double _step_x, double _step_y);
+    void updateStep(double det_x, double det_y);
 
     bool isInsideScreen();
     void _move(bool isInsideScreen = false);
