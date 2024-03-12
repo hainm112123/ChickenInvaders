@@ -1,7 +1,8 @@
 #ifndef BULLET_H_INCLUDED
 #define BULLET_H_INCLUDED
 
-#include "../init.h"
+#include "../common/common.h"
+#include "../common/entity.h"
 
 enum WeaponType {
     GUNDAM_BLASTER = 0,

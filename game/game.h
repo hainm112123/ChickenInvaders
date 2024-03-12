@@ -1,7 +1,7 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
-#include "../init.h"
+#include "../common/common.h"
 #include "../gundam/gundam.h"
 #include "../Painter.h"
 #include "../enemy/chicken.h"

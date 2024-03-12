@@ -1,8 +1,10 @@
 #ifndef CHICKEN_H_INCLUDED
 #define CHICKEN_H_INCLUDED
 
-#include "../init.h"
+#include "../common/common.h"
+#include "../common/entity.h"
 #include "../weapon/bullet.h"
+#include "../game/media.h"
 
 const int CHICKEN_WIDTH[] = {80, 200};
 const int CHICKEN_HEIGHT[] = {60, 200};

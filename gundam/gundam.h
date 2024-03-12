@@ -4,7 +4,10 @@
 #include<set>
 
 #include "../weapon/bullet.h"
-#include "../init.h"
+#include "../common/common.h"
+#include "../common/entity.h"
+#include "../game/media.h"
+#include "../game/time.h"
 
 const int GUNDAM_WIDTH = 65;
 const int GUNDAM_HEIGHT = 67;

@@ -45,7 +45,7 @@ void Gundam::_move() {
 
 void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
-        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
+//        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
 //                entity.setStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);

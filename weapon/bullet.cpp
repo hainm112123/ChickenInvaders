@@ -19,7 +19,6 @@ void Bullet::setEntity(SDL_Rect rect, int speed, Texture texture) {
 }
 
 void Bullet::render(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, RED_COLOR.r, RED_COLOR.g, RED_COLOR.b, 0);
 //    cout << entity.getX() << " " << entity.getY() << "\n";
     entity.render(renderer);
 }

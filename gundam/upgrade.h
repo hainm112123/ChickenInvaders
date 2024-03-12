@@ -1,7 +1,8 @@
 #ifndef UPGRADE_H_INCLUDED
 #define UPGRADE_H_INCLUDED
 
-#include "../init.h"
+#include "../common/common.h"
+#include "../common/entity.h"
 
 enum UpgradeType {
     UPGRADE_ADD_BLASTER = 0,

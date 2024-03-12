@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "init.h"
+#include "common/common.h"
 
 using namespace std;
 

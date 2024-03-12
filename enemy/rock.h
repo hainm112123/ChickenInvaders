@@ -1,7 +1,8 @@
 #ifndef ROCK_H_INCLUDED
 #define ROCK_H_INCLUDED
 
-#include "../init.h"
+#include "../common/common.h"
+#include "../common/entity.h"
 
 const int ROCK_HP = 120;
 const int ROCK_HP_UPGRADE = 80;

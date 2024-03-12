@@ -1,7 +1,9 @@
 #ifndef TEXT_H_INCLUDED
 #define TEXT_H_INCLUDED
 
-#include "../init.h"
+#include <SDL_ttf.h>
+#include "../common/common.h"
+#include "../common/entity.h"
 
 class Text : public Entity {
     string text;

@@ -3,7 +3,7 @@
 
 #include "sdl_init.h"
 #include "Painter.h"
-#include "init.h"
+#include "common/common.h"
 #include "game/game.h"
 
 using namespace std;

@@ -652,10 +652,10 @@ void Game::saveData() {
 void Game::load() {
     setGameStatus(GAME_INITALIZING);
     TTF_Init();
-    fontMenu = TTF_OpenFont("./font/font1.ttf", 50);
-    fontGame = TTF_OpenFont("./font/font1.ttf", 24);
-    fontRoundTitle = TTF_OpenFont("./font/font1.ttf", 32);
-    fontRoundText = TTF_OpenFont("./font/font1.ttf", 20);
+    fontMenu = TTF_OpenFont("./assets/font/font1.ttf", 50);
+    fontGame = TTF_OpenFont("./assets/font/font1.ttf", 24);
+    fontRoundTitle = TTF_OpenFont("./assets/font/font1.ttf", 32);
+    fontRoundText = TTF_OpenFont("./assets/font/font1.ttf", 20);
 
     initData();
 
@@ -671,11 +671,11 @@ void Game::load() {
 
 //    setGameStatus(GAME_RUNNING);
 
-    ifstream fin("./data/players.txt");
+    ifstream fin("./assets/data/players.txt");
 
     string playerName;
     int playScore;
-    int numPlayers;
+    int numPlayers = 0;
     fin >> numPlayers;
     for (int i = 0; i < numPlayers; ++ i) {
         fin >> playerName >> playScore;
