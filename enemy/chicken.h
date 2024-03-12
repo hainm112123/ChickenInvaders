@@ -66,6 +66,9 @@ public:
     bool isAlive() {
         return hp > 0;
     }
+    int getHP() const {
+        return hp;
+    }
 
     void setLastBullet(Time _lastBullet);
 

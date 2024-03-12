@@ -20,6 +20,8 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(shield.texture);
     SDL_DestroyTexture(menu_settings.texture);
     SDL_DestroyTexture(heart.texture);
+    SDL_DestroyTexture(bossHealthBar.texture);
+    SDL_DestroyTexture(bossHealthBorder.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -116,6 +118,8 @@ void Gallery::loadGamePictures() {
     menu = painter->loadTexture("./assets/graphics/menu.png");
     menu_settings = painter->loadTexture("./assets/graphics/CI1Space.png");
     heart = painter->loadTexture("./assets/graphics/heart.png");
+    bossHealthBar = painter->loadTexture("./assets/graphics/HealthBar.png");
+    bossHealthBorder = painter->loadTexture("./assets/graphics/HealthBorder.png");
 }
 
 //.............................Media............................................

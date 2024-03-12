@@ -5,7 +5,7 @@ Chicken::Chicken(int offsetX, int offsetY, int _level, int NG) {
     int width = CHICKEN_WIDTH[level];
     int height = CHICKEN_HEIGHT[level];
     int distance = CHICKENS_DISTANCE[level];
-    entity = Entity((level == 0 ? CHICKEN : CHICKEN_BOSS), {offsetX * (width + distance), offsetY * (height + distance), width, height});
+    entity = Entity((level == 0 ? CHICKEN : CHICKEN_BOSS), {offsetX * (width + distance), 50 + offsetY * (height + distance), width, height});
 
     hp = CHICKEN_HP[level] + CHICKEN_HP_UPGRADE[level] * NG;
     speed = CHICKEN_SPEED[level] + NG_CHICKEN_SPEED * NG;

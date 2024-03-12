@@ -17,7 +17,8 @@ enum EntityType {
     MENU,
     TEXT,
     SHIELD,
-    HEART
+    HEART,
+    BOSS_HEALTH_BAR,
 };
 
 class Entity {

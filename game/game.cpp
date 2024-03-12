@@ -8,7 +8,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", WHITE_COLOR), roundText("", WHITE_COLOR),
-    gundam(gallery)
+    gundam(gallery),
+    bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR)
 {
     media = new Media();
 
@@ -28,6 +29,11 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     gundam.setGame(this);
 //    gundamLaserTimer.startCountdown();
+
+    bossHealthBorder.setRect({SCREEN_WIDTH/2 - HEALTH_BORDER_WIDTH/2, 5, HEALTH_BORDER_WIDTH, HEALTH_BORDER_HEIGHT});
+    bossHealthBar.setRect({bossHealthBorder.getX() + 6, 8, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT});
+    bossHealthBar.setTexture(gallery->bossHealthBar);
+    bossHealthBorder.setTexture(gallery->bossHealthBorder);
 }
 Game::~Game() {
     quit();
@@ -46,6 +52,7 @@ void Game::init() {
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
     numberOfAliveChicken = 0;
     frame = 0;
+    bossHP = 0;
 
     if (round == ROCK_SIDE_ROUND) {
 
@@ -73,6 +80,7 @@ void Game::init() {
                 chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel()]);
             }
             chickens.push_back(chicken);
+            if (level) bossHP += chicken->getHP();
         }
         numberOfAliveChicken = numberOfEnemy;
     }
@@ -121,7 +129,7 @@ void Game::process() {
     int rockWaveCount = (round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE) + NG * NG_ROCK_WAVE;
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
         if (frame % ROCK_WAVE_FRAME == 0) {
-            int n = 10 + NG * 10;
+            int n = 15 + NG * 10;
             int H_OFFSET = 700;
             int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
             for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
@@ -194,6 +202,13 @@ void Game::process() {
     float chicken_step_x = 0, chicken_step_y = 0;
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
 
+    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
+        int currentBossHP = 0;
+        for (Chicken *chicken: chickens) currentBossHP += chicken->getHP();
+        bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
+        bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
+    }
+
     if (!chickens.empty()) {
 //        topChicken = leftChicken = *chickens.begin();
 //        bottomChicken = rightChicken = *chickens.rbegin();
@@ -235,7 +250,7 @@ void Game::process() {
     }
 
     if (topChicken != nullptr) {
-        if (bottomChicken->getEntity()->getY() > bottomChicken->getEntity()->getH() * 5) {
+        if (bottomChicken->getEntity()->getY() > bottomChicken->getEntity()->getH() * 7) {
             chickenMoveState.goDown = 0;
             chickenMoveState.goUp = 1;
         }

@@ -158,6 +158,8 @@ class Game {
     ChickenMoveState chickenMoveState;
     vector<int> killedChickenCount;
     set<Rock*> rocks;
+    Entity bossHealthBar, bossHealthBorder;
+    int bossHP = 0;
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;

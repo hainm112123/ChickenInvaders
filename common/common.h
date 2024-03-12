@@ -37,6 +37,11 @@ const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
 const int GUNDAM_LASER_DAMAGE = 3;
 
+const int HEALTH_BAR_WIDTH = 256;
+const int HEALTH_BAR_HEIGHT = 80;
+const int HEALTH_BORDER_WIDTH = 277;
+const int HEALTH_BORDER_HEIGHT = 87;
+
 int Rand(int l, int r);
 
 struct Texture {

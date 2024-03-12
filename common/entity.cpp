@@ -48,7 +48,13 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
-    if (type == LASER) {
+    if (type == BOSS_HEALTH_BAR) {
+        SDL_Rect src = {0, 0, arg, HEALTH_BAR_HEIGHT};
+        SDL_Rect dst = rect;
+        dst.w = arg;
+        SDL_RenderCopy(renderer, texture.texture, &src, &dst);
+    }
+    else if (type == LASER) {
         int n = 3, m = 4;
         (frame += 1) %= (n * m * FRAME_PER_PICTURE);
         int index = frame / 5;
