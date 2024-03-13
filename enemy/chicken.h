@@ -6,8 +6,8 @@
 #include "../weapon/bullet.h"
 #include "../game/media.h"
 
-const int CHICKEN_WIDTH[] = {80, 200};
-const int CHICKEN_HEIGHT[] = {60, 200};
+const int CHICKEN_WIDTH[] = {78, 200};
+const int CHICKEN_HEIGHT[] = {65, 200};
 
 const double CHICKEN_SPEED[] = {100, 300};
 const double NG_CHICKEN_SPEED = 60;

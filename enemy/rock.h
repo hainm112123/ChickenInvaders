@@ -17,8 +17,8 @@ const int MAX_ROCK_SIDE_SPEED_Y = 300;
 
 const int NG_ROCK_SPEED = 200;
 
-const int MIN_ROCK_SIZE = 32;
-const int MAX_ROCK_SIZE = 48;
+const int MIN_ROCK_SIZE = 36;
+const int MAX_ROCK_SIZE = 81;
 
 class Rock : public Entity{
     double hp;

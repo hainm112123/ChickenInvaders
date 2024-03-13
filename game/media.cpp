@@ -28,14 +28,14 @@ Gallery::~Gallery() {
 void Gallery::loadGamePictures() {
     chickens = {
         {
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (4).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_.png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (1).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (2).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (3).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (2).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_ (1).png"),
-            painter->loadTexture("./assets/graphics/phoenix/Phoenix_Chicken_.png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (0).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (1).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (2).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (3).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (4).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (3).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (2).png"),
+            painter->loadTexture("./assets/graphics/chicken/chicken (1).png"),
         },
         {
             painter->loadTexture("./assets/graphics/boss1/Militarychicken (0).png"),

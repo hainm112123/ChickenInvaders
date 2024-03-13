@@ -84,8 +84,8 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         int n = 7, m = 7;
         int cnt = 48;
         currentTime += elapsed;
-        if (currentTime >= SECOND_PER_PICTURE * m * n) currentTime -= SECOND_PER_PICTURE * m * n;
-        int index = int(currentTime / SECOND_PER_PICTURE);
+        if (currentTime >= SECOND_PER_PICTURE_FASTER * cnt) currentTime -= SECOND_PER_PICTURE_FASTER * cnt;
+        int index = int(currentTime / SECOND_PER_PICTURE_FASTER);
         int w = texture.w / m, h = texture.h / n;
         int offsetX = 15, offsetY = 18;
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
