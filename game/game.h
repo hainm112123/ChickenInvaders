@@ -9,8 +9,10 @@
 #include "../enemy/rock.h"
 #include "text.h"
 
-const int NUMBER_OF_CHICKEN = 20;
+const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
+const double BOSS_TURN_DELAY = 1.2;
+
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 15;
 const int NG_ROCK_WAVE = 10;
@@ -125,10 +127,6 @@ const int NUM_KEYCODES = 36;
 const int MAX_NAME_LENGTH = 16;
 const int NUMBER_SHOWED_PLAYER = 10;
 
-struct ChickenMoveState {
-    bool goLeft, goRight, goUp, goDown;
-};
-
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
@@ -145,7 +143,7 @@ class Game {
     GameAudio audioState;
     Entity background;
     double scrolling = 0;
-    Timer initTimer, gameEndTimer, rockWaveTimer;
+    Timer initTimer, gameEndTimer, rockWaveTimer, bossTurnTimer;
     Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
     Text roundTitle, roundText;
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];
@@ -156,7 +154,6 @@ class Game {
     int numberOfAliveChicken;
     Chicken *topChicken, *bottomChicken, *leftChicken, *rightChicken;
     vector<Bullet*>chickenBullets;
-    ChickenMoveState chickenMoveState;
     vector<int> killedChickenCount;
     set<Rock*> rocks;
     Entity bossHealthBar, bossHealthBorder;

@@ -12,8 +12,8 @@ const int CHICKEN_HEIGHT[] = {60, 200};
 const double CHICKEN_SPEED[] = {100, 300};
 const double NG_CHICKEN_SPEED = 60;
 
-const double CHICKEN_HP[] = {250, 4900};
-const double CHICKEN_HP_UPGRADE[] = {169, 2500};
+const double CHICKEN_HP[] = {100, 4900};
+const double CHICKEN_HP_UPGRADE[] = {69, 2500};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
@@ -28,6 +28,10 @@ const int NG_CHICKEN_SCORE[] = {6, 121};
 
 const double BULLET_DELAY = 0.3;
 
+struct ChickenMoveState {
+    bool goLeft, goRight, goUp, goDown;
+};
+
 class Chicken {
     Entity entity;
     double hp;
@@ -36,6 +40,7 @@ class Chicken {
     double speed, bulletSpeed;
     int bulletWidth, bulletHeight;
     Time lastBullet = CLOCK_NOW();
+    ChickenMoveState moveState;
 
 public:
     Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int NG = 0);
@@ -69,11 +74,15 @@ public:
     double getHP() const {
         return hp;
     }
+    ChickenMoveState getMoveState() const {
+        return moveState;
+    }
 
     void setLastBullet(Time _lastBullet);
 
     bool receiveDamage(double dmg);
-    void _move(double step_x, double step_y);
+    void setMoveState(ChickenMoveState _moveState);
+    void _move();
     void render(SDL_Renderer *renderer);
     void addBullet(Bullet *_bullet, Gallery *gallery);
     void removeBullet(Bullet *bullet);

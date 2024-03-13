@@ -5,7 +5,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gallery(new Gallery(painter)),
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
-    initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY),
+    initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY), bossTurnTimer(BOSS_TURN_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(gallery),
@@ -19,8 +19,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     score = 0;
     round = 0;
     roundWon = true;
-
-    chickenMoveState = {0, 1, 0, 0};
 
     background.setTexture(gallery->background);
 //    gundam.getEntity()->setTexture(gallery->gundams[gundam.getCurrentWeapon()]);
@@ -69,8 +67,6 @@ void Game::init() {
         int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
         int numberOfBullet = (level ? perRow * 2: perRow) * (NG * 2 + 1);
 
-        chickenMoveState = {0, 1, 0, !level};
-
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
@@ -86,10 +82,25 @@ void Game::init() {
             if (level) bossHP += chicken->getHP();
         }
         numberOfAliveChicken = numberOfEnemy;
+
+        if (level) bossTurnTimer.startCountdown();
     }
 
 //    gundamLaserTimer.startCountdown();
 //    cout << "Init Successful\n";
+}
+
+bool touchTop(Chicken *chicken) {
+    return chicken->getEntity()->getY() < 0;
+}
+bool touchBottom(Chicken *chicken, int mul) {
+    return chicken->getEntity()->getY() > chicken->getEntity()->getH() * mul;
+}
+bool touchLeft(Chicken *chicken) {
+    return chicken->getEntity()->getX() < 0;
+}
+bool touchRight(Chicken *chicken) {
+    return chicken->getEntity()->getX() > SCREEN_WIDTH - chicken->getEntity()->getW();
 }
 
 void Game::process() {
@@ -201,18 +212,9 @@ void Game::process() {
 
     //................................chicken.........................................
     float chicken_step_x = 0, chicken_step_y = 0;
-    topChicken = bottomChicken = leftChicken = rightChicken = NULL;
-
-    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
-        int currentBossHP = 0;
-        for (Chicken *chicken: chickens) currentBossHP += chicken->getHP();
-        bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
-        bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
-    }
+    topChicken = bottomChicken = leftChicken = rightChicken = nullptr;
 
     if (!chickens.empty()) {
-//        topChicken = leftChicken = *chickens.begin();
-//        bottomChicken = rightChicken = *chickens.rbegin();
         for (Chicken *chicken: chickens) if (chicken->isAlive()) {
             if (topChicken == nullptr) {
                 topChicken = bottomChicken = leftChicken = rightChicken = chicken;
@@ -225,16 +227,9 @@ void Game::process() {
         }
     }
 
-    if (topChicken != nullptr) {
-        if (chickenMoveState.goLeft) chicken_step_x = -topChicken->getSpeed();
-        if (chickenMoveState.goRight) chicken_step_x = topChicken->getSpeed();
-        if (chickenMoveState.goUp) chicken_step_y = -topChicken->getSpeed();
-        if (chickenMoveState.goDown) chicken_step_y = topChicken->getSpeed();
-    }
-
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
-            chicken->_move(chicken_step_x, chicken_step_y);
+            chicken->_move();
 
             const int rate = chicken->getLevel() == 0 ? 1 : 100;
             const int maxNumberOfBullet = chicken->getLevel() == 0 ? 1 : 3;
@@ -250,22 +245,75 @@ void Game::process() {
         chicken->handleBullet(renderer, chickenBullets);
     }
 
-    if (topChicken != nullptr) {
-        if (bottomChicken->getEntity()->getY() > bottomChicken->getEntity()->getH() * 7) {
+    if (topChicken != nullptr && topChicken->getLevel() == 0) {
+        ChickenMoveState chickenMoveState = topChicken->getMoveState();
+
+        if (touchBottom(bottomChicken, 5)) {
             chickenMoveState.goDown = 0;
             chickenMoveState.goUp = 1;
         }
-        if (topChicken->getEntity()->getY() < 0) {
+        if (touchTop(topChicken)) {
             chickenMoveState.goDown = 1;
             chickenMoveState.goUp = 0;
         }
-        if (rightChicken->getEntity()->getX() > SCREEN_WIDTH - rightChicken->getEntity()->getW()) {
+        if (touchRight(rightChicken)) {
             chickenMoveState.goRight = 0;
             chickenMoveState.goLeft = 1;
         }
-        if (leftChicken->getEntity()->getX() < 0) {
+        if (touchLeft(leftChicken)) {
             chickenMoveState.goRight = 1;
             chickenMoveState.goLeft = 0;
+        }
+
+        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
+    }
+    if (topChicken != nullptr && topChicken->getLevel() > 0) {
+        if (bossTurnTimer.timeIsUp()) {
+            for (Chicken *chicken: chickens) {
+                ChickenMoveState moveState = chicken->getMoveState();
+                if (Rand(0, 100) < 50) {
+                    moveState.goLeft = 1;
+                    moveState.goRight = 0;
+                }
+                else {
+                    moveState.goRight = 1;
+                    moveState.goLeft = 1;
+                }
+                if (Rand(0, 100) < 50) {
+                    moveState.goUp = 1;
+                    moveState.goDown = 0;
+                }
+                else {
+                    moveState.goDown = 1;
+                    moveState.goUp = 0;
+                }
+
+                chicken->setMoveState(moveState);
+            }
+            bossTurnTimer.startCountdown();
+        }
+
+        for (Chicken *chicken: chickens) {
+            ChickenMoveState moveState = chicken->getMoveState();
+
+            if (touchBottom(chicken, 1)) {
+                moveState.goDown = 0;
+                moveState.goUp = 1;
+            }
+            if (touchTop(chicken)) {
+                moveState.goDown = 1;
+                moveState.goUp = 0;
+            }
+            if (touchRight(chicken)) {
+                moveState.goRight = 0;
+                moveState.goLeft = 1;
+            }
+            if (touchLeft(chicken)) {
+                moveState.goRight = 1;
+                moveState.goLeft = 0;
+            }
+
+            chicken->setMoveState(moveState);
         }
     }
 
@@ -290,6 +338,14 @@ void Game::process() {
         if (gameEndTimer.timeIsUp()) {
             setGameStatus(GAME_OVER);
         }
+    }
+
+    //health bar
+    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
+        int currentBossHP = 0;
+        for (Chicken *chicken: chickens) currentBossHP += chicken->getHP();
+        bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
+        bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
     }
 
     SDL_RenderPresent(renderer);
