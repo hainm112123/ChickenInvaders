@@ -19,7 +19,7 @@ void Chicken::setLastBullet(Time _lastBullet) {
 }
 
 void Chicken::render(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b, 0);
+//    SDL_SetRenderDrawColor(renderer, WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b, 0);
     entity.render(renderer);
 }
 

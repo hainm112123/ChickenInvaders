@@ -7,7 +7,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
     initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
-    roundTitle("", WHITE_COLOR), roundText("", WHITE_COLOR),
+    roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(gallery),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR)
 {
@@ -283,7 +283,7 @@ void Game::process() {
     handleGameEvent();
 
     if (gundam.getLives() <= 0) {
-        Text gameover("Game Over!", WHITE_COLOR_2ND);
+        Text gameover("Game Over!", TEXT_COLOR);
         gameover.renderText(fontMenu, renderer, true);
         gameover.setRect(SCREEN_WIDTH/2 - gameover.getW()/2, SCREEN_HEIGHT/3);
         gameover.renderText(fontMenu, renderer);
@@ -475,47 +475,53 @@ void Game::renderMenu() {
 
     Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
     Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, gallery->menu_settings);
+    Entity menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu_control);
 
-    const int mainMenuTextCount = 4;
+    const int mainMenuTextCount = 5;
     Text mainMenuText[] = {
-        Text("", WHITE_COLOR),
-        Text("", WHITE_COLOR),
-        Text("", WHITE_COLOR),
-        Text("", WHITE_COLOR),
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR),
     };
-    const int mainMenuChoiceCount = 4;
+    const int mainMenuChoiceCount = 5;
     Text mainMenuChoice[] = {
-        Text("Start", WHITE_COLOR),
-        Text("Settings", WHITE_COLOR),
-        Text("Ranking", WHITE_COLOR),
-        Text("Quit", WHITE_COLOR),
+        Text("Start", TEXT_COLOR),
+        Text("Settings", TEXT_COLOR),
+        Text("Control", TEXT_COLOR),
+        Text("Ranking", TEXT_COLOR),
+        Text("Quit", TEXT_COLOR),
     };
 
-    Text backButton("Back", WHITE_COLOR);
+    Text backButton("Back", TEXT_COLOR);
     backButton.renderText(fontRoundTitle, renderer);
     backButton.setRect(SCREEN_WIDTH - backButton.getW() - 100, SCREEN_HEIGHT - backButton.getH() - 50);
 
     const int settingsMenuTextCount = 3;
     Text settingsMenuText[] = {
-        Text("", WHITE_COLOR),
-        Text("Audio", WHITE_COLOR),
-        Text("Difficulty", WHITE_COLOR)
+        Text("", TEXT_COLOR),
+        Text("Audio", TEXT_COLOR),
+        Text("Difficulty", TEXT_COLOR)
     };
     const int settingsMenuChoiceCount = 3;
     Text settingsMenuChoice[] = {
         backButton,
-        Text("", WHITE_COLOR),
-        Text("", WHITE_COLOR),
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR),
     };
 
     const int rankingMenuTextCount = 0;
     const int rankingMenuChoiceCount = 1;
     Text rankingMenuChoice[] = {backButton};
 
+    const int controlMenuTextCount = 0;
+    const int controlMenuChoiceCount = 1;
+    Text controlMenuChoice[] = {backButton};
 
     for (int i = 0; i < mainMenuChoiceCount; ++ i) {
         mainMenuChoice[i].renderText(fontMenu, renderer, true);
-        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 360 + i * 80);
+        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 320 + i * 60);
     }
     for (int i = 1; i < settingsMenuTextCount; ++ i) {
         settingsMenuText[i].renderText(fontMenu, renderer, true);
@@ -553,12 +559,18 @@ void Game::renderMenu() {
             choiceCount = settingsMenuChoiceCount;
             menu_settings.render(renderer);
         }
-        else {
+        else if (menuState == MENU_RANKING) {
             textCount = rankingMenuTextCount;
             choiceCount = rankingMenuChoiceCount;
             choices = rankingMenuChoice;
             menu_settings.render(renderer);
             showRanking();
+        }
+        else {
+            textCount = controlMenuTextCount;
+            choiceCount = controlMenuChoiceCount;
+            choices = controlMenuChoice;
+            menu_control.render(renderer);
         }
 
         for (int i = 0; i < textCount; ++ i) {
@@ -579,7 +591,7 @@ void Game::renderMenu() {
                 for (int i = 0; i < choiceCount; ++ i) {
                     if (choices[i].getX() <= (event->motion).x && (event->motion).x <= choices[i].getX() + choices[i].getW() && choices[i].getY() <= (event->motion).y && (event->motion).y <= choices[i].getY() + choices[i].getH()) {
                         if (event->type == SDL_MOUSEMOTION) {
-                            choices[i].setColor(RED_COLOR);
+                            choices[i].setColor(TEXT_HOVER_COLOR);
                         }
                         else {
                             playChunk(media->upgrade);
@@ -594,6 +606,9 @@ void Game::renderMenu() {
                                 }
                                 if (i == MAIN_MENU_RANKING) {
                                     menuState = MENU_RANKING;
+                                }
+                                if (i == MAIN_MENU_CONTROL) {
+                                    menuState = MENU_CONTROL;
                                 }
                                 if (i == MAIN_MENU_QUIT) {
                                     setGameStatus(GAME_STOP);
@@ -620,7 +635,7 @@ void Game::renderMenu() {
                         }
                     }
                     else {
-                        choices[i].setColor(WHITE_COLOR);
+                        choices[i].setColor(TEXT_COLOR);
                     }
                 }
             }
@@ -670,7 +685,7 @@ void Game::saveData() {
 void Game::load() {
     setGameStatus(GAME_INITALIZING);
     TTF_Init();
-    fontMenu = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 50);
+    fontMenu = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 36);
     fontGame = TTF_OpenFont("./assets/font/Zebulon.otf", 24);
     fontRoundTitle = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 32);
     fontRoundText = TTF_OpenFont("./assets/font/Zebulon.otf", 20);
@@ -678,11 +693,11 @@ void Game::load() {
     initData();
 
     scoreText.setText("Score: ");
-    scoreText.setColor(WHITE_COLOR);
+    scoreText.setColor(TEXT_COLOR);
     scoreText.renderText(fontGame, renderer);
     scoreText.setRect(10, 10 + hearts.back().getH() + 5);
     scoreValue.setText("0");
-    scoreValue.setColor(WHITE_COLOR);
+    scoreValue.setColor(TEXT_COLOR);
     scoreValue.renderText(fontRoundText, renderer);
 //    cout << scoreText.getW() << "\n";
     scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
@@ -729,7 +744,7 @@ void Game::gameOver() {
     enterYourName();
     if (!isRunning()) return;
 
-    Text nextButton("Next", WHITE_COLOR);
+    Text nextButton("Next", TEXT_COLOR);
     nextButton.renderText(fontRoundTitle, renderer, true);
     nextButton.setRect(SCREEN_WIDTH - nextButton.getW() - 100, SCREEN_HEIGHT - nextButton.getH() - 50);
 
@@ -750,7 +765,7 @@ void Game::gameOver() {
             if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
                 if (isHover(e, nextButton)) {
                     if (e.type == SDL_MOUSEMOTION) {
-                        nextButton.setColor(RED_COLOR);
+                        nextButton.setColor(TEXT_HOVER_COLOR);
                     }
                     if (e.type == SDL_MOUSEBUTTONDOWN) {
                         playChunk(media->upgrade);
@@ -759,7 +774,7 @@ void Game::gameOver() {
                     }
                 }
                 else {
-                    nextButton.setColor(WHITE_COLOR);
+                    nextButton.setColor(TEXT_COLOR);
                 }
             }
         }
@@ -774,15 +789,15 @@ void Game::enterYourName() {
     scoreText.setRect(SCREEN_WIDTH/2 - (scoreText.getW() + scoreValue.getW())/2, SCREEN_HEIGHT/3);
     scoreValue.setRect(scoreText.getX() + scoreText.getW(), SCREEN_HEIGHT/3 + scoreText.getH() - scoreValue.getH());
 
-    Text placeholder("Enter your name!", WHITE_COLOR_2ND);
+    Text placeholder("Enter your name!", TEXT_PLACEHOLDER_COLOR);
     placeholder.renderText(fontMenu, renderer, true);
     placeholder.setRect(SCREEN_WIDTH/2 - placeholder.getW()/2, SCREEN_HEIGHT/3 + 50);
 
-    Text input("", WHITE_COLOR);
+    Text input("", TEXT_COLOR);
     input.setRect(SCREEN_WIDTH/2 - placeholder.getW()/2, SCREEN_HEIGHT/3);
     string username = "";
 
-    Text nextButton("Next", WHITE_COLOR);
+    Text nextButton("Next", TEXT_COLOR);
     nextButton.renderText(fontRoundTitle, renderer, true);
     nextButton.setRect(SCREEN_WIDTH/2 - nextButton.getW()/2, SCREEN_HEIGHT/3 + 150);
 
@@ -817,9 +832,9 @@ void Game::enterYourName() {
             if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN) {
                 if (isHover(e, nextButton)) {
                     if (e.type == SDL_MOUSEMOTION) {
-                        nextButton.setColor(RED_COLOR);
+                        nextButton.setColor(TEXT_HOVER_COLOR);
                     }
-                    if (e.type == SDL_MOUSEBUTTONDOWN) {
+                    if (e.type == SDL_MOUSEBUTTONDOWN && _size(username) > 0) {
                         summarizing = false;
                         playChunk(media->upgrade);
                         if (!scores.count(username)) {
@@ -832,7 +847,7 @@ void Game::enterYourName() {
                     }
                 }
                 else {
-                    nextButton.setColor(WHITE_COLOR);
+                    nextButton.setColor(TEXT_COLOR);
                 }
             }
             if (e.type == SDL_KEYDOWN) {
@@ -856,8 +871,8 @@ void Game::enterYourName() {
 void Game::showRanking() {
     vector<pair<int,string>> v = getRanking();
     for (int i = 0; i < NUMBER_SHOWED_PLAYER; ++ i) {
-        playerNames[i].setColor(WHITE_COLOR);
-        playerScores[i].setColor(WHITE_COLOR);
+        playerNames[i].setColor(TEXT_COLOR);
+        playerScores[i].setColor(TEXT_COLOR);
         if (i < _size(v)) {
             playerNames[i].setText(v[i].second);
             playerScores[i].setText(to_string(v[i].first));

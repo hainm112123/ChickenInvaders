@@ -58,11 +58,13 @@ const string GAME_AUDIO[] = {"Unmuted", "Muted"};
 enum MenuState {
     MENU_MAIN = 0,
     MENU_SETTINGS,
+    MENU_CONTROL,
     MENU_RANKING,
 };
 enum MainMenuTab {
     MAIN_MENU_START = 0,
     MAIN_MENU_SETTINGS,
+    MAIN_MENU_CONTROL,
     MAIN_MENU_RANKING,
     MAIN_MENU_QUIT,
 };
