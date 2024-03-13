@@ -35,7 +35,8 @@ const double SECOND_PER_PICTURE_FASTER = 0.04;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
-const int GUNDAM_LASER_DAMAGE = 3;
+const double GUNDAM_LASER_DAMAGE = 560;
+const double GUNDAM_LASER_UPGRADE = 320;
 
 const int HEALTH_BAR_WIDTH = 256;
 const int HEALTH_BAR_HEIGHT = 80;

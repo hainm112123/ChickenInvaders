@@ -3,11 +3,11 @@
 void Rock::setActive(bool _active) {
     active = _active;
 }
-void Rock::setHP(int _hp) {
+void Rock::setHP(double _hp) {
     hp = _hp;
 }
 
-void Rock::receiveDamage(int dmg) {
+void Rock::receiveDamage(double dmg) {
     hp -= dmg;
     if (hp < 0) setActive(false);
 }

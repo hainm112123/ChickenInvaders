@@ -28,7 +28,7 @@ void Chicken::_move(double step_x, double step_y) {
     entity._move();
 }
 
-bool Chicken::receiveDamage(int dmg) {
+bool Chicken::receiveDamage(double dmg) {
 //    cout << hp << " " << dmg << "\n";
     hp -= dmg;
     return hp > 0;

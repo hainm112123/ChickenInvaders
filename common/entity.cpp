@@ -59,8 +59,8 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     else if (type == LASER) {
         int n = 3, m = 4;
         currentTime += elapsed;
-        if (currentTime >= SECOND_PER_PICTURE * m * n) currentTime -= SECOND_PER_PICTURE * m * n;
-        int index = int(elapsed / SECOND_PER_PICTURE);
+        if (currentTime >= SECOND_PER_PICTURE_FASTER * m * n) currentTime -= SECOND_PER_PICTURE_FASTER * m * n;
+        int index = int(currentTime / SECOND_PER_PICTURE_FASTER);
         int i = index % m, j = index / m;
         int w = texture.w / m, h = texture.h / n;
         SDL_Rect src = {w*i + w/2 - GUNDAM_LASER_WIDTH/2, h*j, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT};

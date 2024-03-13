@@ -31,7 +31,7 @@ const double INIT_DELAY = 3;
 const double GAME_END_DELAY = 3;
 const double GUNDAM_REVIVE_TIME = 2;
 const double GUNDAM_SHIELD_DURATION = 3;
-const double GUNDAM_LASER_DURATION = 10;
+const double GUNDAM_LASER_DURATION = 15;
 
 enum GameStatus {
     GAME_STOP = 0,

@@ -46,6 +46,7 @@ void Game::setGameStatus(GameStatus newStatus) {
 
 void Game::init() {
 //    cout << round << "\n";
+//    gundamLaserTimer.startCountdown();
     roundWon = false;
     chickenBullets.clear();
     chickens.clear();
@@ -319,7 +320,7 @@ void Game::setRoundWon() {
 }
 
 void Game::handleGameEvent() {
-    const int gundamLaserDamage = GUNDAM_LASER_DAMAGE + gundam.getLevel() * 2;
+    const double gundamLaserDamage = (GUNDAM_LASER_DAMAGE + GUNDAM_LASER_UPGRADE * gundam.getLevel()) * TimeManager::Instance()->getElapsedTime();
 
     //.............................upgrade.....................................................
     for (Upgrade *upgrade: upgrades) {

@@ -4,8 +4,8 @@
 #include "../common/common.h"
 #include "../common/entity.h"
 
-const int ROCK_HP = 360;
-const int ROCK_HP_UPGRADE = 200;
+const double ROCK_HP = 360;
+const double ROCK_HP_UPGRADE = 200;
 
 const int MIN_ROCK_FALL_SPEED = 490;
 const int MAX_ROCK_FALL_SPEED = 810;
@@ -21,7 +21,7 @@ const int MIN_ROCK_SIZE = 32;
 const int MAX_ROCK_SIZE = 48;
 
 class Rock : public Entity{
-    int hp;
+    double hp;
     bool active = false;
 
 public:
@@ -29,9 +29,9 @@ public:
     bool isActive() {
         return active;
     }
-    void setActive(bool _active);    void setHP(int _hp);
+    void setActive(bool _active);    void setHP(double _hp);
 
-    void receiveDamage(int dmg);
+    void receiveDamage(double dmg);
     void handleMove();
 };
 

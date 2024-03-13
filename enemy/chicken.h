@@ -12,8 +12,8 @@ const int CHICKEN_HEIGHT[] = {60, 200};
 const double CHICKEN_SPEED[] = {100, 300};
 const double NG_CHICKEN_SPEED = 60;
 
-const int CHICKEN_HP[] = {250, 4900};
-const int CHICKEN_HP_UPGRADE[] = {169, 2500};
+const double CHICKEN_HP[] = {250, 4900};
+const double CHICKEN_HP_UPGRADE[] = {169, 2500};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
@@ -30,7 +30,7 @@ const double BULLET_DELAY = 0.3;
 
 class Chicken {
     Entity entity;
-    int hp;
+    double hp;
     set<Bullet*> bullets;
     int level;
     double speed, bulletSpeed;
@@ -66,13 +66,13 @@ public:
     bool isAlive() {
         return hp > 0;
     }
-    int getHP() const {
+    double getHP() const {
         return hp;
     }
 
     void setLastBullet(Time _lastBullet);
 
-    bool receiveDamage(int dmg);
+    bool receiveDamage(double dmg);
     void _move(double step_x, double step_y);
     void render(SDL_Renderer *renderer);
     void addBullet(Bullet *_bullet, Gallery *gallery);
