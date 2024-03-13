@@ -5,7 +5,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gallery(new Gallery(painter)),
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
-    initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY),
+    initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", WHITE_COLOR), roundText("", WHITE_COLOR),
     gundam(gallery),
@@ -51,14 +51,16 @@ void Game::init() {
     chickens.clear();
     topChicken = bottomChicken = leftChicken = rightChicken = NULL;
     numberOfAliveChicken = 0;
-    frame = 0;
     bossHP = 0;
+    rockWaveTimer.deactive();
 
     if (round == ROCK_SIDE_ROUND) {
-
+        rockWaveCount = ROCK_SIDE_WAVE + NG * NG_ROCK_WAVE;
+        rockWaveTimer.startCountdown();
     }
     else if (round == ROCK_FALL_ROUND) {
-
+        rockWaveCount = ROCK_FALL_WAVE + NG * NG_ROCK_WAVE;
+        rockWaveTimer.startCountdown();
     }
     else {
         int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
@@ -105,7 +107,8 @@ void Game::process() {
     painter->clearWithBgColor(WHITE_COLOR);
 
 
-    (scrolling += SCREEN_SPEED) %= BG_SIZE;
+    (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
+    if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
     background.render(renderer, scrolling);
 
     //...................heart and score........................................
@@ -126,37 +129,34 @@ void Game::process() {
 
 
     //...............................rock init..............................................
-    int rockWaveCount = (round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE) + NG * NG_ROCK_WAVE;
-    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame <= (rockWaveCount - 1) * ROCK_WAVE_FRAME) {
-        if (frame % ROCK_WAVE_FRAME == 0) {
-            int n = 15 + NG * 10;
-            int H_OFFSET = 700;
-            int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
-            for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
-                int x, y, step_x, step_y;
-                if (round == ROCK_FALL_ROUND) {
-                    x = Rand(L * i - 100, L * (i + 1) + 100) ;
-                    y = -50;
-                    step_x = 0;
-                    step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * NG_ROCK_SPEED;
-                }
-                else {
-                    x = -50;
-                    y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
-                    step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * NG_ROCK_SPEED;
-                    step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * NG_ROCK_SPEED;
-                }
-                int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
-                Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
-                rock->setStep(step_x, step_y);
-                rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * NG);
-                rock->setActive(true);
-                rocks.insert(rock);
-//                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
+    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
+        int n = 10 + NG * 8;
+        int H_OFFSET = 700;
+        int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
+        for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
+            int x, y, step_x, step_y;
+            if (round == ROCK_FALL_ROUND) {
+                x = Rand(L * i - 100, L * (i + 1) + 100) ;
+                y = -50;
+                step_x = 0;
+                step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * NG_ROCK_SPEED;
             }
+            else {
+                x = -50;
+                y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
+                step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * NG_ROCK_SPEED;
+                step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * NG_ROCK_SPEED;
+            }
+            int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
+            Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
+            rock->setStep(step_x, step_y);
+            rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * NG);
+            rock->setActive(true);
+            rocks.insert(rock);
+//                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
         }
-        frame ++;
-//        cout << frame << "\n";
+        rockWaveCount --;
+        rockWaveTimer.startCountdown();
     }
 
     //..............................round...........................................
@@ -276,7 +276,7 @@ void Game::process() {
     }
 
     //.............................explosion..................................................................
-    while (!explosions.empty() && explosions.front()->getFrame() == NUMBER_OF_EXPLOSION_PIC * FRAME_PER_PICTURE - 1) explosions.pop_front();
+    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE_FASTER * NUMBER_OF_EXPLOSION_PIC) explosions.pop_front();
     for (auto *explosion: explosions) explosion->render(renderer);
 
     handleGameEvent();
@@ -410,8 +410,7 @@ void Game::handleGameEvent() {
         }
     }
 
-    int rockWaveCount = round == ROCK_FALL_ROUND ? ROCK_FALL_WAVE : ROCK_SIDE_WAVE + NG * NG_ROCK_WAVE;
-    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && frame > (rockWaveCount - 1) * ROCK_WAVE_FRAME && rocks.empty() && !roundWon) {
+    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount == 0 && rocks.empty() && !roundWon) {
         setRoundWon();
     }
 }
@@ -633,7 +632,7 @@ void Game::renderMenu() {
 
 void Game::initData() {
     score = round = NG = 0;
-    frame = scrolling = 0;
+    scrolling = 0;
     roundWon = true;
 
     killedChickenCount.assign(5, 0);
@@ -736,7 +735,8 @@ void Game::gameOver() {
     SDL_Event e;
     bool rankShowing = true;
     while (rankShowing) {
-        (scrolling += SCREEN_SPEED) %= BG_SIZE;
+        (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
+        if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
         background.render(renderer, scrolling);
         showRanking();
         nextButton.renderText(fontRoundTitle, renderer);
@@ -788,7 +788,8 @@ void Game::enterYourName() {
     bool summarizing = true;
     SDL_Event e;
     while (summarizing) {
-        (scrolling += SCREEN_SPEED) %= BG_SIZE;
+        (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
+        if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
         background.render(renderer, scrolling);
 
         scoreText.renderText(fontGame, renderer);

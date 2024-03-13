@@ -8,6 +8,7 @@ Entity::Entity() {
 Entity::Entity(EntityType _type, SDL_Rect _rect, Texture _texture): type(_type), rect(_rect), texture(_texture) {
     x = rect.x; y = rect.y;
 }
+Entity::~Entity(){}
 
 void Entity::setRect(int _x, int _y) {
     x = _x; y = _y;
@@ -48,6 +49,7 @@ bool Entity::collisionWith(const Entity &entity) {
 }
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
+    const double elapsed = TimeManager::Instance()->getElapsedTime();
     if (type == BOSS_HEALTH_BAR) {
         SDL_Rect src = {0, 0, arg, HEALTH_BAR_HEIGHT};
         SDL_Rect dst = rect;
@@ -56,16 +58,18 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     }
     else if (type == LASER) {
         int n = 3, m = 4;
-        (frame += 1) %= (n * m * FRAME_PER_PICTURE);
-        int index = frame / 5;
+        currentTime += elapsed;
+        if (currentTime >= SECOND_PER_PICTURE * m * n) currentTime -= SECOND_PER_PICTURE * m * n;
+        int index = int(elapsed / SECOND_PER_PICTURE);
         int i = index % m, j = index / m;
         int w = texture.w / m, h = texture.h / n;
         SDL_Rect src = {w*i + w/2 - GUNDAM_LASER_WIDTH/2, h*j, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     } else if (type == CHICKEN || type == CHICKEN_BOSS) {
         int n = textures.size();
-        (frame += 1) %= (n * FRAME_PER_PICTURE_MORE);
-        SDL_RenderCopy(renderer, textures[frame / FRAME_PER_PICTURE_MORE].texture, NULL, &rect);
+        currentTime += elapsed;
+        if (currentTime >= SECOND_PER_PICTURE * n) currentTime -= SECOND_PER_PICTURE * n;
+        SDL_RenderCopy(renderer, textures[int(currentTime / SECOND_PER_PICTURE)].texture, NULL, &rect);
     }
     else if (type == MENU || type == SHIELD || type == HEART) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
@@ -79,8 +83,9 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     else if (type == ROCK) {
         int n = 7, m = 7;
         int cnt = 48;
-        (frame += 1) %= (cnt * FRAME_PER_PICTURE);
-        int index = frame / FRAME_PER_PICTURE;
+        currentTime += elapsed;
+        if (currentTime >= SECOND_PER_PICTURE * m * n) currentTime -= SECOND_PER_PICTURE * m * n;
+        int index = int(currentTime / SECOND_PER_PICTURE);
         int w = texture.w / m, h = texture.h / n;
         int offsetX = 15, offsetY = 18;
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
@@ -88,18 +93,24 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     }
     else if (type == LEVEL_UP || type == EXPLOSION) {
         int n = 1;
+        double perPic = SECOND_PER_PICTURE;
         switch(type) {
             case LEVEL_UP:
                 n = 25;
                 break;
             case EXPLOSION:
                 n = NUMBER_OF_EXPLOSION_PIC;
+                perPic = SECOND_PER_PICTURE_FASTER;
                 break;
             default:
                 break;
         }
-        (frame += 1) %= (n * FRAME_PER_PICTURE);
-        int ind = frame / FRAME_PER_PICTURE;
+        currentTime += elapsed;
+        if (currentTime >= perPic * n) {
+            if (type == EXPLOSION) return;
+            currentTime -= perPic * n;
+        }
+        int ind = int(currentTime / perPic);
         int w = texture.w / n, h = texture.h;
         if (type != EXPLOSION) {
             rect.w = w; rect.h = h;

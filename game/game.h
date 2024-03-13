@@ -14,7 +14,7 @@ const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 15;
 const int NG_ROCK_WAVE = 10;
-const int ROCK_WAVE_FRAME = 100;
+const double ROCK_WAVE_DELAY = 0.87654321;
 
 const int ROCK_FALL_ROUND = 5;
 const int ROCK_SIDE_ROUND = 3;
@@ -24,7 +24,7 @@ const int ROUND_COUNT = 6;
 const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
 const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
 
-const int SCREEN_SPEED = 1;
+const double SCREEN_SPEED = 144;
 const int BG_SIZE = 762;
 
 const double INIT_DELAY = 3;
@@ -142,9 +142,8 @@ class Game {
     GameDifficulty difficultyState;
     GameAudio audioState;
     Entity background;
-    int scrolling = 0;
-    int frame = 0;
-    Timer initTimer, gameEndTimer;
+    double scrolling = 0;
+    Timer initTimer, gameEndTimer, rockWaveTimer;
     Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
     Text roundTitle, roundText;
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];
@@ -160,6 +159,7 @@ class Game {
     set<Rock*> rocks;
     Entity bossHealthBar, bossHealthBorder;
     int bossHP = 0;
+    int rockWaveCount = 0;
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;

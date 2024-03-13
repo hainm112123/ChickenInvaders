@@ -2,6 +2,7 @@
 #define ENTITY_H_INCLUDED
 
 #include "common.h"
+#include "time.h"
 
 enum EntityType {
     GUNDAM = 0,
@@ -29,7 +30,7 @@ protected:
     vector<Texture> textures;
     double step_x = 0, step_y = 0;
     double x, y;
-    int frame = 0;
+    double currentTime = 0;
 
 public:
     bool operator < (const Entity &other) const {
@@ -38,6 +39,7 @@ public:
 
     Entity();
     Entity(EntityType _type, SDL_Rect _rect = {0, 0, 0, 0}, Texture _texture = {NULL, 0, 0});
+    ~Entity();
 
     int getX() const {
         return rect.x;
@@ -57,8 +59,8 @@ public:
     EntityType getType() const {
         return type;
     }
-    int getFrame() const {
-        return frame;
+    double CurrentTime() const {
+        return currentTime;
     }
 
     void setRect(int _x, int _y);

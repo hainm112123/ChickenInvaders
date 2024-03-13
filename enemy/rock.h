@@ -4,11 +4,11 @@
 #include "../common/common.h"
 #include "../common/entity.h"
 
-const int ROCK_HP = 320;
+const int ROCK_HP = 360;
 const int ROCK_HP_UPGRADE = 200;
 
-const int MIN_ROCK_FALL_SPEED = 400;
-const int MAX_ROCK_FALL_SPEED = 600;
+const int MIN_ROCK_FALL_SPEED = 490;
+const int MAX_ROCK_FALL_SPEED = 810;
 
 const int MIN_ROCK_SIDE_SPEED_X = 300;
 const int MAX_ROCK_SIDE_SPEED_X = 500;

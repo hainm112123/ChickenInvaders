@@ -12,21 +12,21 @@ const int CHICKEN_HEIGHT[] = {60, 200};
 const double CHICKEN_SPEED[] = {100, 300};
 const double NG_CHICKEN_SPEED = 60;
 
-const int CHICKEN_HP[] = {200, 2500};
-const int CHICKEN_HP_UPGRADE[] = {150, 2000};
+const int CHICKEN_HP[] = {250, 4900};
+const int CHICKEN_HP_UPGRADE[] = {169, 2500};
 
 const int CHICKENS_DISTANCE[] = {30, 100};
 
 const int CHICKEN_EGG_WIDTH[] = {15, 80};
 const int CHICKEN_EGG_HEIGHT[] = {15, 80};
 const int MIN_CHICKEN_EGG_SPEED[] = {150, 200};
-const int MAX_CHICKEN_EGG_SPEED[] = {400, 400};
-const double NG_CHICKEN_EGG_SPEED = 150;
+const int MAX_CHICKEN_EGG_SPEED[] = {400, 490};
+const double NG_CHICKEN_EGG_SPEED = 160;
 
 const int CHICKEN_SCORE[] = {10, 200};
 const int NG_CHICKEN_SCORE[] = {6, 121};
 
-const double BULLET_DELAY = 0.5;
+const double BULLET_DELAY = 0.3;
 
 class Chicken {
     Entity entity;

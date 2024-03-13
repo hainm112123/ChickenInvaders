@@ -30,8 +30,8 @@ const int GAME_WIDTH = 1280;
 const int GAME_HEIGHT = 4096;
 
 const int NUMBER_OF_EXPLOSION_PIC = 8;
-const int FRAME_PER_PICTURE = 5;
-const int FRAME_PER_PICTURE_MORE = 8;
+const double SECOND_PER_PICTURE = 0.06;
+const double SECOND_PER_PICTURE_FASTER = 0.04;
 
 const int GUNDAM_LASER_WIDTH = 80;
 const int GUNDAM_LASER_HIGHT = 682;
