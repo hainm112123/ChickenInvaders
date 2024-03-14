@@ -23,6 +23,9 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(bossHealthBar.texture);
     SDL_DestroyTexture(bossHealthBorder.texture);
     SDL_DestroyTexture(menu_control.texture);
+    SDL_DestroyTexture(level.texture);
+    SDL_DestroyTexture(rocket_mini.texture);
+    SDL_DestroyTexture(fry_chicken_mini.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -126,15 +129,18 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./assets/graphics/GIFTUtensilPoker.png"),
         painter->loadTexture("./assets/graphics/gift_laser.png"),
     };
-    level = painter->loadTexture("./assets/graphics/thunder.png");
 
     menu = painter->loadTexture("./assets/graphics/menu.png");
     menu_settings = painter->loadTexture("./assets/graphics/CI1Space.png");
     menu_control = painter->loadTexture("./assets/graphics/control.png");
 
-    heart = painter->loadTexture("./assets/graphics/heart.png");
     bossHealthBar = painter->loadTexture("./assets/graphics/HealthBar.png");
     bossHealthBorder = painter->loadTexture("./assets/graphics/HealthBorder.png");
+
+    heart = painter->loadTexture("./assets/graphics/heart.png");
+    level = painter->loadTexture("./assets/graphics/thunder.png");
+    rocket_mini = painter->loadTexture("./assets/graphics/rocket_mini.png");
+    fry_chicken_mini = painter->loadTexture("./assets/graphics/fried-chicken-mini.png");
 }
 
 //.............................Media............................................

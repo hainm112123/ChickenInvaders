@@ -10,7 +10,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(gallery),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
-    gundamLevelImage(GUNDAM_LEVEL)
+    gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE)
 {
     media = new Media();
 
@@ -54,7 +54,7 @@ void Game::init() {
     bossHP = 0;
     rockWaveTimer.deactive();
 
-    game_difficulty = (NG + difficultyState);
+    game_difficulty = (NG + int(difficultyState));
 
     if (round == ROCK_SIDE_ROUND) {
         rockWaveCount = ROCK_SIDE_WAVE + game_difficulty * NG_ROCK_WAVE;
@@ -107,6 +107,8 @@ bool touchRight(Chicken *chicken) {
 }
 
 void Game::process_game_state() {
+    const int offset = 10;
+
     for (auto &heart: hearts) heart.render(renderer);
     scoreText.renderText(fontGame, renderer);
     scoreValue.setText(to_string(score));
@@ -115,6 +117,18 @@ void Game::process_game_state() {
     gundamLevelImage.render(renderer);
     gundamLevelText.setText(to_string(gundam.getLevel()));
     gundamLevelText.renderText(fontGame, renderer);
+
+    frychickenMini.setRect(gundamLevelText.getX() + gundamLevelText.getW() + offset*2, gundamLevelImage.getY());
+    frychickenMini.render(renderer);
+    frychickenText.setText(to_string(frychickenCount));
+    frychickenText.setRect(frychickenMini.getX() + frychickenMini.getW() + offset/2, gundamLevelImage.getY());
+    frychickenText.renderText(fontGame, renderer);
+
+    rocketMini.setRect(frychickenText.getX() + frychickenText.getW() + offset*2, gundamLevelImage.getY());
+    rocketMini.render(renderer);
+    rocketText.setText(to_string(rocketCount));
+    rocketText.setRect(rocketMini.getX() + rocketMini.getW() + offset/2, gundamLevelImage.getY());
+    rocketText.renderText(fontGame, renderer);
 
     if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
         int currentBossHP = 0;
@@ -265,7 +279,7 @@ void Game::process_enemy() {
 
 void Game::init_rock() {
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
-        int n = 10 + game_difficulty * 8;
+        int n = 8 + game_difficulty * 8;
         int H_OFFSET = 700;
         int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
         for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
@@ -747,6 +761,7 @@ void Game::renderMenu() {
 void Game::initData() {
     score = round = NG = 0;
     scrolling = 0;
+    rocketCount = frychickenCount = 0;
     roundWon = true;
 
     killedChickenCount.assign(5, 0);
@@ -802,13 +817,24 @@ void Game::load() {
 //    cout << scoreText.getW() << "\n";
     scoreValue.setRect(offset + scoreText.getW(), offset + hearts.back().getH() + offset/2 + scoreText.getH() - scoreValue.getH());
 
-    const int gundamStateOffsetY = scoreText.getY() + scoreText.getH();
+    const int gundamStateOffsetY = scoreText.getY() + scoreText.getH() + offset/2;
     gundamLevelImage.setTexture(gallery->level, true);
-    gundamLevelImage.setRect(offset, offset/2 + gundamStateOffsetY);
+    gundamLevelImage.setRect(offset, gundamStateOffsetY);
     gundamLevelText.setText(to_string(gundam.getLevel()));
     gundamLevelText.setColor(TEXT_COLOR);
-    gundamLevelText.setRect(gundamLevelImage.getX() + gundamLevelImage.getW() + offset/2, gundamStateOffsetY + offset/2);
-//    setGameStatus(GAME_RUNNING);
+    gundamLevelText.setRect(gundamLevelImage.getX() + gundamLevelImage.getW() + offset/2, gundamStateOffsetY);
+
+    frychickenMini.setTexture(gallery->fry_chicken_mini, true);
+    frychickenMini.setRect(gundamLevelText.getX() + gundamLevelText.getW() + offset, gundamStateOffsetY);
+    frychickenText.setText(to_string(frychickenCount));
+    frychickenText.setColor(TEXT_COLOR);
+    frychickenText.setRect(frychickenMini.getX() + frychickenMini.getW() + offset/2, gundamStateOffsetY);
+
+    rocketMini.setTexture(gallery->rocket_mini, true);
+    rocketMini.setRect(frychickenText.getX() + frychickenText.getW() + offset, gundamStateOffsetY);
+    rocketText.setText(to_string(rocketCount));
+    rocketText.setColor(TEXT_COLOR);
+    rocketText.setRect(rocketMini.getX() + rocketMini.getW() + offset/2, gundamStateOffsetY);
 
     ifstream fin("./assets/data/players.txt");
 

@@ -14,7 +14,7 @@ const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const double BOSS_TURN_DELAY = 1.2;
 
 const int ROCK_FALL_WAVE = 15;
-const int ROCK_SIDE_WAVE = 15;
+const int ROCK_SIDE_WAVE = 10;
 const int NG_ROCK_WAVE = 10;
 const double ROCK_WAVE_DELAY = 0.87654321;
 
@@ -167,10 +167,11 @@ class Game {
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
 
+    int rocketCount = 0, frychickenCount = 0;
     map<string, int> scores;
     vector<Entity> hearts;
-    Entity gundamLevelImage;
-    Text scoreText, scoreValue, gundamLevelText;
+    Entity gundamLevelImage, rocketMini, frychickenMini;
+    Text scoreText, scoreValue, gundamLevelText, frychickenText, rocketText;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);

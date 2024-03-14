@@ -20,7 +20,7 @@ enum EntityType {
     TEXT,
     SHIELD,
     HEART,
-    GUNDAM_LEVEL,
+    GUNDAM_STATE,
     FRY_CHICKEN,
     BOSS_HEALTH_BAR,
 };
