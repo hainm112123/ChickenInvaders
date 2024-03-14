@@ -96,12 +96,15 @@ void Gundam::handleBullet(SDL_Renderer *renderer, const vector<pair<double, doub
         if (bullet->getIsMove()) {
             bullet->render(renderer);
             double target_x = -oo, target_y = -oo;
+            double min_dist = oo;
 //            cout << bullet->Type() << "\n";
             if (bullet->Type() == GUNDAM_AUTO_AIM) {
                 for (auto &pos: enemy_positions) {
-                    if (dist(pos.first, pos.second, bullet->getEntity()->get_act_x(), bullet->getEntity()->get_act_y())) {
+                    double current_dist = dist(pos.first, pos.second, bullet->getEntity()->get_act_x(), bullet->getEntity()->get_act_y());
+                    if (current_dist < min_dist) {
                         target_x = pos.first;
                         target_y = pos.second;
+                        min_dist = current_dist;
                     }
 //                    cout << pos.first << " " << pos.second << "\n";
                 }

@@ -20,10 +20,14 @@ void Bullet::setEntity(SDL_Rect rect, double _speed, Texture texture) {
 
 void Bullet::render(SDL_Renderer *renderer) {
 //    cout << entity.getX() << " " << entity.getY() << "\n";
-    entity.render(renderer);
+    entity.render(renderer, 1);
 }
 
 void Bullet::handleGundamBullet(double target_x, double target_y) {
+//    if (target_x != -oo && target_y != -oo) {
+//        cout << target_x << " " << target_y << " " << entity.get_act_x() << " " << entity.get_act_y() << "\n";
+//        cout << dist(target_x, target_y, entity.get_act_x(), entity.get_act_y()) << "\n";
+//    }
     if (target_x != -oo && target_y != -oo && dist(target_x, target_y, entity.get_act_x(), entity.get_act_y()) < MAX_AUTO_AIM_DISTANCE) {
         double dist = sqrt(sqr(target_x - entity.getX()) + sqr(target_y - entity.getY()));
         double v_x = abs(speed) * (target_x - entity.getX()) / dist;

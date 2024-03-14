@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cmath>
+#include <valarray>
 
 #include <SDL.h>
 

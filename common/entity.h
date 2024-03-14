@@ -69,6 +69,9 @@ public:
     double get_act_y() const {
         return y;
     }
+    pair<double, double> getStep() const {
+        return make_pair(step_x, step_y);
+    }
 
     void setRect(int _x, int _y);
     void setRect(SDL_Rect _rect);

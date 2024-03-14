@@ -455,7 +455,7 @@ void Game::handleGameEvent() {
     //...............................rock..........................................
     for (Rock *rock: rocks) if (rock->isActive()) {
         if (gundam.isAlive() && rock->collisionWith(*gundam.getEntity())) {
-//            gundamDead();
+            gundamDead();
         }
 
         set<Bullet*> gundamBullets = gundam.getBullets();

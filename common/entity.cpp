@@ -118,6 +118,16 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {ind * w, 0, w, h};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
+    else if (type == BULLET) {
+        rect.w = texture.w; rect.h = texture.h;
+        if (step_x != 0) {
+            double deg = atan2(step_x, -step_y) * 180 / M_PI;
+            SDL_RenderCopyEx(renderer, texture.texture, NULL, &rect, deg, NULL, SDL_FLIP_NONE);
+        }
+        else {
+            SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
+        }
+    }
     else {
         rect.w = texture.w; rect.h = texture.h;
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
