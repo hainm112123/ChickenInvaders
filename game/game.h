@@ -35,6 +35,9 @@ const double GUNDAM_REVIVE_TIME = 2;
 const double GUNDAM_SHIELD_DURATION = 3;
 const double GUNDAM_LASER_DURATION = 15;
 
+const int CHICKENS_TO_LEVEL_UP = 30;
+const int BOSS_TO_NEW_WEAPON = 1;
+
 enum GameStatus {
     GAME_STOP = 0,
     GAME_INITALIZING,
@@ -137,7 +140,7 @@ class Game {
 
     bool roundWon;
     int width, height;
-    int score, round, NG = 0;
+    int score, round, NG = 0, game_difficulty;
     GameStatus status;
     GameDifficulty difficultyState;
     GameAudio audioState;

@@ -14,6 +14,9 @@ const int GUNDAM_WIDTH = 65;
 const int GUNDAM_HEIGHT = 67;
 const double GUNDAM_SPEED = 600;
 
+const int MAX_GUNDAM_LEVEL = 10;
+const int NUMBER_OF_BULLET_FORM = 4;
+
 enum GundamMove {
     GUNDAM_MOVE_UP = 0,
     GUNDAM_MOVE_LEFT,
@@ -41,7 +44,7 @@ class Gundam {
 
     vector<WeaponType> weapons;
     int currentWeaponID;
-    int level;
+    int level, bullet_form;
     Entity shield;
     Entity laser;
     bool laserOn = false;

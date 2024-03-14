@@ -43,7 +43,7 @@ class Chicken {
     ChickenMoveState moveState;
 
 public:
-    Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int NG = 0);
+    Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int game_difficulty = 0);
 
     Entity* getEntity() {
         return &entity;

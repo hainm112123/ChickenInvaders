@@ -9,7 +9,7 @@ Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGH
 //    weapons.push_back(GUNDAM_AUTO_AIM);
 //    weapons.push_back(GUNDAM_BORON);
 //    weapons.push_back(GUNDAM_NEUTRON);
-    level = 0;
+    level = bullet_form = 0;
     currentWeaponID = 0;
 
     entity.setTexture(gallery->gundams[getCurrentWeapon()], true);
@@ -67,7 +67,8 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
             Bullet *bullet = new Bullet(getCurrentWeapon());
-            Texture texture = game->getGallery()->gundamWeapons[getCurrentWeapon()][level];
+            bullet_form = min(level, NUMBER_OF_BULLET_FORM);
+            Texture texture = game->getGallery()->gundamWeapons[getCurrentWeapon()][bullet_form];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
             bullets.insert(bullet);
@@ -159,7 +160,7 @@ int Gundam::getBulletDamage() {
 }
 
 void Gundam::levelUp() {
-    level = min(level + 1, 3);
+    level = min(level + 1, MAX_GUNDAM_LEVEL);
 }
 
 void Gundam::setLaserOn(bool _laserOn) {
@@ -178,7 +179,7 @@ void Gundam::reset() {
     weapons.clear();
     bullets.clear();
     weapons.push_back(GUNDAM_BLASTER);
-    level = 0;
+    level = bullet_form = 0;
     currentWeaponID = 0;
     laserOn = false;
 

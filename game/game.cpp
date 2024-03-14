@@ -53,24 +53,26 @@ void Game::init() {
     bossHP = 0;
     rockWaveTimer.deactive();
 
+    game_difficulty = (NG + difficultyState);
+
     if (round == ROCK_SIDE_ROUND) {
-        rockWaveCount = ROCK_SIDE_WAVE + NG * NG_ROCK_WAVE;
+        rockWaveCount = ROCK_SIDE_WAVE + game_difficulty * NG_ROCK_WAVE;
         rockWaveTimer.startCountdown();
     }
     else if (round == ROCK_FALL_ROUND) {
-        rockWaveCount = ROCK_FALL_WAVE + NG * NG_ROCK_WAVE;
+        rockWaveCount = ROCK_FALL_WAVE + game_difficulty * NG_ROCK_WAVE;
         rockWaveTimer.startCountdown();
     }
     else {
         int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
         int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
         int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
-        int numberOfBullet = (level ? perRow * 2: perRow) * (NG * 2 + 1);
+        int numberOfBullet = (level ? perRow * 2: perRow) * (game_difficulty * 2 + 1);
 
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet(CHICKEN_EGG));
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
-            Chicken *chicken = new Chicken(col, row, level, NG);
+            Chicken *chicken = new Chicken(col, row, level, game_difficulty);
 //            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
             if (round == BOSS_ROUND) {
                 chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel() + i]);
@@ -143,7 +145,7 @@ void Game::process() {
 
     //...............................rock init..............................................
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
-        int n = 10 + NG * 8;
+        int n = 10 + game_difficulty * 8;
         int H_OFFSET = 700;
         int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
         for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
@@ -152,18 +154,18 @@ void Game::process() {
                 x = Rand(L * i - 100, L * (i + 1) + 100) ;
                 y = -50;
                 step_x = 0;
-                step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + NG * NG_ROCK_SPEED;
+                step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + game_difficulty * NG_ROCK_SPEED;
             }
             else {
                 x = -50;
                 y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
-                step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + NG * NG_ROCK_SPEED;
-                step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + NG * NG_ROCK_SPEED;
+                step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + game_difficulty * NG_ROCK_SPEED;
+                step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + game_difficulty * NG_ROCK_SPEED;
             }
             int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
             Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
             rock->setStep(step_x, step_y);
-            rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * NG);
+            rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * game_difficulty);
             rock->setActive(true);
             rocks.insert(rock);
 //                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
@@ -518,10 +520,10 @@ void Game::chickenDead(Chicken *chicken) {
     addExplosion(chicken->getEntity()->getRect(), chicken->getLevel());
     int chickenLevel = chicken->getLevel();
     int killed = (++ killedChickenCount[chickenLevel]);
-    if (chickenLevel == 0 && killed % 30 == 0) {
+    if (chickenLevel == 0 && killed % CHICKENS_TO_LEVEL_UP == 0) {
         dropUpgrade(LEVEL_UP);
     }
-    if (chickenLevel == 1) {
+    if (chickenLevel == 1 && killed % BOSS_TO_NEW_WEAPON == 0) {
         dropUpgrade(NEW_WEAPON);
     }
 
