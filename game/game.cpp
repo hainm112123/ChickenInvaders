@@ -151,6 +151,7 @@ void Game::process_gundam() {
 void Game::process_enemy() {
     enemy_positions.clear();
 
+    //...............rock.....................................
     for (Rock *rock: rocks) {
         if (rock->isActive()) {
             rock->handleMove();
@@ -162,6 +163,7 @@ void Game::process_enemy() {
         }
     }
 
+    //.......................chicken......................................
     topChicken = bottomChicken = leftChicken = rightChicken = nullptr;
 
     if (!chickens.empty()) {
@@ -273,6 +275,23 @@ void Game::process_enemy() {
             }
 
             chicken->setMoveState(moveState);
+        }
+    }
+
+    //....................fried chicken..................................
+
+    if (!fried_chickens.empty()) {
+        auto it = fried_chickens.begin();
+        for (FriedChicken *fried_chicken: fried_chickens) {
+            auto next_it = it;
+            next_it ++;
+            if (!fried_chicken->handleMove()) {
+                fried_chickens.erase(it);
+            }
+            else {
+                fried_chicken->render(renderer);
+            }
+            it = next_it;
         }
     }
 }
@@ -552,6 +571,15 @@ void Game::gundamDead() {
     }
 }
 
+void Game::addFriedChicken(double x, double y, int level) {
+    int cnt = NUMBER_OF_FRIED_CHICKEN[level];
+    while (cnt --) {
+        FriedChicken *fried_chicken = new FriedChicken(x, y);
+        fried_chicken->setTexture(gallery->fried_chicken);
+        fried_chickens.push_back(fried_chicken);
+    }
+}
+
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
     if (chicken->getLevel() == 0) {
@@ -562,6 +590,8 @@ void Game::chickenDead(Chicken *chicken) {
     }
 
     addExplosion(chicken->getEntity()->getRect(), chicken->getLevel());
+    addFriedChicken(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y(), chicken->getLevel());
+
     int chickenLevel = chicken->getLevel();
     int killed = (++ killedChickenCount[chickenLevel]);
     if (chickenLevel == 0 && killed % CHICKENS_TO_LEVEL_UP == 0) {

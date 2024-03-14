@@ -1,6 +1,8 @@
 #ifndef GAME_H_INCLUDED
 #define GAME_H_INCLUDED
 
+#include<list>
+
 #include "../common/common.h"
 #include "../gundam/gundam.h"
 #include "../Painter.h"
@@ -8,6 +10,7 @@
 #include "../gundam/upgrade.h"
 #include "../enemy/rock.h"
 #include "text.h"
+#include "../enemy/fried_chicken.h"
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
@@ -163,6 +166,7 @@ class Game {
     int bossHP = 0;
     int rockWaveCount = 0;
     vector<pair<double, double>>enemy_positions;
+    list<FriedChicken*> fried_chickens;
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
@@ -211,6 +215,7 @@ public:
     void setRoundWon();
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect, int level);
+    void addFriedChicken(double x, double y, int level);
     void gundamDead();
     void chickenDead(Chicken *chicken);
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);

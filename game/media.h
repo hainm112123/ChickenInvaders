@@ -14,6 +14,7 @@ public:
     Texture background, menu, menu_settings, menu_control;
     Texture laser, levelUp, shield, heart, level, rocket_mini, fry_chicken_mini;
     Texture bossHealthBar, bossHealthBorder;
+    Texture fried_chicken;
 
     Gallery(Painter *_painter);
     ~Gallery();

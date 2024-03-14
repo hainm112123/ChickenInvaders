@@ -26,6 +26,7 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(level.texture);
     SDL_DestroyTexture(rocket_mini.texture);
     SDL_DestroyTexture(fry_chicken_mini.texture);
+    SDL_DestroyTexture(fried_chicken.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -141,6 +142,8 @@ void Gallery::loadGamePictures() {
     level = painter->loadTexture("./assets/graphics/thunder.png");
     rocket_mini = painter->loadTexture("./assets/graphics/rocket_mini.png");
     fry_chicken_mini = painter->loadTexture("./assets/graphics/fried-chicken-mini.png");
+
+    fried_chicken = painter->loadTexture("./assets/graphics/fried-chicken.png");
 }
 
 //.............................Media............................................

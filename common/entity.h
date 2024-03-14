@@ -21,7 +21,7 @@ enum EntityType {
     SHIELD,
     HEART,
     GUNDAM_STATE,
-    FRY_CHICKEN,
+    FRIED_CHICKEN,
     BOSS_HEALTH_BAR,
 };
 
@@ -75,6 +75,7 @@ public:
         return make_pair(step_x, step_y);
     }
 
+    void setPosition(double _x, double _y);
     void setRect(int _x, int _y);
     void setRect(SDL_Rect _rect);
     void setStep(double _step_x, double _step_y);

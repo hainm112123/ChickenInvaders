@@ -17,14 +17,22 @@ void Entity::setRect(int _x, int _y) {
 void Entity::setRect(SDL_Rect _rect) {
     rect = _rect;
 }
+
+void Entity::setPosition(double _x, double _y) {
+    x = _x; y = _y;
+    rect.x = x; rect.y = y;
+}
+
 void Entity::setStep(double _step_x, double _step_y) {
     step_x = _step_x;
     step_y = _step_y;
 }
 void Entity::updateStep(double det_x, double det_y) {
+//    cerr << det_x << " " << det_y << "\n";
     step_x += det_x;
     step_y += det_y;
 }
+
 void Entity::_move(bool isInsideScreen) {
     double det_x = step_x * TimeManager::Instance()->getElapsedTime();
     double det_y = step_y * TimeManager::Instance()->getElapsedTime();
@@ -71,7 +79,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         if (currentTime >= SECOND_PER_PICTURE * n) currentTime -= SECOND_PER_PICTURE * n;
         SDL_RenderCopy(renderer, textures[int(currentTime / SECOND_PER_PICTURE)].texture, NULL, &rect);
     }
-    else if (type == MENU || type == SHIELD || type == HEART) {
+    else if (type == MENU || type == SHIELD || type == HEART || type == FRIED_CHICKEN) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {
