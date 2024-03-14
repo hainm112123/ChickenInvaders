@@ -208,15 +208,23 @@ void Game::process_enemy() {
         if (bossTurnTimer.timeIsUp()) {
             for (Chicken *chicken: chickens) {
                 ChickenMoveState moveState = chicken->getMoveState();
-                if (Rand(0, 100) < 50) {
+                int H_Rate = 50, V_Rate = 50;
+                if (gundam.getEntity()->getX() < chicken->getEntity()->getX()) {
+                    H_Rate = 80;
+                }
+                else {
+                    H_Rate = 30;
+                }
+
+                if (Rand(0, 100) < H_Rate) {
                     moveState.goLeft = 1;
                     moveState.goRight = 0;
                 }
                 else {
                     moveState.goRight = 1;
-                    moveState.goLeft = 1;
+                    moveState.goLeft = 0;
                 }
-                if (Rand(0, 100) < 50) {
+                if (Rand(0, 100) < V_Rate) {
                     moveState.goUp = 1;
                     moveState.goDown = 0;
                 }
