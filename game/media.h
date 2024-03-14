@@ -10,9 +10,9 @@ class Gallery {
     Painter *painter;
 public:
     vector<vector<Texture>> gundamWeapons, chickens;
-    vector<Texture> eggs, gundams, newWeapons, rocks;
+    vector<Texture> eggs, gundams, newWeapons, rocks, expolosions;
     Texture background, menu, menu_settings, menu_control;
-    Texture laser, levelUp, expolosion, shield, heart;
+    Texture laser, levelUp, shield, heart;
     Texture bossHealthBar, bossHealthBorder;
 
     Gallery(Painter *_painter);

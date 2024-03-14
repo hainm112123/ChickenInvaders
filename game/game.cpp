@@ -67,7 +67,7 @@ void Game::init() {
         int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
         int numberOfBullet = (level ? perRow * 2: perRow) * (NG * 2 + 1);
 
-        for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet());
+        for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet(CHICKEN_EGG));
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
             Chicken *chicken = new Chicken(col, row, level, NG);
@@ -130,6 +130,8 @@ void Game::process() {
     scoreValue.renderText(fontRoundText, renderer);
 
     // ............................gundam.......................................
+    vector<pair<double, double>>enemy_positions;
+
     if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
     if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
         if (gundam.revive()) gundamShieldTimer.startCountdown();
@@ -137,7 +139,6 @@ void Game::process() {
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
     gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
-    gundam.handleBullet(renderer);
 
 
     //...............................rock init..............................................
@@ -200,10 +201,12 @@ void Game::process() {
     }
 
     //......................................rock....................................................................................
+
     for (Rock *rock: rocks) {
         if (rock->isActive()) {
             rock->handleMove();
             rock->render(renderer);
+            enemy_positions.push_back(make_pair(rock->get_act_x(), rock->get_act_y()));
         }
         else {
             rocks.erase(rock);
@@ -211,7 +214,6 @@ void Game::process() {
     }
 
     //................................chicken.........................................
-    float chicken_step_x = 0, chicken_step_y = 0;
     topChicken = bottomChicken = leftChicken = rightChicken = nullptr;
 
     if (!chickens.empty()) {
@@ -229,6 +231,7 @@ void Game::process() {
 
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
+            enemy_positions.push_back(make_pair(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y()));
             chicken->_move();
 
             const int rate = chicken->getLevel() == 0 ? 1 : 100;
@@ -325,7 +328,7 @@ void Game::process() {
     }
 
     //.............................explosion..................................................................
-    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE_FASTER * NUMBER_OF_EXPLOSION_PIC) explosions.pop_front();
+    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE * NUMBER_OF_EXPLOSION_PIC) explosions.pop_front();
     for (auto *explosion: explosions) explosion->render(renderer);
 
     handleGameEvent();
@@ -347,6 +350,9 @@ void Game::process() {
         bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
         bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
     }
+
+    //gundam bullet
+    gundam.handleBullet(renderer, enemy_positions);
 
     SDL_RenderPresent(renderer);
     SDL_Delay(1);
@@ -449,21 +455,25 @@ void Game::handleGameEvent() {
     //...............................rock..........................................
     for (Rock *rock: rocks) if (rock->isActive()) {
         if (gundam.isAlive() && rock->collisionWith(*gundam.getEntity())) {
-            gundamDead();
+//            gundamDead();
         }
 
         set<Bullet*> gundamBullets = gundam.getBullets();
+        bool alive = true;
         for (Bullet *bullet: gundamBullets) {
             if (rock->collisionWith(*(bullet->getEntity()))) {
-                rock->receiveDamage(gundam.getBulletDamage());
+                if (!rock->receiveDamage(gundam.getBulletDamage())) alive = false;
                 gundam.removeBullet(bullet);
                 playChunk(media->bulletRock);
             }
         }
 
-        if (gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
-            rock->receiveDamage(gundamLaserDamage);
+        if (alive && gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
+            if (rock->receiveDamage(gundamLaserDamage)) alive = false;
             playChunk(media->bulletRock);
+        }
+        if (!alive) {
+            addExplosion(rock->getRect(), 0);
         }
     }
 
@@ -472,8 +482,8 @@ void Game::handleGameEvent() {
     }
 }
 
-void Game::addExplosion(SDL_Rect rect) {
-    Texture texture = gallery->expolosion;
+void Game::addExplosion(SDL_Rect rect, int level) {
+    Texture texture = gallery->expolosions[level];
 //    int w = texture.w / NUMBER_OF_EXPLOSION_PIC, h = texture.h;
 //    int center_x = (rect.x + rect.w/2), center_y = (rect.y + rect.h/2);
 //    cout << center_x - w/2 << " " << center_y - h/2 << "\n";
@@ -487,7 +497,7 @@ void Game::gundamDead() {
         return;
     }
     gundam.dead();
-    addExplosion(gundam.getEntity()->getRect());
+    addExplosion(gundam.getEntity()->getRect(), 1);
     playChunk(media->explosions[0]);
     gundamReviveTimer.startCountdown();
     hearts.pop_back();
@@ -505,7 +515,7 @@ void Game::chickenDead(Chicken *chicken) {
         playChunk(media->explosions[1]);
     }
 
-    addExplosion(chicken->getEntity()->getRect());
+    addExplosion(chicken->getEntity()->getRect(), chicken->getLevel());
     int chickenLevel = chicken->getLevel();
     int killed = (++ killedChickenCount[chickenLevel]);
     if (chickenLevel == 0 && killed % 30 == 0) {

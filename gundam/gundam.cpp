@@ -5,7 +5,8 @@
 Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
     lives = 3;
     alive = true;
-    weapons.push_back(GUNDAM_BLASTER);
+    weapons.push_back(GUNDAM_AUTO_AIM);
+//    weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_BORON);
 //    weapons.push_back(GUNDAM_NEUTRON);
     level = 0;
@@ -65,7 +66,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
-            Bullet *bullet = new Bullet();
+            Bullet *bullet = new Bullet(getCurrentWeapon());
             Texture texture = game->getGallery()->gundamWeapons[getCurrentWeapon()][level];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
@@ -90,11 +91,22 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     }
 }
 
-void Gundam::handleBullet(SDL_Renderer *renderer) {
+void Gundam::handleBullet(SDL_Renderer *renderer, const vector<pair<double, double>> &enemy_positions) {
     for (Bullet *bullet: bullets) {
         if (bullet->getIsMove()) {
             bullet->render(renderer);
-            bullet->handleGundamBullet();
+            double target_x = -oo, target_y = -oo;
+//            cout << bullet->Type() << "\n";
+            if (bullet->Type() == GUNDAM_AUTO_AIM) {
+                for (auto &pos: enemy_positions) {
+                    if (dist(pos.first, pos.second, bullet->getEntity()->get_act_x(), bullet->getEntity()->get_act_y())) {
+                        target_x = pos.first;
+                        target_y = pos.second;
+                    }
+//                    cout << pos.first << " " << pos.second << "\n";
+                }
+            }
+            bullet->handleGundamBullet(target_x, target_y);
         }
         else {
             bullets.erase(bullet);

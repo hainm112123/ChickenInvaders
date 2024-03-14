@@ -10,6 +10,7 @@ enum EntityType {
     CHICKEN,
     CHICKEN_BOSS,
     BULLET,
+    ROCKET,
     LASER,
     LEVEL_UP,
     NEW_WEAPON,
@@ -61,6 +62,12 @@ public:
     }
     double CurrentTime() const {
         return currentTime;
+    }
+    double get_act_x() const {
+        return x;
+    }
+    double get_act_y() const {
+        return y;
     }
 
     void setRect(int _x, int _y);

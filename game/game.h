@@ -200,7 +200,7 @@ public:
 
     void setRoundWon();
     void dropUpgrade(EntityType type);
-    void addExplosion(SDL_Rect rect);
+    void addExplosion(SDL_Rect rect, int level);
     void gundamDead();
     void chickenDead(Chicken *chicken);
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);

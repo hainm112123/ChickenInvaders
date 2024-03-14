@@ -13,23 +13,27 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 #include <SDL.h>
 
 #define CLOCK_NOW chrono::system_clock::now
 #define _size(x) (int((x).size()))
+#define sqr(x) ((x) * (x))
 
 using namespace std;
 
 typedef chrono::system_clock::time_point Time;
 typedef chrono::duration<double> ElapsedTime;
 
+const int oo = int(1e9);
+
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 const int GAME_WIDTH = 1280;
 const int GAME_HEIGHT = 4096;
 
-const int NUMBER_OF_EXPLOSION_PIC = 8;
+const int NUMBER_OF_EXPLOSION_PIC = 4;
 const double SECOND_PER_PICTURE = 0.06;
 const double SECOND_PER_PICTURE_FASTER = 0.04;
 
@@ -44,6 +48,8 @@ const int HEALTH_BORDER_WIDTH = 277;
 const int HEALTH_BORDER_HEIGHT = 87;
 
 int Rand(int l, int r);
+
+double dist(double x, double y, double u, double v);
 
 struct Texture {
     SDL_Texture *texture;

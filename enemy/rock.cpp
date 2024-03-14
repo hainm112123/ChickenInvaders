@@ -7,9 +7,10 @@ void Rock::setHP(double _hp) {
     hp = _hp;
 }
 
-void Rock::receiveDamage(double dmg) {
+bool Rock::receiveDamage(double dmg) {
     hp -= dmg;
-    if (hp < 0) setActive(false);
+    if (hp <= 0) setActive(false);
+    return hp > 0;
 }
 
 void Rock::handleMove() {

@@ -2,6 +2,7 @@
 #define GUNDAM_H_INCLUDED
 
 #include<set>
+#include<vector>
 
 #include "../weapon/bullet.h"
 #include "../common/common.h"
@@ -85,7 +86,7 @@ public:
 
     void _move();
     void control(SDL_Event event, Timer &gundamLaserTimer);
-    void handleBullet(SDL_Renderer *renderer);
+    void handleBullet(SDL_Renderer *renderer, const vector<pair<double, double>> &enemy_positions);
     void removeBullet(Bullet *bullet);
     void dead();
     bool revive();

@@ -8,22 +8,26 @@ enum WeaponType {
     GUNDAM_BLASTER = 0,
     GUNDAM_BORON,
     GUNDAM_NEUTRON,
+    GUNDAM_AUTO_AIM,
     GUNDAM_LASER,
 
     CHICKEN_EGG,
 };
 
-const double GUNDAM_BULLET_DAMAGE[] = {56, 40, 81};
-const double GUNDAM_BULLET_SPEED[] = {800, 1500, 600};
-const double GUNDAM_BULLET_UPGRADE[] = {25, 16, 49};
+const double GUNDAM_BULLET_DAMAGE[] = {56, 40, 81, 144};
+const double GUNDAM_BULLET_SPEED[] = {800, 1500, 600, 196};
+const double GUNDAM_BULLET_UPGRADE[] = {25, 16, 49, 64};
+
+const double MAX_AUTO_AIM_DISTANCE = 300;
 
 class Bullet {
     Entity entity;
     WeaponType type;
     bool isMove;
+    double speed;
 public:
-    Bullet();
-    Bullet(Entity _entity, WeaponType _type = GUNDAM_BLASTER);
+    Bullet(WeaponType _type);
+    Bullet(Entity _entity, WeaponType _type);
 
     bool getIsMove() const {
         return isMove;
@@ -32,10 +36,14 @@ public:
     Entity* getEntity() {
         return &entity;
     }
-    void setEntity(SDL_Rect rect, double speed, Texture texture);
+    WeaponType Type() const {
+        return type;
+    }
+
+    void setEntity(SDL_Rect rect, double _speed, Texture texture);
 
     void render(SDL_Renderer *renderer);
-    void handleGundamBullet();
+    void handleGundamBullet(double target_x = -oo, double target_y = -oo);
     void handleEnemyBullet();
 };
 

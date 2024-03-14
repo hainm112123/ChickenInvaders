@@ -31,7 +31,7 @@ public:
     }
     void setActive(bool _active);    void setHP(double _hp);
 
-    void receiveDamage(double dmg);
+    bool receiveDamage(double dmg);
     void handleMove();
 };
 

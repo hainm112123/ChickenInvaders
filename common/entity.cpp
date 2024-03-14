@@ -100,7 +100,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 break;
             case EXPLOSION:
                 n = NUMBER_OF_EXPLOSION_PIC;
-                perPic = SECOND_PER_PICTURE_FASTER;
+                perPic = SECOND_PER_PICTURE;
                 break;
             default:
                 break;

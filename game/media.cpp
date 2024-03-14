@@ -12,10 +12,10 @@ Gallery::~Gallery() {
     for (Texture texture: gundams) SDL_DestroyTexture(texture.texture);
     for (Texture texture: newWeapons) SDL_DestroyTexture(texture.texture);
     for (Texture texture: rocks) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: expolosions) SDL_DestroyTexture(texture.texture);
     SDL_DestroyTexture(laser.texture);
     SDL_DestroyTexture(background.texture);
     SDL_DestroyTexture(levelUp.texture);
-    SDL_DestroyTexture(expolosion.texture);
     SDL_DestroyTexture(menu.texture);
     SDL_DestroyTexture(shield.texture);
     SDL_DestroyTexture(menu_settings.texture);
@@ -87,6 +87,12 @@ void Gallery::loadGamePictures() {
             painter->loadTexture("./assets/graphics/neutron2.png"),
             painter->loadTexture("./assets/graphics/neutron3.png"),
         },
+        {
+            painter->loadTexture("./assets/graphics/aim-laser-0.png"),
+            painter->loadTexture("./assets/graphics/aim-laser-1.png"),
+            painter->loadTexture("./assets/graphics/aim-laser-2.png"),
+            painter->loadTexture("./assets/graphics/aim-laser-3.png"),
+        },
     };
     eggs = {
         painter->loadTexture("./assets/graphics/egg.png"),
@@ -96,16 +102,20 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./assets/graphics/player-red-1.png"),
         painter->loadTexture("./assets/graphics/player-blue-1.png"),
         painter->loadTexture("./assets/graphics/player-green-1.png"),
+        painter->loadTexture("./assets/graphics/player-black.png"),
     };
     rocks = {
         painter->loadTexture("./assets/graphics/asteroid1.png"),
         painter->loadTexture("./assets/graphics/asteroid2.png"),
         painter->loadTexture("./assets/graphics/asteroid3.png"),
     };
+    expolosions = {
+        painter->loadTexture("./assets/graphics/smoke.png"),
+        painter->loadTexture("./assets/graphics/explosion.png"),
+    };
 
     laser = painter->loadTexture("./assets/graphics/texture_laser.png");
     background = painter->loadTexture("./assets/graphics/CI1Space_1.png");
-    expolosion = painter->loadTexture("./assets/graphics/explosion.png");
 
     shield = painter->loadTexture("./assets/graphics/spr_shield.png");
     levelUp = painter->loadTexture("./assets/graphics/level_up.png");
@@ -113,7 +123,8 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./assets/graphics/gift0.png"),
         painter->loadTexture("./assets/graphics/gift1.png"),
         painter->loadTexture("./assets/graphics/gift2.png"),
-        painter->loadTexture("./assets/graphics/gift_laser.png")
+        painter->loadTexture("./assets/graphics/GIFTUtensilPoker.png"),
+        painter->loadTexture("./assets/graphics/gift_laser.png"),
     };
 
     menu = painter->loadTexture("./assets/graphics/menu.png");
@@ -150,6 +161,7 @@ void Media::loadMedia() {
         Mix_LoadWAV("./assets/sound/blaster.wav"),
         Mix_LoadWAV("./assets/sound/boron.wav"),
         Mix_LoadWAV("./assets/sound/neutron.wav"),
+        Mix_LoadWAV("./assets/sound/laser1.wav"),
     };
     chickens = {
         Mix_LoadWAV("./assets/sound/ChickenHit.wav"),
