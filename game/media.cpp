@@ -126,6 +126,7 @@ void Gallery::loadGamePictures() {
         painter->loadTexture("./assets/graphics/GIFTUtensilPoker.png"),
         painter->loadTexture("./assets/graphics/gift_laser.png"),
     };
+    level = painter->loadTexture("./assets/graphics/thunder.png");
 
     menu = painter->loadTexture("./assets/graphics/menu.png");
     menu_settings = painter->loadTexture("./assets/graphics/CI1Space.png");

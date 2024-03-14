@@ -9,7 +9,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(gallery),
-    bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR)
+    bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
+    gundamLevelImage(GUNDAM_LEVEL)
 {
     media = new Media();
 
@@ -105,35 +106,25 @@ bool touchRight(Chicken *chicken) {
     return chicken->getEntity()->getX() > SCREEN_WIDTH - chicken->getEntity()->getW();
 }
 
-void Game::process() {
-    if (status != GAME_PLAYING) return;
-
-    while (SDL_PollEvent(event)) {
-        if (event->type == SDL_QUIT) {
-            setGameStatus(GAME_STOP);
-            return;
-        }
-        if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-            gundam.control(*event, gundamLaserTimer);
-        }
-    }
-
-    painter->clearWithBgColor(WHITE_COLOR);
-
-
-    (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
-    if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
-    background.render(renderer, scrolling);
-
-    //...................heart and score........................................
+void Game::process_game_state() {
     for (auto &heart: hearts) heart.render(renderer);
     scoreText.renderText(fontGame, renderer);
     scoreValue.setText(to_string(score));
     scoreValue.renderText(fontRoundText, renderer);
 
-    // ............................gundam.......................................
-    vector<pair<double, double>>enemy_positions;
+    gundamLevelImage.render(renderer);
+    gundamLevelText.setText(to_string(gundam.getLevel()));
+    gundamLevelText.renderText(fontGame, renderer);
 
+    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
+        int currentBossHP = 0;
+        for (Chicken *chicken: chickens) currentBossHP += chicken->getHP();
+        bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
+        bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
+    }
+}
+
+void Game::process_gundam() {
     if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
     if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
         if (gundam.revive()) gundamShieldTimer.startCountdown();
@@ -141,68 +132,10 @@ void Game::process() {
     gundam._move();
 //    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
     gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
+}
 
-
-    //...............................rock init..............................................
-    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
-        int n = 10 + game_difficulty * 8;
-        int H_OFFSET = 700;
-        int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
-        for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
-            int x, y, step_x, step_y;
-            if (round == ROCK_FALL_ROUND) {
-                x = Rand(L * i - 100, L * (i + 1) + 100) ;
-                y = -50;
-                step_x = 0;
-                step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + game_difficulty * NG_ROCK_SPEED;
-            }
-            else {
-                x = -50;
-                y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
-                step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + game_difficulty * NG_ROCK_SPEED;
-                step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + game_difficulty * NG_ROCK_SPEED;
-            }
-            int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
-            Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
-            rock->setStep(step_x, step_y);
-            rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * game_difficulty);
-            rock->setActive(true);
-            rocks.insert(rock);
-//                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
-        }
-        rockWaveCount --;
-        rockWaveTimer.startCountdown();
-    }
-
-    //..............................round...........................................
-    if (roundWon) {
-//        cout << initTimer.timeIsUp() << "\n";
-        if (initTimer.timeIsUp()) {
-            if (round == BOSS_ROUND) {
-//                setGameStatus(GAME_WON);
-//                return;
-                NG ++;
-            }
-//            cerr << "Start init\n";
-            round = (round % ROUND_COUNT) + 1;
-            init();
-        }
-        else {
-            int nextRound = NG * ROUND_COUNT + round + 1;
-            roundTitle.setText("Wave " + to_string(nextRound) + ": ");
-            roundTitle.renderText(fontRoundTitle, renderer);
-            roundText.setText(ROUND_TEXT[(round % ROUND_COUNT) + 1]);
-            roundText.renderText(fontRoundText, renderer);
-
-            int W = roundTitle.getW() + roundText.getW();
-            roundTitle.setRect(SCREEN_WIDTH/2 - W/2, SCREEN_HEIGHT/2 - roundTitle.getH()/2 - 100);
-            roundText.setRect(roundTitle.getX() + roundTitle.getW(), SCREEN_HEIGHT/2 - roundText.getH()/2 - 100);
-            roundTitle.renderText(fontRoundTitle, renderer);
-            roundText.renderText(fontRoundText, renderer);
-        }
-    }
-
-    //......................................rock....................................................................................
+void Game::process_enemy() {
+    enemy_positions.clear();
 
     for (Rock *rock: rocks) {
         if (rock->isActive()) {
@@ -215,7 +148,6 @@ void Game::process() {
         }
     }
 
-    //................................chicken.........................................
     topChicken = bottomChicken = leftChicken = rightChicken = nullptr;
 
     if (!chickens.empty()) {
@@ -321,6 +253,100 @@ void Game::process() {
             chicken->setMoveState(moveState);
         }
     }
+}
+
+void Game::init_rock() {
+    if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
+        int n = 10 + game_difficulty * 8;
+        int H_OFFSET = 700;
+        int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
+        for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
+            int x, y, step_x, step_y;
+            if (round == ROCK_FALL_ROUND) {
+                x = Rand(L * i - 100, L * (i + 1) + 100) ;
+                y = -50;
+                step_x = 0;
+                step_y = Rand(MIN_ROCK_FALL_SPEED, MAX_ROCK_FALL_SPEED) + game_difficulty * NG_ROCK_SPEED;
+            }
+            else {
+                x = -50;
+                y = Rand(L * i - H_OFFSET, L * (i + 1) - H_OFFSET);
+                step_x = Rand(MIN_ROCK_SIDE_SPEED_X, MAX_ROCK_SIDE_SPEED_X) + game_difficulty * NG_ROCK_SPEED;
+                step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + game_difficulty * NG_ROCK_SPEED;
+            }
+            int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
+            Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
+            rock->setStep(step_x, step_y);
+            rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * game_difficulty);
+            rock->setActive(true);
+            rocks.insert(rock);
+//                cout << "New Rock" << rock->getX() << " " << rock->getY() << " " << rock->getW() << " " << rock->getH() << "\n";
+        }
+        rockWaveCount --;
+        rockWaveTimer.startCountdown();
+    }
+}
+
+void Game::process() {
+    if (status != GAME_PLAYING) return;
+
+    while (SDL_PollEvent(event)) {
+        if (event->type == SDL_QUIT) {
+            setGameStatus(GAME_STOP);
+            return;
+        }
+        if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
+            gundam.control(*event, gundamLaserTimer);
+        }
+    }
+
+    painter->clearWithBgColor(WHITE_COLOR);
+
+    (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
+    if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
+    background.render(renderer, scrolling);
+
+    //...................player state........................................
+
+
+
+    // ............................gundam.......................................
+    process_gundam();
+
+    //...............................rock init..............................................
+    init_rock();
+
+    //..............................round...........................................
+    if (roundWon) {
+//        cout << initTimer.timeIsUp() << "\n";
+        if (initTimer.timeIsUp()) {
+            if (round == BOSS_ROUND) {
+//                setGameStatus(GAME_WON);
+//                return;
+                NG ++;
+            }
+//            cerr << "Start init\n";
+            round = (round % ROUND_COUNT) + 1;
+            init();
+        }
+        else {
+            int nextRound = NG * ROUND_COUNT + round + 1;
+            roundTitle.setText("Wave " + to_string(nextRound) + ": ");
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.setText(ROUND_TEXT[(round % ROUND_COUNT) + 1]);
+            roundText.renderText(fontRoundText, renderer);
+
+            int W = roundTitle.getW() + roundText.getW();
+            roundTitle.setRect(SCREEN_WIDTH/2 - W/2, SCREEN_HEIGHT/2 - roundTitle.getH()/2 - 100);
+            roundText.setRect(roundTitle.getX() + roundTitle.getW(), SCREEN_HEIGHT/2 - roundText.getH()/2 - 100);
+            roundTitle.renderText(fontRoundTitle, renderer);
+            roundText.renderText(fontRoundText, renderer);
+        }
+    }
+
+    //......................................rock....................................................................................
+    //................................chicken.........................................
+    process_enemy();
 
     //................................upgrade................................................................
     for (auto *upgrade: upgrades) {
@@ -335,6 +361,7 @@ void Game::process() {
 
     handleGameEvent();
 
+    //.............................game over.......................................
     if (gundam.getLives() <= 0) {
         Text gameover("Game Over!", TEXT_COLOR);
         gameover.renderText(fontMenu, renderer, true);
@@ -346,12 +373,7 @@ void Game::process() {
     }
 
     //health bar
-    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
-        int currentBossHP = 0;
-        for (Chicken *chicken: chickens) currentBossHP += chicken->getHP();
-        bossHealthBar.render(renderer, 1ll * HEALTH_BAR_WIDTH * currentBossHP / bossHP);
-        bossHealthBorder.render(renderer, HEALTH_BORDER_WIDTH);
-    }
+    process_game_state();
 
     //gundam bullet
     gundam.handleBullet(renderer, enemy_positions);
@@ -760,16 +782,24 @@ void Game::load() {
 
     initData();
 
+    const int offset = 10;
+
     scoreText.setText("Score: ");
     scoreText.setColor(TEXT_COLOR);
     scoreText.renderText(fontGame, renderer);
-    scoreText.setRect(10, 10 + hearts.back().getH() + 5);
+    scoreText.setRect(offset, offset + hearts.back().getH() + offset/2);
     scoreValue.setText("0");
     scoreValue.setColor(TEXT_COLOR);
     scoreValue.renderText(fontRoundText, renderer);
 //    cout << scoreText.getW() << "\n";
-    scoreValue.setRect(10 + scoreText.getW(), 10 + hearts.back().getH() + 5 + scoreText.getH() - scoreValue.getH());
+    scoreValue.setRect(offset + scoreText.getW(), offset + hearts.back().getH() + offset/2 + scoreText.getH() - scoreValue.getH());
 
+    const int gundamStateOffsetY = scoreText.getY() + scoreText.getH();
+    gundamLevelImage.setTexture(gallery->level, true);
+    gundamLevelImage.setRect(offset, offset/2 + gundamStateOffsetY);
+    gundamLevelText.setText(to_string(gundam.getLevel()));
+    gundamLevelText.setColor(TEXT_COLOR);
+    gundamLevelText.setRect(gundamLevelImage.getX() + gundamLevelImage.getW() + offset/2, gundamStateOffsetY + offset/2);
 //    setGameStatus(GAME_RUNNING);
 
     ifstream fin("./assets/data/players.txt");

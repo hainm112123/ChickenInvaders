@@ -162,13 +162,15 @@ class Game {
     Entity bossHealthBar, bossHealthBorder;
     int bossHP = 0;
     int rockWaveCount = 0;
+    vector<pair<double, double>>enemy_positions;
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
 
     map<string, int> scores;
     vector<Entity> hearts;
-    Text scoreText, scoreValue;
+    Entity gundamLevelImage;
+    Text scoreText, scoreValue, gundamLevelText;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
@@ -196,9 +198,13 @@ public:
     void setGameStatus(GameStatus newStatus);
     void load();
     void init();
+    void init_rock();
     void renderMenu();
     void handleGameEvent();
     void process();
+    void process_game_state();
+    void process_enemy();
+    void process_gundam();
     void quit();
 
     void setRoundWon();

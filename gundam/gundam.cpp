@@ -67,7 +67,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
             Bullet *bullet = new Bullet(getCurrentWeapon());
-            bullet_form = min(level, NUMBER_OF_BULLET_FORM);
+            bullet_form = min(level, NUMBER_OF_BULLET_FORM - 1);
             Texture texture = game->getGallery()->gundamWeapons[getCurrentWeapon()][bullet_form];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
