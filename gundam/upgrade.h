@@ -8,11 +8,12 @@ enum UpgradeType {
     UPGRADE_ADD_BLASTER = 0,
     UPGRADE_ADD_BORON,
     UPGRADE_ADD_NEUTRON,
+    UPGRADE_ADD_AUTO_AIM_BULLET,
     UPGRADE_ADD_LASER,
     UPGRADE_LEVEL_UP,
 };
 
-const int NUMBER_OF_UPGRADE = 5;
+const int NUMBER_OF_UPGRADE = 6;
 const int UPGRADE_SPEED = 200;
 
 class Upgrade {
