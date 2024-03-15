@@ -16,7 +16,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_MUTED;
+    audioState = AUDIO_UNMUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -499,7 +499,7 @@ void Game::handleGameEvent() {
 
     //.............................upgrade.....................................................
     for (Upgrade *upgrade: upgrades) {
-        if (gundam.isAlive() && upgrade->getEntity()->collisionWith(*gundam.getEntity())) {
+        if (gundam.isAlive() && upgrade->getEntity()->collisionWith(gundam.getEntity())) {
 //            cout << "Level Up\n";
             if (upgrade->getType() == UPGRADE_LEVEL_UP) {
                 gundam.levelUp();
@@ -524,7 +524,7 @@ void Game::handleGameEvent() {
     //............................chicken...................................................
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
-            if (chicken->getEntity()->collisionWith(*gundam.getEntity())) {
+            if (chicken->getEntity()->collisionWith(gundam.getEntity())) {
                 if (gundam.isAlive()) {
                     gundamDead();
                 }
@@ -534,7 +534,7 @@ void Game::handleGameEvent() {
         set<Bullet*> currentChickenBullets = chicken->getBullets();
         if (gundam.isAlive()) {
             for (Bullet *bullet: currentChickenBullets) {
-                if (bullet->getEntity()->collisionWith(*gundam.getEntity())) {
+                if (bullet->getEntity()->collisionWith(gundam.getEntity())) {
 //                    chickenBullets.push_back(bullet);
 //                    chicken->removeBullet(bullet);
                     gundamDead();
@@ -546,7 +546,7 @@ void Game::handleGameEvent() {
         if (chicken->isAlive()) {
             set<Bullet*> gundamBullets = gundam.getBullets();
             for (Bullet *bullet: gundamBullets) {
-                if (chicken->getEntity()->collisionWith(*(bullet->getEntity()))) {
+                if (chicken->getEntity()->collisionWith((bullet->getEntity()))) {
                     bool alive = chicken->receiveDamage(gundam.getBulletDamage());
                     gundam.removeBullet(bullet);
                     if (!alive) {
@@ -568,14 +568,14 @@ void Game::handleGameEvent() {
 
     //...............................rock..........................................
     for (Rock *rock: rocks) if (rock->isActive()) {
-        if (gundam.isAlive() && rock->collisionWith(*gundam.getEntity())) {
+        if (gundam.isAlive() && rock->collisionWith(gundam.getEntity())) {
             gundamDead();
         }
 
         set<Bullet*> gundamBullets = gundam.getBullets();
         bool alive = true;
         for (Bullet *bullet: gundamBullets) {
-            if (rock->collisionWith(*(bullet->getEntity()))) {
+            if (rock->collisionWith((bullet->getEntity()))) {
                 if (!rock->receiveDamage(gundam.getBulletDamage())) alive = false;
                 gundam.removeBullet(bullet);
                 playChunk(media->bulletRock);
@@ -593,6 +593,25 @@ void Game::handleGameEvent() {
 
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount == 0 && rocks.empty() && !roundWon) {
         setRoundWon();
+    }
+
+    //...............................fried chicken................................
+    if (!fried_chickens.empty()) {
+        auto it = fried_chickens.begin();
+        for (FriedChicken *fried_chicken: fried_chickens) {
+            auto next_it = it;
+            next_it ++;
+            if (fried_chicken->collisionWith(gundam.getEntity())) {
+                fried_chickens.erase(it);
+                removeFriedChicken(fried_chicken);
+                frychickenCount ++;
+                if (frychickenCount >= FRIED_CHICKEN_TO_ROCKET) {
+                    frychickenCount -= FRIED_CHICKEN_TO_ROCKET;
+                    rocketCount ++;
+                }
+            }
+            it = next_it;
+        }
     }
 }
 

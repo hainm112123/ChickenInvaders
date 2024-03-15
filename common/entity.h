@@ -83,6 +83,7 @@ public:
 
     bool isInsideScreen();
     void _move(bool isInsideScreen = false);
+    bool collisionWith(const Entity *entity);
     bool collisionWith(const Entity &entity);
 
     void render(SDL_Renderer *renderer, int arg = 0);

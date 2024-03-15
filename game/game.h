@@ -40,6 +40,7 @@ const double GUNDAM_LASER_DURATION = 15;
 
 const int CHICKENS_TO_LEVEL_UP = 30;
 const int BOSS_TO_NEW_WEAPON = 1;
+const int FRIED_CHICKEN_TO_ROCKET = 10;
 
 enum GameStatus {
     GAME_STOP = 0,
