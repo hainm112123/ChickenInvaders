@@ -185,10 +185,14 @@ Media::Media() {
 }
 
 Media::~Media() {
+    Mix_FreeMusic(start);
+    Mix_FreeMusic(battle);
+    Mix_FreeMusic(ending);
+
     for (Mix_Chunk *bullet: bullets) Mix_FreeChunk(bullet);
     for (Mix_Chunk *chicken: chickens) Mix_FreeChunk(chicken);
     for (Mix_Chunk *explosion: explosions) Mix_FreeChunk(explosion);
-    Mix_FreeMusic(music);
+
     Mix_FreeChunk(upgrade);
     Mix_FreeChunk(laser);
     Mix_FreeChunk(bulletRock);
@@ -215,8 +219,11 @@ void Media::loadMedia() {
         Mix_LoadWAV("./assets/sound/exp_uco.wav"),
     };
     upgrade = Mix_LoadWAV("./assets/sound/level_up.wav");
-    music = Mix_LoadMUS("./assets/sound/start.mp3");
     bulletRock = Mix_LoadWAV("./assets/sound/whistle.wav");
     laser = Mix_LoadWAV("./assets/sound/laser8.wav");
     rocket = Mix_LoadWAV("./assets/sound/rocket.wav");
+
+    start = Mix_LoadMUS("./assets/sound/Zoltraak.mp3");
+    battle = Mix_LoadMUS("./assets/sound/battle.mp3");
+    ending = Mix_LoadMUS("./assets/sound/Fear Brought Me This Far.mp3");
 }

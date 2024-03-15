@@ -52,12 +52,13 @@ void Game::_clear(bool round_init) {
     for (Rock *rock: rocks) delete(rock);
     rocks.clear();
 
-    for (FriedChicken *fried_chicken: fried_chickens) delete(fried_chicken);
-    fried_chickens.clear();
-
     if (!round_init) {
+        for (FriedChicken *fried_chicken: fried_chickens) delete(fried_chicken);
+        fried_chickens.clear();
+
         for (Upgrade *upgrade: upgrades) delete(upgrade);
         upgrades.clear();
+
         for (auto explosion: explosions) delete(explosion);
         explosions.clear();
     }
@@ -741,7 +742,7 @@ void Game::renderMenu() {
 
     Text backButton("Back", TEXT_COLOR);
     backButton.renderText(fontRoundTitle, renderer);
-    backButton.setRect(SCREEN_WIDTH - backButton.getW() - 100, SCREEN_HEIGHT - backButton.getH() - 50);
+    backButton.setRect(SCREEN_WIDTH - backButton.getW() - 30, SCREEN_HEIGHT - backButton.getH() - 20);
 
     const int settingsMenuTextCount = 3;
     Text settingsMenuText[] = {
@@ -774,7 +775,7 @@ void Game::renderMenu() {
     }
 
     bool menuRunning = true;
-    playMusic(Media::Instance()->music);
+    playMusic(Media::Instance()->start);
     Text *texts, *choices;
     while (menuRunning) {
         int textCount, choiceCount;
@@ -845,6 +846,7 @@ void Game::renderMenu() {
                                     setGameStatus(GAME_PLAYING);
                                     initTimer.startCountdown();
                                     menuRunning = false;
+                                    playMusic(Media::Instance()->battle);
                                 }
                                 if (i == MAIN_MENU_SETTINGS) {
                                     menuState = MENU_SETTINGS;
@@ -889,7 +891,7 @@ void Game::renderMenu() {
         SDL_RenderPresent(renderer);
         SDL_Delay(10);
     }
-    Mix_PauseMusic();
+//    Mix_PauseMusic();
 }
 
 void Game::initData() {
@@ -1007,6 +1009,7 @@ bool isHover(const SDL_Event &event, const Entity &entity) {
 
 void Game::gameOver() {
     if (status != GAME_OVER) return;
+    playMusic(Media::Instance()->ending);
 
     enterYourName();
     if (!isRunning()) return;
