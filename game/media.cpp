@@ -192,6 +192,7 @@ Media::~Media() {
     Mix_FreeChunk(upgrade);
     Mix_FreeChunk(laser);
     Mix_FreeChunk(bulletRock);
+    Mix_FreeChunk(rocket);
     Mix_CloseAudio();
 
     instance = nullptr;
@@ -217,4 +218,5 @@ void Media::loadMedia() {
     music = Mix_LoadMUS("./assets/sound/start.mp3");
     bulletRock = Mix_LoadWAV("./assets/sound/whistle.wav");
     laser = Mix_LoadWAV("./assets/sound/laser8.wav");
+    rocket = Mix_LoadWAV("./assets/sound/rocket.wav");
 }

@@ -3,6 +3,7 @@
 
 #include "../common/entity.h"
 #include "../common/time.h"
+#include "../game/media.h"
 
 const int ROCKET_WIDTH = 35;
 const int ROCKET_HEIGHT = 95;
@@ -14,13 +15,20 @@ class Rocket: public Entity {
     int damage;
     double src_x, src_y, dst_x, dst_y;
     double R, distance, center_x, center_y;
+    Entity explosion;
+    bool active = false, exp = false;
 public:
     Rocket(double _src_x, double _src_y, double _dst_x, double _dst_y);
     ~Rocket();
 
+    bool Active() {
+        return active;
+    }
+
     bool reached();
     void handleMove();
-    void reset();
+    void Set();
+    void handleExplosion(SDL_Renderer *renderer);
 };
 
 #endif // ROCKET_H_INCLUDED

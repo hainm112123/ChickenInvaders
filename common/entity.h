@@ -4,6 +4,12 @@
 #include "common.h"
 #include "time.h"
 
+const int NUMBER_OF_EXPLOSION_PIC = 4;
+const int NUMBER_OF_BIG_EXPLOSION_PIC = 8;
+const double SECOND_PER_PICTURE = 0.06;
+const double SECOND_PER_PICTURE_FASTER = 0.04;
+const double SECOND_PER_PICTURE_LONGER = 0.1;
+
 enum EntityType {
     GUNDAM = 0,
     BACKGROUND,

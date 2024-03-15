@@ -154,7 +154,6 @@ class Game {
 
     Gundam gundam;
     Rocket rocket;
-    bool rocketActive = false;
 
     vector<Chicken*> chickens;
     int numberOfAliveChicken;

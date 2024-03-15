@@ -114,7 +114,8 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 perPic = SECOND_PER_PICTURE;
                 break;
             case BIG_EXPLOSION:
-                n = NUMBER_OF_EXPLOSION_PIC * 2;
+                n = NUMBER_OF_BIG_EXPLOSION_PIC;
+                perPic = SECOND_PER_PICTURE_LONGER;
                 break;
             default:
                 break;
@@ -125,6 +126,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
             currentTime -= perPic * n;
         }
         int ind = int(currentTime / perPic);
+//        cout << ind << "\n";
         int w = texture.w / n, h = texture.h;
         if (type == LEVEL_UP) {
             rect.w = w; rect.h = h;

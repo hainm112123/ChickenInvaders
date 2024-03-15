@@ -15,7 +15,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_MUTED;
+    audioState = AUDIO_UNMUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -26,7 +26,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     killedChickenCount.assign(5, 0);
 
     gundam.setGame(this);
-    rocket.setTexture(Gallery::Instance()->rocket);
 //    gundamLaserTimer.startCountdown();
 
     bossHealthBorder.setRect({SCREEN_WIDTH/2 - HEALTH_BORDER_WIDTH/2, 5, HEALTH_BORDER_WIDTH, HEALTH_BORDER_HEIGHT});
@@ -382,10 +381,10 @@ void Game::process() {
             gundam.control(*event, gundamLaserTimer);
         }
         if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_r) {
-            if (!rocketActive && rocketCount > 0) {
-                rocket.reset();
-                rocketActive = true;
+            if (!rocket.Active() && rocketCount > 0) {
+                rocket.Set();
                 rocketCount --;
+                playChunk(Media::Instance()->rocket);
             }
         }
     }
@@ -402,13 +401,11 @@ void Game::process() {
 
     // ............................gundam.......................................
     process_gundam();
-    if (rocketActive) {
+    if (rocket.Active()) {
         rocket.handleMove();
         rocket.render(renderer);
-        if (rocket.reached()) {
-            rocketActive = false;
-        }
     }
+    rocket.handleExplosion(renderer);
 
     //...............................rock init..............................................
     init_rock();
@@ -873,9 +870,8 @@ void Game::initData() {
     _clear();
     score = round = NG = 0;
     scrolling = 0;
-    rocketCount = frychickenCount = 0;
+    rocketCount = frychickenCount = 10;
     roundWon = true;
-    rocketActive = false;
 
     killedChickenCount.assign(5, 0);
     chickens.clear(); chickenBullets.clear();

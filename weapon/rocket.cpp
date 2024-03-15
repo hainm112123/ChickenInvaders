@@ -1,7 +1,8 @@
 #include "rocket.h"
 
 Rocket::Rocket(double _src_x, double _src_y, double _dst_x, double _dst_y):
-    src_x(_src_x), src_y(_src_y), dst_x(_dst_x), dst_y(_dst_y)
+    src_x(_src_x), src_y(_src_y), dst_x(_dst_x), dst_y(_dst_y),
+    explosion(BIG_EXPLOSION)
 {
     type = ROCKET;
     x = src_x; y = src_y;
@@ -10,6 +11,10 @@ Rocket::Rocket(double _src_x, double _src_y, double _dst_x, double _dst_y):
     distance = R * M_PI;
     center_x = (src_x + dst_x) / 2;
     center_y = (src_y + dst_y) / 2;
+    setTexture(Gallery::Instance()->rocket);
+
+    explosion.setRect({int(dst_x - BIG_EXPLOSION_WIDTH/2), int(dst_y - BIG_EXPLOSION_HEIGHT/2), BIG_EXPLOSION_WIDTH, BIG_EXPLOSION_HEIGHT});
+    explosion.setTexture(Gallery::Instance()->big_explosion);
 }
 
 Rocket::~Rocket() {}
@@ -19,7 +24,13 @@ bool Rocket::reached() {
 }
 
 void Rocket::handleMove() {
-    if (reached()) return;
+    if (!active) return;
+    if (reached()) {
+        active = false;
+        exp = true;
+        Mix_PlayChannel(-1, Media::Instance()->explosions[1], 0);
+        return;
+    }
 //    double static L = 0;
 //    cout << x << " " << y << "\n";
     double elapsed = (TimeManager::Instance()->getElapsedTime());
@@ -37,7 +48,18 @@ void Rocket::handleMove() {
     _move();
 }
 
-void Rocket::reset() {
+void Rocket::handleExplosion(SDL_Renderer *renderer) {
+    if (!exp) return;
+    if (explosion.CurrentTime() >= SECOND_PER_PICTURE_LONGER * NUMBER_OF_BIG_EXPLOSION_PIC) {
+        exp = false;
+        return;
+    }
+    explosion.render(renderer);
+}
+
+void Rocket::Set() {
+    active = true;
+    exp = false;
     x = src_x;
     y = src_y;
 }

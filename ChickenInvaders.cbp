@@ -32,8 +32,6 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="Painter.cpp" />
-		<Unit filename="Painter.h" />
 		<Unit filename="common/common.cpp" />
 		<Unit filename="common/common.h" />
 		<Unit filename="common/entity.cpp" />
@@ -61,6 +59,8 @@
 		<Unit filename="sdl_init.h" />
 		<Unit filename="weapon/bullet.cpp" />
 		<Unit filename="weapon/bullet.h" />
+		<Unit filename="weapon/rocket.cpp" />
+		<Unit filename="weapon/rocket.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
