@@ -102,7 +102,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == LEVEL_UP || type == EXPLOSION) {
+    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION) {
         int n = 1;
         double perPic = SECOND_PER_PICTURE;
         switch(type) {
@@ -113,17 +113,20 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 n = NUMBER_OF_EXPLOSION_PIC;
                 perPic = SECOND_PER_PICTURE;
                 break;
+            case BIG_EXPLOSION:
+                n = NUMBER_OF_EXPLOSION_PIC * 2;
+                break;
             default:
                 break;
         }
         currentTime += elapsed;
         if (currentTime >= perPic * n) {
-            if (type == EXPLOSION) return;
+            if (type == EXPLOSION || type == BIG_EXPLOSION) return;
             currentTime -= perPic * n;
         }
         int ind = int(currentTime / perPic);
         int w = texture.w / n, h = texture.h;
-        if (type != EXPLOSION) {
+        if (type == LEVEL_UP) {
             rect.w = w; rect.h = h;
         }
         SDL_Rect src = {ind * w, 0, w, h};
@@ -132,12 +135,24 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     else if (type == BULLET) {
         rect.w = texture.w; rect.h = texture.h;
         if (step_x != 0) {
-            double deg = atan2(step_x, -step_y) * 180 / M_PI;
+            double deg = get_angle_from_step(step_x, step_y);
             SDL_RenderCopyEx(renderer, texture.texture, NULL, &rect, deg, NULL, SDL_FLIP_NONE);
         }
         else {
             SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
         }
+    }
+    else if (type == ROCKET) {
+        int n = 3;
+        currentTime += elapsed;
+        if (currentTime >= n * SECOND_PER_PICTURE) currentTime -= n * SECOND_PER_PICTURE;
+        int index = int(currentTime / SECOND_PER_PICTURE);
+        SDL_Rect src = {0, (texture.h/n) * index, texture.w, texture.h/n};
+        double deg = get_angle_from_step(step_x, step_y);
+//        cout << rect.x << " " << rect.y << " " << rect.w << " " << rect.h << "\n";
+//        cout << src.x << " " << src.y << " " << src.w << " " << src.h << "\n";
+//        SDL_RenderCopy(renderer, texture.texture, &src, &rect);
+        SDL_RenderCopyEx(renderer, texture.texture, &src, &rect, deg, NULL, SDL_FLIP_NONE);
     }
     else {
         rect.w = texture.w; rect.h = texture.h;

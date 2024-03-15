@@ -27,6 +27,8 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(rocket_mini.texture);
     SDL_DestroyTexture(fry_chicken_mini.texture);
     SDL_DestroyTexture(fried_chicken.texture);
+    SDL_DestroyTexture(rocket.texture);
+    SDL_DestroyTexture(big_explosion.texture);
 }
 
 void Gallery::loadGamePictures() {
@@ -144,6 +146,8 @@ void Gallery::loadGamePictures() {
     fry_chicken_mini = painter->loadTexture("./assets/graphics/fried-chicken-mini.png");
 
     fried_chicken = painter->loadTexture("./assets/graphics/fried-chicken.png");
+    rocket = painter->loadTexture("./assets/graphics/rocket.png");
+    big_explosion = painter->loadTexture("./assets/graphics/big_exp-transformed.png");
 }
 
 //.............................Media............................................

@@ -28,6 +28,7 @@ typedef chrono::system_clock::time_point Time;
 typedef chrono::duration<double> ElapsedTime;
 
 const int oo = int(1e9);
+const double eps = 1e-9;
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -51,6 +52,11 @@ const int HEALTH_BORDER_HEIGHT = 87;
 int Rand(int l, int r);
 
 double dist(double x, double y, double u, double v);
+
+double to_radian(double degree);
+double to_degree(double radian);
+
+double get_angle_from_step(double x, double y);
 
 struct Texture {
     SDL_Texture *texture;

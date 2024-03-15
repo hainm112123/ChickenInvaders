@@ -15,6 +15,7 @@ enum EntityType {
     LEVEL_UP,
     NEW_WEAPON,
     EXPLOSION,
+    BIG_EXPLOSION,
     ROCK,
     MENU,
     TEXT,

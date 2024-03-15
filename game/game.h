@@ -11,6 +11,7 @@
 #include "../enemy/rock.h"
 #include "text.h"
 #include "../enemy/fried_chicken.h"
+#include "../weapon/rocket.h"
 
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
@@ -156,6 +157,8 @@ class Game {
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];
 
     Gundam gundam;
+    Rocket rocket;
+    bool rocketActive = false;
 
     vector<Chicken*> chickens;
     int numberOfAliveChicken;

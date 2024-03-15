@@ -9,6 +9,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(gallery),
+    rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
     gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE)
 {
@@ -16,7 +17,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_UNMUTED;
+    audioState = AUDIO_MUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -27,6 +28,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     killedChickenCount.assign(5, 0);
 
     gundam.setGame(this);
+    rocket.setTexture(gallery->rocket);
 //    gundamLaserTimer.startCountdown();
 
     bossHealthBorder.setRect({SCREEN_WIDTH/2 - HEALTH_BORDER_WIDTH/2, 5, HEALTH_BORDER_WIDTH, HEALTH_BORDER_HEIGHT});
@@ -383,6 +385,12 @@ void Game::process() {
         if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
             gundam.control(*event, gundamLaserTimer);
         }
+        if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_r) {
+            if (!rocketActive) {
+                rocket.reset();
+                rocketActive = true;
+            }
+        }
     }
 
     painter->clearWithBgColor(WHITE_COLOR);
@@ -397,6 +405,13 @@ void Game::process() {
 
     // ............................gundam.......................................
     process_gundam();
+    if (rocketActive) {
+        rocket.handleMove();
+        rocket.render(renderer);
+        if (rocket.reached()) {
+            rocketActive = false;
+        }
+    }
 
     //...............................rock init..............................................
     init_rock();
@@ -852,6 +867,7 @@ void Game::renderMenu() {
         }
 
         SDL_RenderPresent(renderer);
+        SDL_Delay(10);
     }
     Mix_PauseMusic();
 }
@@ -862,6 +878,7 @@ void Game::initData() {
     scrolling = 0;
     rocketCount = frychickenCount = 0;
     roundWon = true;
+    rocketActive = false;
 
     killedChickenCount.assign(5, 0);
     chickens.clear(); chickenBullets.clear();
