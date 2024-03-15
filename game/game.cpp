@@ -86,6 +86,7 @@ void Game::init() {
 
 //    cout << round << "\n";
 //    gundamLaserTimer.startCountdown();
+
     roundWon = false;
     chickenBullets.clear();
     chickens.clear();
@@ -575,7 +576,12 @@ void Game::handleGameEvent() {
 
             if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
                 bool alive = chicken->receiveDamage(gundamLaserDamage);
-                if (!alive) chickenDead(chicken);
+                if (!alive) {
+                    chickenDead(chicken);
+                }
+                else {
+                    if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
+                }
             }
         }
     }
@@ -597,11 +603,12 @@ void Game::handleGameEvent() {
         }
 
         if (alive && gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
-            if (rock->receiveDamage(gundamLaserDamage)) alive = false;
+            if (!rock->receiveDamage(gundamLaserDamage)) alive = false;
             playChunk(Media::Instance()->bulletRock);
         }
         if (!alive) {
-            addExplosion(rock->getRect(), 0);
+//            if (!(rock->isActive()))cout << (rock->isActive()) << "\n";
+            addExplosion(rock->getRect(), 1);
         }
     }
 

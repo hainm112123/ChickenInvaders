@@ -4,7 +4,7 @@
 #include "../common/common.h"
 #include "../common/entity.h"
 
-const double ROCK_HP = 360;
+const double ROCK_HP = 300;
 const double ROCK_HP_UPGRADE = 200;
 
 const int MIN_ROCK_FALL_SPEED = 490;
