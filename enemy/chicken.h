@@ -44,6 +44,7 @@ class Chicken {
 
 public:
     Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int game_difficulty = 0);
+    ~Chicken();
 
     Entity* getEntity() {
         return &entity;

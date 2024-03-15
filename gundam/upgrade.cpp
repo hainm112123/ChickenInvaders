@@ -4,6 +4,8 @@ Upgrade::Upgrade(UpgradeType _type, SDL_Rect rect): type(_type) {
     entity = Entity(type == UPGRADE_LEVEL_UP ? LEVEL_UP : NEW_WEAPON, rect);
 }
 
+Upgrade::~Upgrade() {}
+
 void Upgrade::_move() {
     entity._move();
 }

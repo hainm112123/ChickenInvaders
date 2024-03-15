@@ -221,6 +221,10 @@ public:
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
 
+    void removeUpgrade(Upgrade *upgrade);
+    void removeFriedChicken(FriedChicken *fried_chicken);
+    void removeRock(Rock *rock);
+
     void gameOver();
     void enterYourName();
     void playAgain();
@@ -229,6 +233,8 @@ public:
     void saveData();
     void showRanking();
     vector<pair<int, string>> getRanking();
+
+    void _clear();
 };
 
 #endif // GAME_H_INCLUDED

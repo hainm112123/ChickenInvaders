@@ -22,6 +22,7 @@ class Upgrade {
 
 public:
     Upgrade(UpgradeType _type, SDL_Rect rect = {0, 0, 0, 0});
+    ~Upgrade();
 
     void _move();
     void render(SDL_Renderer *renderer);

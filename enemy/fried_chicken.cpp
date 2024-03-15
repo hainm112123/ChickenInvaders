@@ -11,6 +11,8 @@ FriedChicken::FriedChicken(double _x, double _y) {
     active = true;
 }
 
+FriedChicken::~FriedChicken() {}
+
 bool FriedChicken::handleMove() {
     if (!active) return false;
 

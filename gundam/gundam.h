@@ -52,6 +52,7 @@ class Gundam {
 
 public:
     Gundam(Gallery *gallery);
+    ~Gundam();
 
     set<Bullet*> getBullets() const {
         return bullets;

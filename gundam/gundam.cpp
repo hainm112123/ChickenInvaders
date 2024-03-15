@@ -23,6 +23,11 @@ Gundam::Gundam(Gallery *gallery): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGH
     memset(keydown, 0, sizeof(keydown));
 }
 
+Gundam::~Gundam() {
+    for (Bullet *bullet: bullets) delete(bullet);
+    bullets.clear();
+}
+
 void Gundam::setGame(Game *_game) {
     game = _game;
 }
@@ -121,6 +126,7 @@ void Gundam::handleBullet(SDL_Renderer *renderer, const vector<pair<double, doub
 void Gundam::removeBullet(Bullet *bullet) {
     assert(bullets.find(bullet) != bullets.end());
     bullets.erase(bullet);
+    delete(bullet);
 }
 
 void Gundam::dead() {

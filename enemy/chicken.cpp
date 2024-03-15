@@ -16,6 +16,11 @@ Chicken::Chicken(int offsetX, int offsetY, int _level, int game_difficulty) {
     moveState = {0, 1, 0, !level};
 }
 
+Chicken::~Chicken() {
+//    for (Bullet *bullet: bullets) delete(bullet);
+//    bullets.clear();
+}
+
 void Chicken::setLastBullet(Time _lastBullet) {
     lastBullet = _lastBullet;
 }

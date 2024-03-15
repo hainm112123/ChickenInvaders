@@ -16,7 +16,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_UNMUTED;
+    audioState = AUDIO_MUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -35,6 +35,9 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     bossHealthBorder.setTexture(gallery->bossHealthBorder);
 }
 Game::~Game() {
+    _clear();
+    delete gallery;
+    delete media;
     quit();
 }
 void Game::setGameStatus(GameStatus newStatus) {
@@ -42,8 +45,46 @@ void Game::setGameStatus(GameStatus newStatus) {
 //    cout << newStatus << " " << getGameStatus() << "\n";
 }
 
+void Game::_clear() {
+    for (Chicken *chicken: chickens) delete(chicken);
+    chickens.clear();
+
+    for (Bullet *bullet: chickenBullets) delete(bullet);
+    chickenBullets.clear();
+
+    for (Rock *rock: rocks) delete(rock);
+    rocks.clear();
+
+    for (FriedChicken *fried_chicken: fried_chickens) delete(fried_chicken);
+    fried_chickens.clear();
+
+    for (Upgrade *upgrade: upgrades) delete(upgrade);
+    upgrades.clear();
+    for (auto explosion: explosions) delete(explosion);
+    explosions.clear();
+}
+
+void Game::removeUpgrade(Upgrade *upgrade) {
+    auto it = upgrades.find(upgrade);
+    if (it != upgrades.end()) {
+        upgrades.erase(it);
+        delete(upgrade);
+    }
+}
+void Game::removeRock(Rock *rock) {
+    auto it = rocks.find(rock);
+    if (it != rocks.end()) {
+        rocks.erase(it);
+        delete(rock);
+    }
+}
+void Game::removeFriedChicken(FriedChicken *fried_chicken) {
+    delete(fried_chicken);
+}
 
 void Game::init() {
+    _clear();
+
 //    cout << round << "\n";
 //    gundamLaserTimer.startCountdown();
     roundWon = false;
@@ -159,7 +200,9 @@ void Game::process_enemy() {
             enemy_positions.push_back(make_pair(rock->get_act_x(), rock->get_act_y()));
         }
         else {
-            rocks.erase(rock);
+//            rocks.erase(rock);
+//            delete(rock);
+            removeRock(rock);
         }
     }
 
@@ -287,6 +330,7 @@ void Game::process_enemy() {
             next_it ++;
             if (!fried_chicken->handleMove()) {
                 fried_chickens.erase(it);
+                removeFriedChicken(fried_chicken);
             }
             else {
                 fried_chicken->render(renderer);
@@ -397,7 +441,11 @@ void Game::process() {
     }
 
     //.............................explosion..................................................................
-    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE * NUMBER_OF_EXPLOSION_PIC) explosions.pop_front();
+    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE * NUMBER_OF_EXPLOSION_PIC) {
+        Entity *explosion = explosions.front();
+        explosions.pop_front();
+        delete(explosion);
+    }
     for (auto *explosion: explosions) explosion->render(renderer);
 
     handleGameEvent();
@@ -467,7 +515,8 @@ void Game::handleGameEvent() {
                     gundam.addWeapon(WeaponType(uType));
                 }
             }
-            upgrades.erase(upgrade);
+//            upgrades.erase(upgrade);
+            removeUpgrade(upgrade);
             playChunk(media->upgrade);
         }
     }
@@ -789,6 +838,7 @@ void Game::renderMenu() {
 }
 
 void Game::initData() {
+    _clear();
     score = round = NG = 0;
     scrolling = 0;
     rocketCount = frychickenCount = 0;
