@@ -42,6 +42,8 @@
 		<Unit filename="common/time.h" />
 		<Unit filename="enemy/chicken.cpp" />
 		<Unit filename="enemy/chicken.h" />
+		<Unit filename="enemy/fried_chicken.cpp" />
+		<Unit filename="enemy/fried_chicken.h" />
 		<Unit filename="enemy/rock.cpp" />
 		<Unit filename="enemy/rock.h" />
 		<Unit filename="game/game.cpp" />
