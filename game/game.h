@@ -227,7 +227,7 @@ public:
     void showRanking();
     vector<pair<int, string>> getRanking();
 
-    void _clear();
+    void _clear(bool round_init = false);
 };
 
 #endif // GAME_H_INCLUDED

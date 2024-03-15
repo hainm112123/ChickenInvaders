@@ -87,6 +87,7 @@ public:
     void setRect(SDL_Rect _rect);
     void setStep(double _step_x, double _step_y);
     void updateStep(double det_x, double det_y);
+    void resetTime();
 
     bool isInsideScreen();
     void _move(bool isInsideScreen = false);

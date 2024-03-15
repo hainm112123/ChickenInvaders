@@ -173,3 +173,7 @@ void Entity::setTexture(Texture _texture, bool isSetRect) {
 void Entity::setTextures(vector< Texture > _textures) {
     textures = _textures;
 }
+
+void Entity::resetTime() {
+    currentTime = 0;
+}

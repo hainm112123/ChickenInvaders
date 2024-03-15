@@ -20,17 +20,18 @@ Rocket::Rocket(double _src_x, double _src_y, double _dst_x, double _dst_y):
 Rocket::~Rocket() {}
 
 bool Rocket::reached() {
-    return abs(x - dst_x) < 2 && abs(y - dst_y) < 2;
+    if (!active) return false;
+    if (abs(x - dst_x) < 2 && abs(y - dst_y) < 2) {
+        active = false;
+        exp = true;
+        Mix_PlayChannel(-1, Media::Instance()->explosions[1], 0);
+        return true;
+    }
+    return false;
 }
 
 void Rocket::handleMove() {
     if (!active) return;
-    if (reached()) {
-        active = false;
-        exp = true;
-        Mix_PlayChannel(-1, Media::Instance()->explosions[1], 0);
-        return;
-    }
 //    double static L = 0;
 //    cout << x << " " << y << "\n";
     double elapsed = (TimeManager::Instance()->getElapsedTime());
@@ -60,6 +61,7 @@ void Rocket::handleExplosion(SDL_Renderer *renderer) {
 void Rocket::Set() {
     active = true;
     exp = false;
+    explosion.resetTime();
     x = src_x;
     y = src_y;
 }

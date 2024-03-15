@@ -9,7 +9,7 @@ const int ROCKET_WIDTH = 35;
 const int ROCKET_HEIGHT = 95;
 const int BIG_EXPLOSION_WIDTH = 429;
 const int BIG_EXPLOSION_HEIGHT = 453;
-const double MOVE_TIME = 3;
+const double MOVE_TIME = 2;
 
 class Rocket: public Entity {
     int damage;

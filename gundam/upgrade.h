@@ -14,7 +14,7 @@ enum UpgradeType {
 };
 
 const int NUMBER_OF_UPGRADE = 6;
-const int UPGRADE_SPEED = 200;
+const int UPGRADE_SPEED = 100;
 
 class Upgrade {
     Entity entity;

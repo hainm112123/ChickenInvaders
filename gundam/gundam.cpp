@@ -5,8 +5,8 @@
 Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
     lives = 3;
     alive = true;
-    weapons.push_back(GUNDAM_BLASTER);
-//    weapons.push_back(GUNDAM_AUTO_AIM);
+//    weapons.push_back(GUNDAM_BLASTER);
+    weapons.push_back(GUNDAM_AUTO_AIM);
 //    weapons.push_back(GUNDAM_BORON);
 //    weapons.push_back(GUNDAM_NEUTRON);
     level = bullet_form = 0;

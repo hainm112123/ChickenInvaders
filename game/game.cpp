@@ -42,7 +42,7 @@ void Game::setGameStatus(GameStatus newStatus) {
 //    cout << newStatus << " " << getGameStatus() << "\n";
 }
 
-void Game::_clear() {
+void Game::_clear(bool round_init) {
     for (Chicken *chicken: chickens) delete(chicken);
     chickens.clear();
 
@@ -55,10 +55,12 @@ void Game::_clear() {
     for (FriedChicken *fried_chicken: fried_chickens) delete(fried_chicken);
     fried_chickens.clear();
 
-    for (Upgrade *upgrade: upgrades) delete(upgrade);
-    upgrades.clear();
-    for (auto explosion: explosions) delete(explosion);
-    explosions.clear();
+    if (!round_init) {
+        for (Upgrade *upgrade: upgrades) delete(upgrade);
+        upgrades.clear();
+        for (auto explosion: explosions) delete(explosion);
+        explosions.clear();
+    }
 }
 
 void Game::removeUpgrade(Upgrade *upgrade) {
@@ -80,7 +82,7 @@ void Game::removeFriedChicken(FriedChicken *fried_chicken) {
 }
 
 void Game::init() {
-    _clear();
+    _clear(true);
 
 //    cout << round << "\n";
 //    gundamLaserTimer.startCountdown();
@@ -446,7 +448,10 @@ void Game::process() {
     for (auto *upgrade: upgrades) {
         upgrade->_move();
         upgrade->render(renderer);
-        if (!upgrade->isInsideScreen()) upgrades.erase(upgrade);
+        if (!upgrade->isInsideScreen()) {
+            upgrades.erase(upgrade);
+            delete(upgrade);
+        }
     }
 
     //.............................explosion..................................................................
@@ -621,6 +626,20 @@ void Game::handleGameEvent() {
             }
             it = next_it;
         }
+    }
+
+    //...............rocket......................................
+    if (rocket.reached()) {
+        for (Chicken *chicken: chickens) {
+            chickenDead(chicken);
+            delete(chicken);
+        }
+        chickens.clear();
+        for (Rock *rock: rocks) {
+            addExplosion(rock->getRect(), 0);
+            delete(rock);
+        }
+        rocks.clear();
     }
 }
 

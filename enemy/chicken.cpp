@@ -17,8 +17,8 @@ Chicken::Chicken(int offsetX, int offsetY, int _level, int game_difficulty) {
 }
 
 Chicken::~Chicken() {
-//    for (Bullet *bullet: bullets) delete(bullet);
-//    bullets.clear();
+    for (Bullet *bullet: bullets) delete(bullet);
+    bullets.clear();
 }
 
 void Chicken::setLastBullet(Time _lastBullet) {
