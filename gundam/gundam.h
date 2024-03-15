@@ -51,7 +51,7 @@ class Gundam {
     bool keydown[4];
 
 public:
-    Gundam(Gallery *gallery);
+    Gundam();
     ~Gundam();
 
     set<Bullet*> getBullets() const {
@@ -86,7 +86,7 @@ public:
     void changeWeapon();
     void levelUp();
 
-    void render(SDL_Renderer *renderer, Gallery *gallery, bool hasShield = false, bool hasLaser = false);
+    void render(SDL_Renderer *renderer, bool hasShield = false, bool hasLaser = false);
 
     void _move();
     void control(SDL_Event event, Timer &gundamLaserTimer);

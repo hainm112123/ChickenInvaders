@@ -2,10 +2,10 @@
 #include <ctime>
 
 #include "sdl_init.h"
-#include "Painter.h"
 #include "common/common.h"
 #include "game/game.h"
 #include "time.h"
+#include "game/media.h"
 
 using namespace std;
 
@@ -18,9 +18,8 @@ int main(int agrc, char **argv)
     SDL_Event event;
     initSDL(window, renderer);
 
-    Painter painter(window, renderer);
-    Game game(renderer, &event, &painter, GAME_WIDTH, GAME_HEIGHT);
-
+    Gallery::initInstance(renderer);
+    Game game(renderer, &event, GAME_WIDTH, GAME_HEIGHT);
 
     auto a = SDL_GetTicks();
     auto b = SDL_GetTicks();

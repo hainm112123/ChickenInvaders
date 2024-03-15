@@ -5,7 +5,6 @@
 
 #include "../common/common.h"
 #include "../gundam/gundam.h"
-#include "../Painter.h"
 #include "../enemy/chicken.h"
 #include "../gundam/upgrade.h"
 #include "../enemy/rock.h"
@@ -138,9 +137,6 @@ const int NUMBER_SHOWED_PLAYER = 10;
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
-    Painter *painter;
-    Gallery *gallery;
-    Media *media;
     TTF_Font *fontMenu, *fontGame, *fontRoundTitle, *fontRoundText;
 
     bool roundWon;
@@ -182,7 +178,7 @@ class Game {
     Text scoreText, scoreValue, gundamLevelText, frychickenText, rocketText;
 
 public:
-    Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height);
+    Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);
     ~Game();
 
     int getWidth() const {
@@ -196,12 +192,6 @@ public:
     }
     bool isRunning() const {
         return status != GAME_STOP;
-    }
-    Gallery* getGallery() const {
-        return gallery;
-    }
-    Media* getMedia() const {
-        return media;
     }
 
     void setGameStatus(GameStatus newStatus);

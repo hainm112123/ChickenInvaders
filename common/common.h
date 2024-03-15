@@ -30,6 +30,15 @@ typedef chrono::duration<double> ElapsedTime;
 const int oo = int(1e9);
 const double eps = 1e-9;
 
+const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
+const SDL_Color WHITE_COLOR_2ND = {255, 255, 255, 0};
+const SDL_Color BLACK_COLOR = {0, 0, 0, 0};
+const SDL_Color GREEN_COLOR = {0, 128, 0, 0};
+const SDL_Color RED_COLOR = {255, 0, 0, 0};
+const SDL_Color TEXT_COLOR = {255, 255, 255, 0};
+const SDL_Color TEXT_HOVER_COLOR = {128, 128, 128, 0};
+const SDL_Color TEXT_PLACEHOLDER_COLOR = {128, 128, 128, 0};
+
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 const int GAME_WIDTH = 1280;

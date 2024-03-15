@@ -1,19 +1,17 @@
 #include "game.h"
 
-Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _width, int _height):
-    renderer(_renderer), event(_event), painter(_painter),
-    gallery(new Gallery(painter)),
+Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
+    renderer(_renderer), event(_event),
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
     initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY), bossTurnTimer(BOSS_TURN_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
-    gundam(gallery),
+    gundam(),
     rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
     gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE)
 {
-    media = new Media();
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
@@ -22,24 +20,22 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, Painter *_painter, int _w
     round = 0;
     roundWon = true;
 
-    background.setTexture(gallery->background);
-//    gundam.getEntity()->setTexture(gallery->gundams[gundam.getCurrentWeapon()]);
+    background.setTexture(Gallery::Instance()->background);
+//    gundam.getEntity()->setTexture(Gallery::Instance()->gundams[gundam.getCurrentWeapon()]);
 
     killedChickenCount.assign(5, 0);
 
     gundam.setGame(this);
-    rocket.setTexture(gallery->rocket);
+    rocket.setTexture(Gallery::Instance()->rocket);
 //    gundamLaserTimer.startCountdown();
 
     bossHealthBorder.setRect({SCREEN_WIDTH/2 - HEALTH_BORDER_WIDTH/2, 5, HEALTH_BORDER_WIDTH, HEALTH_BORDER_HEIGHT});
     bossHealthBar.setRect({bossHealthBorder.getX() + 6, 8, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT});
-    bossHealthBar.setTexture(gallery->bossHealthBar);
-    bossHealthBorder.setTexture(gallery->bossHealthBorder);
+    bossHealthBar.setTexture(Gallery::Instance()->bossHealthBar);
+    bossHealthBorder.setTexture(Gallery::Instance()->bossHealthBorder);
 }
 Game::~Game() {
     _clear();
-    delete gallery;
-    delete media;
     quit();
 }
 void Game::setGameStatus(GameStatus newStatus) {
@@ -117,12 +113,12 @@ void Game::init() {
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
             Chicken *chicken = new Chicken(col, row, level, game_difficulty);
-//            chicken->getEntity()->setTexture(gallery->chickens[chicken->getLevel()]);
+//            chicken->getEntity()->setTexture(Gallery::Instance()->chickens[chicken->getLevel()]);
             if (round == BOSS_ROUND) {
-                chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel() + i]);
+                chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->getLevel() + i]);
             }
             else {
-                chicken->getEntity()->setTextures(gallery->chickens[chicken->getLevel()]);
+                chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->getLevel()]);
             }
             chickens.push_back(chicken);
             if (level) bossHP += chicken->getHP();
@@ -187,8 +183,8 @@ void Game::process_gundam() {
         if (gundam.revive()) gundamShieldTimer.startCountdown();
     }
     gundam._move();
-//    cout << (gallery->gundam).w << " " << (gallery->gundam).h << "\n";
-    gundam.render(renderer, gallery, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
+//    cout << (Gallery::Instance()->gundam).w << " " << (Gallery::Instance()->gundam).h << "\n";
+    gundam.render(renderer, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
 }
 
 void Game::process_enemy() {
@@ -234,7 +230,7 @@ void Game::process_enemy() {
             auto _now = CLOCK_NOW();
             ElapsedTime elapsed = _now - chicken->getLastBullet();
             if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && elapsed.count() > BULLET_DELAY) {
-                chicken->addBullet(chickenBullets.back(), gallery);
+                chicken->addBullet(chickenBullets.back());
                 chickenBullets.pop_back();
                 chicken->setLastBullet(_now);
             }
@@ -362,7 +358,7 @@ void Game::init_rock() {
                 step_y = Rand(MIN_ROCK_SIDE_SPEED_Y, MAX_ROCK_SIDE_SPEED_Y) + game_difficulty * NG_ROCK_SPEED;
             }
             int _size = Rand(MIN_ROCK_SIZE, MAX_ROCK_SIZE);
-            Rock *rock = new Rock(ROCK, {x, y, _size, _size}, gallery->rocks[Rand(0, _size(gallery->rocks) - 1)]);
+            Rock *rock = new Rock(ROCK, {x, y, _size, _size}, Gallery::Instance()->rocks[Rand(0, _size(Gallery::Instance()->rocks) - 1)]);
             rock->setStep(step_x, step_y);
             rock->setHP(ROCK_HP + ROCK_HP_UPGRADE * game_difficulty);
             rock->setActive(true);
@@ -386,14 +382,15 @@ void Game::process() {
             gundam.control(*event, gundamLaserTimer);
         }
         if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_r) {
-            if (!rocketActive) {
+            if (!rocketActive && rocketCount > 0) {
                 rocket.reset();
                 rocketActive = true;
+                rocketCount --;
             }
         }
     }
 
-    painter->clearWithBgColor(WHITE_COLOR);
+    SDL_RenderClear(renderer);
 
     (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
     if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
@@ -494,10 +491,10 @@ void Game::dropUpgrade(EntityType eType) {
     Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
     upgrade->getEntity()->setStep(0, UPGRADE_SPEED);
     if (uType == UPGRADE_LEVEL_UP) {
-        upgrade->getEntity()->setTexture(gallery->levelUp);
+        upgrade->getEntity()->setTexture(Gallery::Instance()->levelUp);
     }
     else {
-        upgrade->getEntity()->setTexture(gallery->newWeapons[uType]);
+        upgrade->getEntity()->setTexture(Gallery::Instance()->newWeapons[uType]);
     }
     upgrades.insert(upgrade);
 }
@@ -532,7 +529,7 @@ void Game::handleGameEvent() {
             }
 //            upgrades.erase(upgrade);
             removeUpgrade(upgrade);
-            playChunk(media->upgrade);
+            playChunk(Media::Instance()->upgrade);
         }
     }
 
@@ -569,7 +566,7 @@ void Game::handleGameEvent() {
                         break;
                     }
                     else {
-                        if (Rand(0, 100) < 15) playChunk(media->chickens[Rand(0, 1)]);
+                        if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
                     }
                 }
             }
@@ -593,13 +590,13 @@ void Game::handleGameEvent() {
             if (rock->collisionWith((bullet->getEntity()))) {
                 if (!rock->receiveDamage(gundam.getBulletDamage())) alive = false;
                 gundam.removeBullet(bullet);
-                playChunk(media->bulletRock);
+                playChunk(Media::Instance()->bulletRock);
             }
         }
 
         if (alive && gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
             if (rock->receiveDamage(gundamLaserDamage)) alive = false;
-            playChunk(media->bulletRock);
+            playChunk(Media::Instance()->bulletRock);
         }
         if (!alive) {
             addExplosion(rock->getRect(), 0);
@@ -631,7 +628,7 @@ void Game::handleGameEvent() {
 }
 
 void Game::addExplosion(SDL_Rect rect, int level) {
-    Texture texture = gallery->expolosions[level];
+    Texture texture = Gallery::Instance()->expolosions[level];
 //    int w = texture.w / NUMBER_OF_EXPLOSION_PIC, h = texture.h;
 //    int center_x = (rect.x + rect.w/2), center_y = (rect.y + rect.h/2);
 //    cout << center_x - w/2 << " " << center_y - h/2 << "\n";
@@ -641,12 +638,12 @@ void Game::addExplosion(SDL_Rect rect, int level) {
 
 void Game::gundamDead() {
     if (!gundamShieldTimer.timeIsUp()) {
-        playChunk(media->bulletRock);
+        playChunk(Media::Instance()->bulletRock);
         return;
     }
     gundam.dead();
     addExplosion(gundam.getEntity()->getRect(), 1);
-    playChunk(media->explosions[0]);
+    playChunk(Media::Instance()->explosions[0]);
     gundamReviveTimer.startCountdown();
     hearts.pop_back();
     if (hearts.empty()) {
@@ -658,7 +655,7 @@ void Game::addFriedChicken(double x, double y, int level) {
     int cnt = NUMBER_OF_FRIED_CHICKEN[level];
     while (cnt --) {
         FriedChicken *fried_chicken = new FriedChicken(x, y);
-        fried_chicken->setTexture(gallery->fried_chicken);
+        fried_chicken->setTexture(Gallery::Instance()->fried_chicken);
         fried_chickens.push_back(fried_chicken);
     }
 }
@@ -666,10 +663,10 @@ void Game::addFriedChicken(double x, double y, int level) {
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
     if (chicken->getLevel() == 0) {
-        if (Rand(0, 100) < 20) playChunk(media->chickens[2]);
+        if (Rand(0, 100) < 20) playChunk(Media::Instance()->chickens[2]);
     }
     else {
-        playChunk(media->explosions[1]);
+        playChunk(Media::Instance()->explosions[1]);
     }
 
     addExplosion(chicken->getEntity()->getRect(), chicken->getLevel());
@@ -698,9 +695,9 @@ void Game::renderMenu() {
 
     static int menuState = MENU_MAIN;
 
-    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu);
-    Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, gallery->menu_settings);
-    Entity menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, gallery->menu_control);
+    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu);
+    Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, Gallery::Instance()->menu_settings);
+    Entity menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu_control);
 
     const int mainMenuTextCount = 5;
     Text mainMenuText[] = {
@@ -754,7 +751,7 @@ void Game::renderMenu() {
     }
 
     bool menuRunning = true;
-    playMusic(media->music);
+    playMusic(Media::Instance()->music);
     Text *texts, *choices;
     while (menuRunning) {
         int textCount, choiceCount;
@@ -819,7 +816,7 @@ void Game::renderMenu() {
                             choices[i].setColor(TEXT_HOVER_COLOR);
                         }
                         else {
-                            playChunk(media->upgrade);
+                            playChunk(Media::Instance()->upgrade);
                             if (menuState == MENU_MAIN) {
                                 if (i == MAIN_MENU_START) {
                                     setGameStatus(GAME_PLAYING);
@@ -889,7 +886,7 @@ void Game::initData() {
 
     for (int i = 0; i < gundam.getLives(); ++ i) {
         hearts.push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
-        hearts.back().setTexture(gallery->heart);
+        hearts.back().setTexture(Gallery::Instance()->heart);
     }
 }
 
@@ -934,19 +931,19 @@ void Game::load() {
     scoreValue.setRect(offset + scoreText.getW(), offset + hearts.back().getH() + offset/2 + scoreText.getH() - scoreValue.getH());
 
     const int gundamStateOffsetY = scoreText.getY() + scoreText.getH() + offset/2;
-    gundamLevelImage.setTexture(gallery->level, true);
+    gundamLevelImage.setTexture(Gallery::Instance()->level, true);
     gundamLevelImage.setRect(offset, gundamStateOffsetY);
     gundamLevelText.setText(to_string(gundam.getLevel()));
     gundamLevelText.setColor(TEXT_COLOR);
     gundamLevelText.setRect(gundamLevelImage.getX() + gundamLevelImage.getW() + offset/2, gundamStateOffsetY);
 
-    frychickenMini.setTexture(gallery->fry_chicken_mini, true);
+    frychickenMini.setTexture(Gallery::Instance()->fry_chicken_mini, true);
     frychickenMini.setRect(gundamLevelText.getX() + gundamLevelText.getW() + offset, gundamStateOffsetY);
     frychickenText.setText(to_string(frychickenCount));
     frychickenText.setColor(TEXT_COLOR);
     frychickenText.setRect(frychickenMini.getX() + frychickenMini.getW() + offset/2, gundamStateOffsetY);
 
-    rocketMini.setTexture(gallery->rocket_mini, true);
+    rocketMini.setTexture(Gallery::Instance()->rocket_mini, true);
     rocketMini.setRect(frychickenText.getX() + frychickenText.getW() + offset, gundamStateOffsetY);
     rocketText.setText(to_string(rocketCount));
     rocketText.setColor(TEXT_COLOR);
@@ -1016,7 +1013,7 @@ void Game::gameOver() {
                         nextButton.setColor(TEXT_HOVER_COLOR);
                     }
                     if (e.type == SDL_MOUSEBUTTONDOWN) {
-                        playChunk(media->upgrade);
+                        playChunk(Media::Instance()->upgrade);
                         rankShowing = false;
                         break;
                     }
@@ -1084,7 +1081,7 @@ void Game::enterYourName() {
                     }
                     if (e.type == SDL_MOUSEBUTTONDOWN && _size(username) > 0) {
                         summarizing = false;
-                        playChunk(media->upgrade);
+                        playChunk(Media::Instance()->upgrade);
                         if (!scores.count(username)) {
                             scores.insert({username, score});
                         }
@@ -1099,7 +1096,7 @@ void Game::enterYourName() {
                 }
             }
             if (e.type == SDL_KEYDOWN) {
-                playChunk(media->bulletRock);
+                playChunk(Media::Instance()->bulletRock);
                 for (int i = 0; i < NUM_KEYCODES; ++ i) if (e.key.keysym.sym == KEYCODES[i] && _size(username) < MAX_NAME_LENGTH) {
                     char c = (i < 26) ? char('a' + i) : char('0' + i - 26);
                     username += c;

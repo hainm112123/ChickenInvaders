@@ -85,7 +85,7 @@ public:
     void setMoveState(ChickenMoveState _moveState);
     void _move();
     void render(SDL_Renderer *renderer);
-    void addBullet(Bullet *_bullet, Gallery *gallery);
+    void addBullet(Bullet *_bullet);
     void removeBullet(Bullet *bullet);
     void handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBullets);
 };
