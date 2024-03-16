@@ -178,6 +178,7 @@ class Game {
     Text scoreText, scoreValue, gundamLevelText, frychickenText, rocketText;
 
     Entity pause_button, home_button, audio_button, resume_button, pause_menu;
+    SDL_Texture *overlay;
 
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);

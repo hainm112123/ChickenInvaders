@@ -50,9 +50,14 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     home_button.setRect(button_offset_x, button_offset_y);
     resume_button.setRect(pause_menu.getX() + pause_menu.getW()/2 - resume_button.getW()/2, button_offset_y);
     audio_button.setRect(pause_menu.getX() + pause_menu.getW() - audio_button.getW() - 10, button_offset_y);
+
+    overlay = (Gallery::Instance()->overlay).texture;
+//    SDL_SetTextureBlendMode(overlay, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(overlay, 1);
 }
 Game::~Game() {
     _clear();
+    SDL_DestroyTexture(overlay);
     quit();
 }
 void Game::setGameStatus(GameStatus newStatus) {
@@ -410,7 +415,10 @@ void Game::process() {
                 playChunk(Media::Instance()->rocket);
             }
         }
-        if (event->type == SDL_MOUSEBUTTONDOWN && isHover(*event, pause_button)) {
+        if ((event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_ESCAPE) ||
+            (event->type == SDL_MOUSEBUTTONDOWN && isHover(*event, pause_button)))
+        {
+            playChunk(Media::Instance()->upgrade);
             setGameStatus(GAME_PAUSED);
             gundam.resetControl();
             return;
@@ -931,24 +939,31 @@ void Game::renderPauseMenu() {
         }
         if (event->type == SDL_MOUSEBUTTONDOWN) {
             if (isHover(*event, home_button)) {
+                playChunk(Media::Instance()->upgrade);
                 playAgain();
                 return;
             }
             if (isHover(*event, resume_button)) {
+                playChunk(Media::Instance()->upgrade);
                 setGameStatus(GAME_PLAYING);
                 return;
             }
             if (isHover(*event, audio_button)) {
+                playChunk(Media::Instance()->upgrade);
                 toggleAudio();
             }
+        }
+        if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_ESCAPE) {
+            playChunk(Media::Instance()->upgrade);
+            setGameStatus(GAME_PLAYING);
+            return;
         }
     }
 
 //    cout << "paused\n";
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 2);
-    SDL_Rect rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderCopy(renderer, overlay, NULL, NULL);
+
     pause_menu.render(renderer);
     home_button.render(renderer);
     resume_button.render(renderer);
