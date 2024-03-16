@@ -1,5 +1,9 @@
 #include "game.h"
 
+bool isHover(const SDL_Event &event, const Entity &entity) {
+    return entity.getX() <= event.motion.x && event.motion.x <= entity.getX() + entity.getW() && entity.getY() <= event.motion.y && event.motion.y <= entity.getY() + entity.getH();
+}
+
 Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     renderer(_renderer), event(_event),
     width(_width), height(_height),
@@ -32,6 +36,20 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     bossHealthBar.setRect({bossHealthBorder.getX() + 6, 8, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT});
     bossHealthBar.setTexture(Gallery::Instance()->bossHealthBar);
     bossHealthBorder.setTexture(Gallery::Instance()->bossHealthBorder);
+
+    pause_button.setTexture(Gallery::Instance()->pause_button, true);
+    pause_button.setRect(SCREEN_WIDTH - pause_button.getW(), 0);
+
+    pause_menu.setTexture(Gallery::Instance()->pause_menu, true);
+    pause_menu.setRect(SCREEN_WIDTH/2 - pause_menu.getW()/2, SCREEN_HEIGHT/3);
+    home_button.setTexture(Gallery::Instance()->home_button, true);
+    resume_button.setTexture(Gallery::Instance()->resume_button, true);
+    audio_button.setTexture(Gallery::Instance()->audio_unmuted_button, true);
+    int button_offset_x = pause_menu.getX() + 10;
+    int button_offset_y = pause_menu.getY() + pause_menu.getH()/2 - home_button.getH()/2;
+    home_button.setRect(button_offset_x, button_offset_y);
+    resume_button.setRect(pause_menu.getX() + pause_menu.getW()/2 - resume_button.getW()/2, button_offset_y);
+    audio_button.setRect(pause_menu.getX() + pause_menu.getW() - audio_button.getW() - 10, button_offset_y);
 }
 Game::~Game() {
     _clear();
@@ -148,6 +166,7 @@ bool touchRight(Chicken *chicken) {
     return chicken->getEntity()->getX() > SCREEN_WIDTH - chicken->getEntity()->getW();
 }
 
+//............................process...............................................
 void Game::process_game_state() {
     const int offset = 10;
 
@@ -391,6 +410,11 @@ void Game::process() {
                 playChunk(Media::Instance()->rocket);
             }
         }
+        if (event->type == SDL_MOUSEBUTTONDOWN && isHover(*event, pause_button)) {
+            setGameStatus(GAME_PAUSED);
+            gundam.resetControl();
+            return;
+        }
     }
 
     SDL_RenderClear(renderer);
@@ -398,10 +422,6 @@ void Game::process() {
     (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
     if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
     background.render(renderer, scrolling);
-
-    //...................player state........................................
-
-
 
     // ............................gundam.......................................
     process_gundam();
@@ -479,6 +499,8 @@ void Game::process() {
 
     //health bar
     process_game_state();
+    //...................pause........................................
+    pause_button.render(renderer);
 
     //gundam bullet
     gundam.handleBullet(renderer, enemy_positions);
@@ -714,6 +736,17 @@ void Game::chickenDead(Chicken *chicken) {
     score += CHICKEN_SCORE[chicken->getLevel()] + NG_CHICKEN_SCORE[chicken->getLevel()] * NG;
 }
 
+//.......................................menu...............................
+void Game::toggleAudio() {
+    audioState = GameAudio((audioState + 1) % AUDIO_COUNT);
+    if (audioState == AUDIO_MUTED) {
+        Mix_PauseMusic();
+    }
+    else {
+        Mix_ResumeMusic();
+    }
+}
+
 void Game::renderMenu() {
     if (status != GAME_INITALIZING) return;
 
@@ -864,13 +897,7 @@ void Game::renderMenu() {
                             }
                             else {
                                 if (i == SETTING_MENU_AUDIO) {
-                                    audioState = GameAudio((audioState + 1) % AUDIO_COUNT);
-                                    if (audioState == AUDIO_MUTED) {
-                                        Mix_PauseMusic();
-                                    }
-                                    else {
-                                        Mix_ResumeMusic();
-                                    }
+                                    toggleAudio();
                                 }
                                 else if (i == SETTING_MENU_DIFFICULTY) {
                                     difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
@@ -894,6 +921,44 @@ void Game::renderMenu() {
 //    Mix_PauseMusic();
 }
 
+void Game::renderPauseMenu() {
+    if (status != GAME_PAUSED) return;
+
+    while (SDL_PollEvent(event)) {
+        if (event->type == SDL_QUIT) {
+            setGameStatus(GAME_STOP);
+            return;
+        }
+        if (event->type == SDL_MOUSEBUTTONDOWN) {
+            if (isHover(*event, home_button)) {
+                playAgain();
+                return;
+            }
+            if (isHover(*event, resume_button)) {
+                setGameStatus(GAME_PLAYING);
+                return;
+            }
+            if (isHover(*event, audio_button)) {
+                toggleAudio();
+            }
+        }
+    }
+
+//    cout << "paused\n";
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 2);
+    SDL_Rect rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderFillRect(renderer, &rect);
+    pause_menu.render(renderer);
+    home_button.render(renderer);
+    resume_button.render(renderer);
+    audio_button.setTexture((audioState == AUDIO_MUTED ? Gallery::Instance()->audio_muted_button : Gallery::Instance()->audio_unmuted_button));
+    audio_button.render(renderer);
+
+    SDL_RenderPresent(renderer);
+}
+
+//..............................data..........................................
 void Game::initData() {
     _clear();
     score = round = NG = 0;
@@ -999,14 +1064,11 @@ void Game::playChunk(Mix_Chunk *chunk, int channel, int loop) {
 }
 
 void Game::playMusic(Mix_Music *music) {
-    if (audioState == AUDIO_MUTED) return;
     Mix_PlayMusic(music, -1);
+    if (audioState == AUDIO_MUTED) Mix_PauseMusic();
 }
 
-bool isHover(const SDL_Event &event, const Entity &entity) {
-    return entity.getX() <= event.motion.x && event.motion.x <= entity.getX() + entity.getW() && entity.getY() <= event.motion.y && event.motion.y <= entity.getY() + entity.getH();
-}
-
+//...................................summary............................
 void Game::gameOver() {
     if (status != GAME_OVER) return;
     playMusic(Media::Instance()->ending);

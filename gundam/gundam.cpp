@@ -20,7 +20,7 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     laser.setTexture(Gallery::Instance()->laser);
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 
-    memset(keydown, 0, sizeof(keydown));
+    resetControl();
 }
 
 Gundam::~Gundam() {
@@ -195,5 +195,10 @@ void Gundam::reset() {
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 
+    resetControl();
+}
+
+void Gundam::resetControl() {
+    entity.setStep(0, 0);
     memset(keydown, 0, sizeof(keydown));
 }

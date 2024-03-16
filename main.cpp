@@ -34,6 +34,7 @@ int main(int agrc, char **argv)
             b = a;
             game.renderMenu();
             game.process();
+            game.renderPauseMenu();
             game.gameOver();
         }
     }

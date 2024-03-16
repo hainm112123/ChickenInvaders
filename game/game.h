@@ -46,6 +46,7 @@ enum GameStatus {
     GAME_STOP = 0,
     GAME_INITALIZING,
     GAME_PLAYING,
+    GAME_PAUSED,
     GAME_OVER,
 };
 
@@ -176,6 +177,8 @@ class Game {
     Entity gundamLevelImage, rocketMini, frychickenMini;
     Text scoreText, scoreValue, gundamLevelText, frychickenText, rocketText;
 
+    Entity pause_button, home_button, audio_button, resume_button, pause_menu;
+
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);
     ~Game();
@@ -195,9 +198,11 @@ public:
 
     void setGameStatus(GameStatus newStatus);
     void load();
+    void renderMenu();
+    void renderPauseMenu();
+
     void init();
     void init_rock();
-    void renderMenu();
     void handleGameEvent();
     void process();
     void process_game_state();
@@ -213,6 +218,7 @@ public:
     void chickenDead(Chicken *chicken);
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
+    void toggleAudio();
 
     void removeUpgrade(Upgrade *upgrade);
     void removeFriedChicken(FriedChicken *fried_chicken);

@@ -30,6 +30,7 @@ enum EntityType {
     GUNDAM_STATE,
     FRIED_CHICKEN,
     BOSS_HEALTH_BAR,
+    PAUSE_MENU_BUTTON
 };
 
 class Entity {

@@ -51,6 +51,12 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(fried_chicken.texture);
     SDL_DestroyTexture(rocket.texture);
     SDL_DestroyTexture(big_explosion.texture);
+    SDL_DestroyTexture(pause_button.texture);
+    SDL_DestroyTexture(home_button.texture);
+    SDL_DestroyTexture(resume_button.texture);
+    SDL_DestroyTexture(audio_muted_button.texture);
+    SDL_DestroyTexture(audio_unmuted_button.texture);
+    SDL_DestroyTexture(pause_menu.texture);
 
     instance = nullptr;
 }
@@ -172,6 +178,14 @@ void Gallery::loadGamePictures() {
     fried_chicken = loadTexture("./assets/graphics/fried-chicken.png");
     rocket = loadTexture("./assets/graphics/rocket.png");
     big_explosion = loadTexture("./assets/graphics/big_exp-transformed.png");
+
+    pause_button = loadTexture("./assets/graphics/pause_menu/pause.png");
+    home_button = loadTexture("./assets/graphics/pause_menu/home_button.png");
+    resume_button = loadTexture("./assets/graphics/pause_menu/resume_button.png");
+    audio_muted_button = loadTexture("./assets/graphics/pause_menu/audio_muted.png");
+    audio_unmuted_button = loadTexture("./assets/graphics/pause_menu/audio_unmuted.png");
+    pause_menu = loadTexture("./assets/graphics/pause_menu/pause_menu.png");
+
 }
 
 //.............................Media............................................

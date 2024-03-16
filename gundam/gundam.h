@@ -96,6 +96,7 @@ public:
     bool revive();
 
     void reset();
+    void resetControl();
 };
 
 #endif // GUNDAM_H_INCLUDED
