@@ -14,7 +14,11 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     gundam(),
     rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
-    gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE)
+    gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE),
+    menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu),
+    menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, Gallery::Instance()->menu_settings),
+    menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu_control),
+    backButton("Back", TEXT_COLOR)
 {
 
     setGameStatus(GAME_STOP);
@@ -37,6 +41,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     bossHealthBar.setTexture(Gallery::Instance()->bossHealthBar);
     bossHealthBorder.setTexture(Gallery::Instance()->bossHealthBorder);
 
+    //.....................pause.............................
     pause_button.setTexture(Gallery::Instance()->pause_button, true);
     pause_button.setRect(SCREEN_WIDTH - pause_button.getW(), 0);
 
@@ -57,6 +62,15 @@ Game::~Game() {
 }
 void Game::setGameStatus(GameStatus newStatus) {
     status = newStatus;
+    if (status == GAME_INITALIZING) {
+        playMusic(Media::Instance()->start);
+    }
+    else if (status == GAME_PLAYING) {
+        playMusic(Media::Instance()->battle);
+    }
+    else if (status == GAME_OVER) {
+        playMusic(Media::Instance()->ending);
+    }
 //    cout << newStatus << " " << getGameStatus() << "\n";
 }
 
@@ -768,175 +782,103 @@ void Game::toggleAudio() {
 void Game::renderMenu() {
     if (status != GAME_INITALIZING) return;
 
-    static int menuState = MENU_MAIN;
-
-    Entity menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu);
-    Entity menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, Gallery::Instance()->menu_settings);
-    Entity menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu_control);
-
-    const int mainMenuTextCount = 5;
-    Text mainMenuText[] = {
-        Text("", TEXT_COLOR),
-        Text("", TEXT_COLOR),
-        Text("", TEXT_COLOR),
-        Text("", TEXT_COLOR),
-        Text("", TEXT_COLOR),
-    };
-    const int mainMenuChoiceCount = 5;
-    Text mainMenuChoice[] = {
-        Text("Save the World", TEXT_COLOR),
-        Text("Settings", TEXT_COLOR),
-        Text("Control", TEXT_COLOR),
-        Text("Hall of Fame", TEXT_COLOR),
-        Text("Quit", TEXT_COLOR),
-    };
-
-    Text backButton("Back", TEXT_COLOR);
-    backButton.renderText(fontRoundTitle, renderer);
-    backButton.setRect(SCREEN_WIDTH - backButton.getW() - 30, SCREEN_HEIGHT - backButton.getH() - 20);
-
-    const int settingsMenuTextCount = 3;
-    Text settingsMenuText[] = {
-        Text("", TEXT_COLOR),
-        Text("Audio", TEXT_COLOR),
-        Text("Difficulty", TEXT_COLOR)
-    };
-    const int settingsMenuChoiceCount = 3;
-    Text settingsMenuChoice[] = {
-        backButton,
-        Text("", TEXT_COLOR),
-        Text("", TEXT_COLOR),
-    };
-
-    const int rankingMenuTextCount = 0;
-    const int rankingMenuChoiceCount = 1;
-    Text rankingMenuChoice[] = {backButton};
-
-    const int controlMenuTextCount = 0;
-    const int controlMenuChoiceCount = 1;
-    Text controlMenuChoice[] = {backButton};
-
-    for (int i = 0; i < mainMenuChoiceCount; ++ i) {
-        mainMenuChoice[i].renderText(fontMenu, renderer, true);
-        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 320 + i * 60);
-    }
-    for (int i = 1; i < settingsMenuTextCount; ++ i) {
-        settingsMenuText[i].renderText(fontMenu, renderer, true);
-        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + (i - 1) * 80);
+    for (int i = 1; i < _size(settingsMenuChoice); ++ i) {
+        if (i == SETTING_MENU_AUDIO) {
+            settingsMenuChoice[i].setText(GAME_AUDIO[audioState]);
+        }
+        if (i == SETTING_MENU_DIFFICULTY) {
+            settingsMenuChoice[i].setText(GAME_DIFFICULTY[difficultyState]);
+        }
+        settingsMenuChoice[i].renderText(fontMenu, renderer);
+        settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + (i - 1) * 80);
     }
 
-    bool menuRunning = true;
-    playMusic(Media::Instance()->start);
-    Text *texts, *choices;
-    while (menuRunning) {
-        int textCount, choiceCount;
-        for (int i = 1; i < settingsMenuChoiceCount; ++ i) {
-            if (i == SETTING_MENU_AUDIO) {
-                settingsMenuChoice[i].setText(GAME_AUDIO[audioState]);
-            }
-            if (i == SETTING_MENU_DIFFICULTY) {
-                settingsMenuChoice[i].setText(GAME_DIFFICULTY[difficultyState]);
-            }
-            settingsMenuChoice[i].renderText(fontMenu, renderer, true);
-            settingsMenuChoice[i].setRect(SCREEN_WIDTH*3/4 - settingsMenuChoice[i].getW()/2, 150 + (i - 1) * 80);
-        }
-//        cout << textCount << " " << choiceCount << "\n";
+    vector<Text> texts = {};
+    vector<Text> &choices = (menuState == MENU_MAIN ? mainMenuChoice : (
+                             menuState == MENU_SETTINGS ? settingsMenuChoice : (
+                             menuState == MENU_RANKING ? rankingMenuChoice : (
+                             controlMenuChoice))));
+    if (menuState == MENU_MAIN) {
+        choices = mainMenuChoice;
+        menu.render(renderer);
+    }
+    else if (menuState == MENU_SETTINGS) {
+        texts = settingsMenuText;
+        choices = settingsMenuChoice;
+        menu_settings.render(renderer);
+    }
+    else if (menuState == MENU_RANKING) {
+        choices = rankingMenuChoice;
+        menu_settings.render(renderer);
+        showRanking();
+    }
+    else {
+        choices = controlMenuChoice;
+        menu_control.render(renderer);
+    }
 
-        if (menuState == MENU_MAIN) {
-            texts = mainMenuText;
-            choices = mainMenuChoice;
-            textCount = mainMenuTextCount;
-            choiceCount = mainMenuChoiceCount;
-            menu.render(renderer);
-        }
-        else if (menuState == MENU_SETTINGS) {
-            texts = settingsMenuText;
-            choices = settingsMenuChoice;
-            textCount = settingsMenuTextCount;
-            choiceCount = settingsMenuChoiceCount;
-            menu_settings.render(renderer);
-        }
-        else if (menuState == MENU_RANKING) {
-            textCount = rankingMenuTextCount;
-            choiceCount = rankingMenuChoiceCount;
-            choices = rankingMenuChoice;
-            menu_settings.render(renderer);
-            showRanking();
-        }
-        else {
-            textCount = controlMenuTextCount;
-            choiceCount = controlMenuChoiceCount;
-            choices = controlMenuChoice;
-            menu_control.render(renderer);
-        }
+//    cout << _size(texts) << "\n";
+    for (int i = 0; i < _size(texts); ++ i) {
+        texts[i].renderText(fontMenu, renderer);
+    }
+    for (int i = 0; i < _size(choices); ++ i) {
+        choices[i].renderText(fontMenu, renderer);
+    }
 
-        for (int i = 0; i < textCount; ++ i) {
-            if (menuState == MENU_MAIN) continue;
-            texts[i].renderText(fontMenu, renderer);
+    while (SDL_PollEvent(event) != 0) {
+        if (event->type == SDL_QUIT) {
+            setGameStatus(GAME_STOP);
         }
-        for (int i = 0; i < choiceCount; ++ i) {
-            choices[i].renderText(fontMenu, renderer);
-        }
-
-
-        while (SDL_PollEvent(event) != 0) {
-            if (event->type == SDL_QUIT) {
-                setGameStatus(GAME_STOP);
-                menuRunning = false;
-            }
-            else if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN) {
-                for (int i = 0; i < choiceCount; ++ i) {
-                    if (choices[i].getX() <= (event->motion).x && (event->motion).x <= choices[i].getX() + choices[i].getW() && choices[i].getY() <= (event->motion).y && (event->motion).y <= choices[i].getY() + choices[i].getH()) {
-                        if (event->type == SDL_MOUSEMOTION) {
-                            choices[i].setColor(TEXT_HOVER_COLOR);
-                        }
-                        else {
-                            playChunk(Media::Instance()->upgrade);
-                            if (menuState == MENU_MAIN) {
-                                if (i == MAIN_MENU_START) {
-                                    setGameStatus(GAME_PLAYING);
-                                    initTimer.startCountdown();
-                                    menuRunning = false;
-                                    playMusic(Media::Instance()->battle);
-                                }
-                                if (i == MAIN_MENU_SETTINGS) {
-                                    menuState = MENU_SETTINGS;
-                                }
-                                if (i == MAIN_MENU_RANKING) {
-                                    menuState = MENU_RANKING;
-                                }
-                                if (i == MAIN_MENU_CONTROL) {
-                                    menuState = MENU_CONTROL;
-                                }
-                                if (i == MAIN_MENU_QUIT) {
-                                    setGameStatus(GAME_STOP);
-                                    menuRunning = false;
-                                }
-                            }
-                            else {
-                                if (i == SETTING_MENU_AUDIO) {
-                                    toggleAudio();
-                                }
-                                else if (i == SETTING_MENU_DIFFICULTY) {
-                                    difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
-                                }
-                                else {
-                                    menuState = MENU_MAIN;
-                                }
-                            }
-                        }
+        else if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN) {
+            for (int i = 0; i < _size(choices); ++ i) {
+                if (isHover(*event, choices[i])) {
+                    if (event->type == SDL_MOUSEMOTION) {
+                        choices[i].setColor(TEXT_HOVER_COLOR);
+//                            cout << "hover\n";
                     }
                     else {
-                        choices[i].setColor(TEXT_COLOR);
+                        playChunk(Media::Instance()->upgrade);
+                        if (menuState == MENU_MAIN) {
+                            if (i == MAIN_MENU_START) {
+                                setGameStatus(GAME_PLAYING);
+                                initTimer.startCountdown();
+//                                playMusic(Media::Instance()->battle);
+                            }
+                            if (i == MAIN_MENU_SETTINGS) {
+                                menuState = MENU_SETTINGS;
+                            }
+                            if (i == MAIN_MENU_RANKING) {
+                                menuState = MENU_RANKING;
+                            }
+                            if (i == MAIN_MENU_CONTROL) {
+                                menuState = MENU_CONTROL;
+                            }
+                            if (i == MAIN_MENU_QUIT) {
+                                setGameStatus(GAME_STOP);
+                            }
+                        }
+                        else {
+                            if (i == SETTING_MENU_AUDIO) {
+                                toggleAudio();
+                            }
+                            else if (i == SETTING_MENU_DIFFICULTY) {
+                                difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
+                            }
+                            else {
+                                menuState = MENU_MAIN;
+                            }
+                        }
                     }
+                }
+                else {
+                    choices[i].setColor(TEXT_COLOR);
                 }
             }
         }
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(10);
     }
-//    Mix_PauseMusic();
+
+    SDL_RenderPresent(renderer);
+    SDL_Delay(10);
 }
 
 void Game::renderPauseMenu() {
@@ -1022,6 +964,7 @@ void Game::saveData() {
 
 void Game::load() {
     setGameStatus(GAME_INITALIZING);
+//    playMusic(Media::Instance()->start);
     TTF_Init();
     fontMenu = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 36);
     fontGame = TTF_OpenFont("./assets/font/Zebulon.otf", 24);
@@ -1061,6 +1004,38 @@ void Game::load() {
     rocketText.setColor(TEXT_COLOR);
     rocketText.setRect(rocketMini.getX() + rocketMini.getW() + offset/2, gundamStateOffsetY);
 
+    //....................menu.....................................
+    mainMenuChoice = {
+        Text("Save the World", TEXT_COLOR),
+        Text("Settings", TEXT_COLOR),
+        Text("Control", TEXT_COLOR),
+        Text("Hall of Fame", TEXT_COLOR),
+        Text("Quit", TEXT_COLOR),
+    };
+    settingsMenuText = {
+        Text("", TEXT_COLOR),
+        Text("Audio", TEXT_COLOR),
+        Text("Difficulty", TEXT_COLOR)
+    };
+    backButton.renderText(fontRoundTitle, renderer, true);
+    backButton.setRect(SCREEN_WIDTH - backButton.getW() - 30, SCREEN_HEIGHT - backButton.getH() - 20);
+    settingsMenuChoice = {
+        backButton,
+        Text("", TEXT_COLOR),
+        Text("", TEXT_COLOR)
+    };
+    rankingMenuChoice = {backButton};
+    controlMenuChoice = {backButton};
+
+    for (int i = 0; i < _size(mainMenuChoice); ++ i) {
+        mainMenuChoice[i].renderText(fontMenu, renderer, true);
+        mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 320 + i * 60);
+    }
+    for (int i = 1; i < _size(settingsMenuText); ++ i) {
+        settingsMenuText[i].renderText(fontMenu, renderer, true);
+        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + (i - 1) * 80);
+    }
+
     ifstream fin("./assets/data/players.txt");
 
     string playerName;
@@ -1094,7 +1069,7 @@ void Game::playMusic(Mix_Music *music) {
 //...................................summary............................
 void Game::gameOver() {
     if (status != GAME_OVER) return;
-    playMusic(Media::Instance()->ending);
+//    playMusic(Media::Instance()->ending);
 
     enterYourName();
     if (!isRunning()) return;

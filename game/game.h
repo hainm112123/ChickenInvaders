@@ -179,6 +179,11 @@ class Game {
 
     Entity pause_menu, home_button, audio_button, resume_button, pause_button;
 
+    MenuState menuState = MENU_MAIN;
+    Entity menu, menu_settings, menu_control;
+    vector<Text> settingsMenuText;
+    vector<Text> mainMenuChoice, settingsMenuChoice, rankingMenuChoice, controlMenuChoice;
+    Text backButton;
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);
     ~Game();
