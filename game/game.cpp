@@ -19,7 +19,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_UNMUTED;
+    audioState = AUDIO_MUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -52,7 +52,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     audio_button.setRect(pause_menu.getX() + pause_menu.getW() - audio_button.getW() - 10, button_offset_y);
 
     overlay = (Gallery::Instance()->overlay).texture;
-//    SDL_SetTextureBlendMode(overlay, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(overlay, SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(overlay, 1);
 }
 Game::~Game() {
@@ -109,7 +109,7 @@ void Game::init() {
     _clear(true);
 
 //    cout << round << "\n";
-//    gundamLaserTimer.startCountdown();
+    gundamLaserTimer.startCountdown();
 
     roundWon = false;
     chickenBullets.clear();
@@ -254,12 +254,10 @@ void Game::process_enemy() {
 
             const int rate = chicken->getLevel() == 0 ? 1 : 100;
             const int maxNumberOfBullet = chicken->getLevel() == 0 ? 1 : 3;
-            auto _now = CLOCK_NOW();
-            ElapsedTime elapsed = _now - chicken->getLastBullet();
-            if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && elapsed.count() > BULLET_DELAY) {
+            if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp()) {
                 chicken->addBullet(chickenBullets.back());
                 chickenBullets.pop_back();
-                chicken->setLastBullet(_now);
+                (chicken->bulletTimer).startCountdown();
             }
             chicken->render(renderer);
         }
@@ -424,6 +422,22 @@ void Game::process() {
             return;
         }
     }
+
+    // ........................Timer process..............................
+    initTimer.process();
+    gameEndTimer.process();
+    rockWaveTimer.process();
+    bossTurnTimer.process();
+
+    gundamReviveTimer.process();
+    gundamShieldTimer.process();
+    gundamLaserTimer.process();
+
+    for (Chicken *chicken: chickens) if (chicken->isAlive()) {
+        (chicken->bulletTimer).process();
+    }
+
+    //...........................................................
 
     SDL_RenderClear(renderer);
 

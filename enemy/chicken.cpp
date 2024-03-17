@@ -14,15 +14,12 @@ Chicken::Chicken(int offsetX, int offsetY, int _level, int game_difficulty) {
     bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[level], MAX_CHICKEN_EGG_SPEED[level]) + game_difficulty * NG_CHICKEN_EGG_SPEED;
 
     moveState = {0, 1, 0, !level};
+    bulletTimer.setDuration(BULLET_DELAY);
 }
 
 Chicken::~Chicken() {
     for (Bullet *bullet: bullets) delete(bullet);
     bullets.clear();
-}
-
-void Chicken::setLastBullet(Time _lastBullet) {
-    lastBullet = _lastBullet;
 }
 
 void Chicken::render(SDL_Renderer *renderer) {

@@ -39,12 +39,13 @@ class Chicken {
     int level;
     double speed, bulletSpeed;
     int bulletWidth, bulletHeight;
-    Time lastBullet = CLOCK_NOW();
     ChickenMoveState moveState;
 
 public:
     Chicken(int offsetX = 0, int offsetY = 0, int _level = 0, int game_difficulty = 0);
     ~Chicken();
+
+    Timer bulletTimer;
 
     Entity* getEntity() {
         return &entity;
@@ -66,9 +67,6 @@ public:
     double getSpeed() const {
         return speed;
     }
-    Time getLastBullet() const {
-        return lastBullet;
-    }
     bool isAlive() {
         return hp > 0;
     }
@@ -78,8 +76,6 @@ public:
     ChickenMoveState getMoveState() const {
         return moveState;
     }
-
-    void setLastBullet(Time _lastBullet);
 
     bool receiveDamage(double dmg);
     void setMoveState(ChickenMoveState _moveState);

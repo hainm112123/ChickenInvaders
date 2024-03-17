@@ -90,9 +90,11 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
     if (!gundamLaserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
             setLaserOn(true);
+            keydown[GUNDAM_FIRE] = 1;
         }
-        if (event.type == SDL_KEYUP && event.key.repeat == 0) {
+        if (event.type == SDL_KEYUP && event.key.repeat == 0 && keydown[GUNDAM_FIRE]) {
             setLaserOn(false);
+            keydown[GUNDAM_FIRE] = 0;
         }
     }
 }
@@ -200,5 +202,6 @@ void Gundam::reset() {
 
 void Gundam::resetControl() {
     entity.setStep(0, 0);
+    setLaserOn(false);
     memset(keydown, 0, sizeof(keydown));
 }

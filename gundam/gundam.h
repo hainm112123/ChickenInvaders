@@ -22,6 +22,7 @@ enum GundamMove {
     GUNDAM_MOVE_LEFT,
     GUNDAM_MOVE_DOWN,
     GUNDAM_MOVE_RIGHT,
+    GUNDAM_FIRE,
 };
 const int gundam_step_x[] = {0, -1, 0, 1};
 const int gundam_step_y[] = {-1, 0, 1, 0};
@@ -48,7 +49,7 @@ class Gundam {
     Entity shield;
     Entity laser;
     bool laserOn = false;
-    bool keydown[4];
+    bool keydown[5];
 
 public:
     Gundam();

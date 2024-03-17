@@ -4,8 +4,7 @@
 #include "../common/common.h"
 
 class Timer {
-    Time st, ed;
-    double duration = 0;
+    double duration = 0, currentTime = 0;
     bool active = false;
 public:
     Timer(double duration = 0);
@@ -14,6 +13,7 @@ public:
     void startCountdown();
     bool timeIsUp();
     void deactive();
+    void process();
 };
 
 class TimeManager {

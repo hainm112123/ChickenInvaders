@@ -8,18 +8,21 @@ void Timer::setDuration(double _duration) {
 
 void Timer::startCountdown() {
     active = true;
-    st = CLOCK_NOW();
+    currentTime = 0;
 }
 
 bool Timer::timeIsUp() {
     if (!active) return true;
-    ed = CLOCK_NOW();
-    ElapsedTime elapsed = ed - st;
-    if (elapsed.count() > duration) {
+    if (currentTime >= duration) {
         active = false;
         return true;
     }
     return false;
+}
+
+void Timer::process() {
+    if (!active) return;
+    currentTime += TimeManager::Instance()->getElapsedTime();
 }
 
 void Timer::deactive() {

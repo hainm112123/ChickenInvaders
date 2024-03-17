@@ -18,14 +18,14 @@
 
 #include <SDL.h>
 
-#define CLOCK_NOW chrono::system_clock::now
+//#define CLOCK_NOW chrono::system_clock::now
 #define _size(x) (int((x).size()))
 #define sqr(x) ((x) * (x))
 
 using namespace std;
 
-typedef chrono::system_clock::time_point Time;
-typedef chrono::duration<double> ElapsedTime;
+//typedef chrono::system_clock::time_point Time;
+//typedef chrono::duration<double> ElapsedTime;
 
 const int oo = int(1e9);
 const double eps = 1e-9;
