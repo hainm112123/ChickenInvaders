@@ -19,7 +19,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
 
     setGameStatus(GAME_STOP);
     difficultyState = GAME_EASY;
-    audioState = AUDIO_MUTED;
+    audioState = AUDIO_UNMUTED;
     score = 0;
     round = 0;
     roundWon = true;
@@ -41,23 +41,18 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     pause_button.setRect(SCREEN_WIDTH - pause_button.getW(), 0);
 
     pause_menu.setTexture(Gallery::Instance()->pause_menu, true);
-    pause_menu.setRect(SCREEN_WIDTH/2 - pause_menu.getW()/2, SCREEN_HEIGHT/3);
+    pause_menu.setRect(0, 0);
     home_button.setTexture(Gallery::Instance()->home_button, true);
     resume_button.setTexture(Gallery::Instance()->resume_button, true);
     audio_button.setTexture(Gallery::Instance()->audio_unmuted_button, true);
-    int button_offset_x = pause_menu.getX() + 10;
-    int button_offset_y = pause_menu.getY() + pause_menu.getH()/2 - home_button.getH()/2;
-    home_button.setRect(button_offset_x, button_offset_y);
-    resume_button.setRect(pause_menu.getX() + pause_menu.getW()/2 - resume_button.getW()/2, button_offset_y);
-    audio_button.setRect(pause_menu.getX() + pause_menu.getW() - audio_button.getW() - 10, button_offset_y);
-
-    overlay = (Gallery::Instance()->overlay).texture;
-    SDL_SetTextureBlendMode(overlay, SDL_BLENDMODE_BLEND);
-    SDL_SetTextureAlphaMod(overlay, 1);
+    int button_offset_x = pause_menu.getX() + pause_menu.getW()/2;
+    int button_offset_y = pause_menu.getY() + pause_menu.getH()/2 - home_button.getH();
+    resume_button.setRect(button_offset_x - resume_button.getW() - 5, button_offset_y);
+    home_button.setRect(button_offset_x + 5, button_offset_y);
+    audio_button.setRect(button_offset_x - audio_button.getW()/2, pause_menu.getY() + pause_menu.getH()*3/4 - audio_button.getH()/2);
 }
 Game::~Game() {
     _clear();
-    SDL_DestroyTexture(overlay);
     quit();
 }
 void Game::setGameStatus(GameStatus newStatus) {
@@ -413,8 +408,9 @@ void Game::process() {
                 playChunk(Media::Instance()->rocket);
             }
         }
-        if ((event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_ESCAPE) ||
-            (event->type == SDL_MOUSEBUTTONDOWN && isHover(*event, pause_button)))
+        if ((event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_ESCAPE)
+            || (event->type == SDL_MOUSEBUTTONDOWN && isHover(*event, pause_button))
+        )
         {
             playChunk(Media::Instance()->upgrade);
             setGameStatus(GAME_PAUSED);
@@ -681,7 +677,7 @@ void Game::handleGameEvent() {
     }
 
     //...............rocket......................................
-    if (rocket.reached()) {
+    if (rocket.reached(audioState == AUDIO_UNMUTED)) {
         for (Chicken *chicken: chickens) {
             chickenDead(chicken);
             delete(chicken);
@@ -788,10 +784,10 @@ void Game::renderMenu() {
     };
     const int mainMenuChoiceCount = 5;
     Text mainMenuChoice[] = {
-        Text("Start", TEXT_COLOR),
+        Text("Save the World", TEXT_COLOR),
         Text("Settings", TEXT_COLOR),
         Text("Control", TEXT_COLOR),
-        Text("Ranking", TEXT_COLOR),
+        Text("Hall of Fame", TEXT_COLOR),
         Text("Quit", TEXT_COLOR),
     };
 
@@ -975,8 +971,6 @@ void Game::renderPauseMenu() {
     }
 
 //    cout << "paused\n";
-
-    SDL_RenderCopy(renderer, overlay, NULL, NULL);
 
     pause_menu.render(renderer);
     home_button.render(renderer);

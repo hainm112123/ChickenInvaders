@@ -19,12 +19,14 @@ Rocket::Rocket(double _src_x, double _src_y, double _dst_x, double _dst_y):
 
 Rocket::~Rocket() {}
 
-bool Rocket::reached() {
+bool Rocket::reached(bool is_audio_on) {
     if (!active) return false;
     if (abs(x - dst_x) < 2 && abs(y - dst_y) < 2) {
         active = false;
         exp = true;
-        Mix_PlayChannel(-1, Media::Instance()->explosions[1], 0);
+        if (is_audio_on) {
+            Mix_PlayChannel(-1, Media::Instance()->explosions[1], 0);
+        }
         return true;
     }
     return false;

@@ -25,7 +25,7 @@ public:
         return active;
     }
 
-    bool reached();
+    bool reached(bool is_audio_on);
     void handleMove();
     void Set();
     void handleExplosion(SDL_Renderer *renderer);
