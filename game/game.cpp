@@ -365,7 +365,7 @@ void Game::process_enemy() {
                 removeFriedChicken(fried_chicken);
             }
             else {
-                fried_chicken->render(renderer);
+                fried_chicken->render_friedchicken(renderer);
             }
             it = next_it;
         }
@@ -733,7 +733,7 @@ void Game::addFriedChicken(double x, double y, int level) {
     int cnt = NUMBER_OF_FRIED_CHICKEN[level];
     while (cnt --) {
         FriedChicken *fried_chicken = new FriedChicken(x, y);
-        fried_chicken->setTexture(Gallery::Instance()->fried_chicken);
+        fried_chicken->setTextures(Gallery::Instance()->fried_chickens);
         fried_chickens.push_back(fried_chicken);
     }
 }

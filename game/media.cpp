@@ -35,6 +35,7 @@ Gallery::~Gallery() {
     for (Texture texture: newWeapons) SDL_DestroyTexture(texture.texture);
     for (Texture texture: rocks) SDL_DestroyTexture(texture.texture);
     for (Texture texture: expolosions) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: fried_chickens) SDL_DestroyTexture(texture.texture);
     SDL_DestroyTexture(laser.texture);
     SDL_DestroyTexture(background.texture);
     SDL_DestroyTexture(levelUp.texture);
@@ -48,7 +49,6 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(level.texture);
     SDL_DestroyTexture(rocket_mini.texture);
     SDL_DestroyTexture(fry_chicken_mini.texture);
-    SDL_DestroyTexture(fried_chicken.texture);
     SDL_DestroyTexture(rocket.texture);
     SDL_DestroyTexture(big_explosion.texture);
     SDL_DestroyTexture(pause_button.texture);
@@ -175,7 +175,24 @@ void Gallery::loadGamePictures() {
     rocket_mini = loadTexture("./assets/graphics/rocket_mini.png");
     fry_chicken_mini = loadTexture("./assets/graphics/fried-chicken-mini.png");
 
-    fried_chicken = loadTexture("./assets/graphics/fried-chicken.png");
+    fried_chickens = {
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken.png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (8).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (1).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (9).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (2).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (10).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (3).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (11).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (4).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (12).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (5).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (13).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (6).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (14).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (7).png"),
+        loadTexture("./assets/graphics/fried_chicken/fried-chicken (15).png"),
+    };
     rocket = loadTexture("./assets/graphics/rocket.png");
     big_explosion = loadTexture("./assets/graphics/big_exp-transformed.png");
 

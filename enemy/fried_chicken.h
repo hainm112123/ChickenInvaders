@@ -4,8 +4,8 @@
 #include "../common/entity.h"
 #include "../common/time.h"
 
-const int FRIED_CHICKEN_WIDTH = 36;
-const int FRIED_CHICKEN_HEIGHT = 28;
+const int FRIED_CHICKEN_WIDTH = 40;
+const int FRIED_CHICKEN_HEIGHT = 39;
 
 const double FRIED_CHICKEN_TURN_DELAY = 0.04;
 const double DELAY_AFTER_TOUCH_BOTTOM = 1.5;
@@ -25,6 +25,7 @@ public:
     FriedChicken(double _x, double _y);
     ~FriedChicken();
     bool handleMove();
+    void render_friedchicken(SDL_Renderer *renderer);
 };
 
 #endif // FRY_CHICKEN_H_INCLUDED

@@ -79,10 +79,11 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
     } else if (type == CHICKEN || type == CHICKEN_BOSS) {
         int n = textures.size();
         currentTime += elapsed;
-        if (currentTime >= SECOND_PER_PICTURE * n) currentTime -= SECOND_PER_PICTURE * n;
-        SDL_RenderCopy(renderer, textures[int(currentTime / SECOND_PER_PICTURE)].texture, NULL, &rect);
+        double per_pic = SECOND_PER_PICTURE;
+        if (currentTime >= per_pic * n) currentTime -= per_pic * n;
+        SDL_RenderCopy(renderer, textures[int(currentTime / per_pic)].texture, NULL, &rect);
     }
-    else if (type == MENU || type == SHIELD || type == HEART || type == FRIED_CHICKEN) {
+    else if (type == MENU || type == SHIELD || type == HEART) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {

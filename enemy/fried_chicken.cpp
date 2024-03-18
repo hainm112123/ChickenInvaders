@@ -46,3 +46,11 @@ bool FriedChicken::handleMove() {
     }
     return true;
 }
+
+void FriedChicken::render_friedchicken(SDL_Renderer *renderer) {
+    int n = textures.size();
+    if (touch_bottom <= 3) currentTime += TimeManager::Instance()->getElapsedTime();
+    double per_pic = SECOND_PER_PICTURE_FASTER;
+    if (currentTime >= per_pic * n) currentTime -= per_pic * n;
+    SDL_RenderCopy(renderer, textures[int(currentTime / per_pic)].texture, NULL, &rect);
+}
