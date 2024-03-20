@@ -16,6 +16,7 @@ const double GUNDAM_SPEED = 500;
 
 const int MAX_GUNDAM_LEVEL = 10;
 const int NUMBER_OF_BULLET_FORM = 4;
+const double FIRE_DELAY[] = {0.1, 0, 0.2, 0.81};
 
 enum GundamMove {
     GUNDAM_MOVE_UP = 0,
@@ -50,6 +51,8 @@ class Gundam {
     Entity laser;
     bool laserOn = false;
     bool keydown[5];
+
+    Timer fire_timer;
 
 public:
     Gundam();

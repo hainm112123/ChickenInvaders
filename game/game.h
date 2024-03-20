@@ -24,7 +24,7 @@ const double ROCK_WAVE_DELAY = 0.87654321;
 
 const int ROCK_FALL_ROUND = 5;
 const int ROCK_SIDE_ROUND = 3;
-const int MINI_BOSS_ROUND = 1;
+const int MINI_BOSS_ROUND = 4;
 const int BOSS_ROUND = 6;
 const int ROUND_COUNT = 6;
 const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};

@@ -20,6 +20,8 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     laser.setTexture(Gallery::Instance()->laser);
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 
+    fire_timer.setDuration(FIRE_DELAY[getCurrentWeapon()]);
+
     resetControl();
 }
 
@@ -41,6 +43,8 @@ void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
 }
 
 void Gundam::_move() {
+    fire_timer.process();
+
     if (!alive) return;
     entity._move(true);
     int shieldSize = max(entity.getW(), entity.getH()) + 20;
@@ -70,7 +74,9 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
         }
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-        if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp()) {
+        if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp() && fire_timer.timeIsUp()) {
+            fire_timer.startCountdown();
+
             Bullet *bullet = new Bullet(getCurrentWeapon());
             bullet_form = min(level, NUMBER_OF_BULLET_FORM - 1);
             Texture texture = Gallery::Instance()->gundamWeapons[getCurrentWeapon()][bullet_form];
@@ -157,10 +163,16 @@ void Gundam::addWeapon(WeaponType newWeapon) {
     weapons.push_back(newWeapon);
     currentWeaponID = int(weapons.size()) - 1;
 //    cout << "New weapon added\n";
+
+    fire_timer.deactive();
+    fire_timer.setDuration(FIRE_DELAY[getCurrentWeapon()]);
 }
 
 void Gundam::changeWeapon() {
     currentWeaponID = (currentWeaponID + 1) % (int(weapons.size()));
+
+    fire_timer.deactive();
+    fire_timer.setDuration(FIRE_DELAY[getCurrentWeapon()]);
 }
 
 int Gundam::getBulletDamage() {
