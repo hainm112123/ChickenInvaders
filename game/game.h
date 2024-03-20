@@ -83,6 +83,9 @@ enum SettingsMenuTab {
     SETTING_MENU_AUDIO = 1,
     SETTING_MENU_DIFFICULTY
 };
+enum RankingMenuTab {
+    RANKING_MENU_CLEAR_RANKING = 1,
+};
 
 const string ROUND_TEXT[] = {
     "",

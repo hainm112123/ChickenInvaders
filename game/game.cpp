@@ -305,16 +305,17 @@ void Game::process_enemy() {
         for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
     }
 
-    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_BOSS) {
+    if (topChicken != nullptr && (topChicken->chicken_type() == CHICKEN_BOSS || topChicken->chicken_type() == CHICKEN_DODGE)) {
+        ChickenType chicken_type = topChicken->chicken_type();
         if (bossTurnTimer.timeIsUp()) {
             for (Chicken *chicken: chickens) {
                 ChickenMoveState moveState = chicken->getMoveState();
                 int H_Rate = 50, V_Rate = 50;
                 if (gundam.getEntity()->getX() < chicken->getEntity()->getX()) {
-                    H_Rate = 80;
+                    H_Rate = chicken_type == CHICKEN_BOSS ? 80 : 30;
                 }
                 else {
-                    H_Rate = 30;
+                    H_Rate = chicken_type == CHICKEN_BOSS ? 30 : 80;
                 }
 
                 if (Rand(0, 100) < H_Rate) {
@@ -363,28 +364,28 @@ void Game::process_enemy() {
         }
     }
 
-    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
-        ChickenMoveState chickenMoveState = topChicken->getMoveState();
-
-        if (touchBottom(bottomChicken, 5)) {
-            chickenMoveState.goDown = 0;
-            chickenMoveState.goUp = 1;
-        }
-        if (touchTop(topChicken)) {
-            chickenMoveState.goDown = 1;
-            chickenMoveState.goUp = 0;
-        }
-        if (touchRight(rightChicken)) {
-            chickenMoveState.goRight = 0;
-            chickenMoveState.goLeft = 1;
-        }
-        if (touchLeft(leftChicken)) {
-            chickenMoveState.goRight = 1;
-            chickenMoveState.goLeft = 0;
-        }
-
-        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
-    }
+//    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
+//        ChickenMoveState chickenMoveState = topChicken->getMoveState();
+//
+//        if (touchBottom(bottomChicken, 5)) {
+//            chickenMoveState.goDown = 0;
+//            chickenMoveState.goUp = 1;
+//        }
+//        if (touchTop(topChicken)) {
+//            chickenMoveState.goDown = 1;
+//            chickenMoveState.goUp = 0;
+//        }
+//        if (touchRight(rightChicken)) {
+//            chickenMoveState.goRight = 0;
+//            chickenMoveState.goLeft = 1;
+//        }
+//        if (touchLeft(leftChicken)) {
+//            chickenMoveState.goRight = 1;
+//            chickenMoveState.goLeft = 0;
+//        }
+//
+//        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
+//    }
 
     //....................fried chicken..................................
 
@@ -927,14 +928,21 @@ void Game::renderMenu() {
                             }
                         }
                         else {
-                            if (i == SETTING_MENU_AUDIO) {
-                                toggleAudio();
-                            }
-                            else if (i == SETTING_MENU_DIFFICULTY) {
-                                difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
-                            }
-                            else {
+                            if (i == 0) {
                                 menuState = MENU_MAIN;
+                            }
+                            if (menuState == MENU_SETTINGS) {
+                                if (i == SETTING_MENU_AUDIO) {
+                                    toggleAudio();
+                                }
+                                else if (i == SETTING_MENU_DIFFICULTY) {
+                                    difficultyState = GameDifficulty((difficultyState + 1) % GAME_DIFFICULTY_COUNT);
+                                }
+                            }
+                            if (menuState == MENU_RANKING) {
+                                if (i == RANKING_MENU_CLEAR_RANKING) {
+                                    scores.clear();
+                                }
                             }
                         }
                     }
@@ -997,7 +1005,9 @@ void Game::initData() {
     _clear();
     score = round = NG = 0;
     scrolling = 0;
-    rocketCount = 5;
+    rocketCount = 3;
+    if (difficultyState == GAME_NORMAL) rocketCount = 1;
+    if (difficultyState == GAME_HARD) rocketCount = 0;
     frychickenCount = 0;
     roundWon = true;
 
@@ -1094,7 +1104,13 @@ void Game::load() {
         Text("", TEXT_COLOR),
         Text("", TEXT_COLOR)
     };
-    rankingMenuChoice = {backButton};
+    rankingMenuChoice = {
+        backButton,
+        Text("Reset ranking", TEXT_COLOR)
+    };
+    rankingMenuChoice[1].renderText(fontMenu, renderer, true);
+    rankingMenuChoice[1].setRect(30, SCREEN_HEIGHT - rankingMenuChoice[1].getH() - 20);
+
     controlMenuChoice = {backButton};
 
     for (int i = 0; i < _size(mainMenuChoice); ++ i) {
