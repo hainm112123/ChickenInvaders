@@ -9,6 +9,10 @@ class Timer {
 public:
     Timer(double duration = 0);
 
+    double RemainTime() const {
+        return max(duration - currentTime, double(0));
+    }
+
     void setDuration(double _duration);
     void startCountdown();
     bool timeIsUp();

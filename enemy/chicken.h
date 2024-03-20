@@ -12,7 +12,7 @@ const int CHICKEN_HEIGHT[] = {65, 200, 108};
 const double CHICKEN_SPEED[] = {100, 300, 256};
 const double NG_CHICKEN_SPEED = 60;
 
-const double CHICKEN_HP[] = {100, 6400, 2500};
+const double CHICKEN_HP[] = {100, 6789, 2500};
 const double CHICKEN_HP_UPGRADE[] = {69, 3333, 1111};
 
 const int CHICKENS_DISTANCE[] = {30, 100, 0};

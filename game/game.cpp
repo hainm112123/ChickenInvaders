@@ -118,7 +118,7 @@ void Game::init() {
     _clear(true);
 
 //    cout << round << "\n";
-    gundamLaserTimer.startCountdown();
+//    gundamLaserTimer.startCountdown();
 
     roundWon = false;
     chickenBullets.clear();
@@ -160,6 +160,11 @@ void Game::init() {
         numberOfAliveChicken = numberOfEnemy;
 
         if (chicken_type == CHICKEN_BOSS) bossTurnTimer.startCountdown();
+    }
+
+    if (round == MINI_BOSS_ROUND) {
+        roundTimer.setDuration(MINI_BOSS_TIME_LIMIT);
+        roundTimer.startCountdown();
     }
 
 //    gundamLaserTimer.startCountdown();
@@ -298,28 +303,7 @@ void Game::process_enemy() {
 
         for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
     }
-    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
-        ChickenMoveState chickenMoveState = topChicken->getMoveState();
 
-        if (touchBottom(bottomChicken, 5)) {
-            chickenMoveState.goDown = 0;
-            chickenMoveState.goUp = 1;
-        }
-        if (touchTop(topChicken)) {
-            chickenMoveState.goDown = 1;
-            chickenMoveState.goUp = 0;
-        }
-        if (touchRight(rightChicken)) {
-            chickenMoveState.goRight = 0;
-            chickenMoveState.goLeft = 1;
-        }
-        if (touchLeft(leftChicken)) {
-            chickenMoveState.goRight = 1;
-            chickenMoveState.goLeft = 0;
-        }
-
-        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
-    }
     if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_BOSS) {
         if (bossTurnTimer.timeIsUp()) {
             for (Chicken *chicken: chickens) {
@@ -376,6 +360,29 @@ void Game::process_enemy() {
 
             chicken->setMoveState(moveState);
         }
+    }
+
+    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
+        ChickenMoveState chickenMoveState = topChicken->getMoveState();
+
+        if (touchBottom(bottomChicken, 5)) {
+            chickenMoveState.goDown = 0;
+            chickenMoveState.goUp = 1;
+        }
+        if (touchTop(topChicken)) {
+            chickenMoveState.goDown = 1;
+            chickenMoveState.goUp = 0;
+        }
+        if (touchRight(rightChicken)) {
+            chickenMoveState.goRight = 0;
+            chickenMoveState.goLeft = 1;
+        }
+        if (touchLeft(leftChicken)) {
+            chickenMoveState.goRight = 1;
+            chickenMoveState.goLeft = 0;
+        }
+
+        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
     }
 
     //....................fried chicken..................................
@@ -472,6 +479,15 @@ void Game::process() {
         (chicken->bulletTimer).process();
     }
 
+    if (round == MINI_BOSS_ROUND && !chickens.empty()) {
+        bool round_end = true;
+        for (Chicken *chicken: chickens) if (chicken->isAlive()) {
+            round_end = false;
+            break;
+        }
+        if (!round_end) roundTimer.process();
+    }
+
     //...........................................................
 
     SDL_RenderClear(renderer);
@@ -558,6 +574,15 @@ void Game::process() {
     process_game_state();
     //...................pause........................................
     pause_button.render(renderer);
+    //....................................................................
+    if (round == MINI_BOSS_ROUND) {
+//        cout << roundTimer.RemainTime() << "\n";
+        string remain_time = to_string(roundTimer.RemainTime());
+        for (int i = 0; i < 3; ++ i) remain_time.pop_back();
+//        remain_time += 's';
+        roundTimerText.setText(remain_time);
+        roundTimerText.renderText(fontGame, renderer);
+    }
 
     //gundam bullet
     gundam.handleBullet(renderer, enemy_positions);
@@ -728,6 +753,11 @@ void Game::handleGameEvent() {
         }
         rocks.clear();
     }
+
+    //......................speed round (mini boss) ....................................
+    if (!roundWon && round == MINI_BOSS_ROUND && roundTimer.timeIsUp()) {
+        gundamDead(true);
+    }
 }
 
 void Game::addExplosion(SDL_Rect rect, int level) {
@@ -739,16 +769,26 @@ void Game::addExplosion(SDL_Rect rect, int level) {
     explosions.push_back(new Entity(EXPLOSION, rect, texture));
 }
 
-void Game::gundamDead() {
+void Game::gundamDead(bool immediately) {
+    if (hearts.empty()) return;
+
     if (!gundamShieldTimer.timeIsUp()) {
         playChunk(Media::Instance()->bulletRock);
         return;
     }
     gundam.dead();
+    hearts.pop_back();
+
+    if (immediately) {
+        while (!hearts.empty()) {
+            hearts.pop_back();
+            gundam.dead();
+        }
+    }
+
     addExplosion(gundam.getEntity()->getRect(), 1);
     playChunk(Media::Instance()->explosions[0]);
     gundamReviveTimer.startCountdown();
-    hearts.pop_back();
     if (hearts.empty()) {
         gameEndTimer.startCountdown();
     }
@@ -959,7 +999,7 @@ void Game::initData() {
     _clear();
     score = round = NG = 0;
     scrolling = 0;
-    rocketCount = frychickenCount = 10;
+    rocketCount = frychickenCount = 0;
     roundWon = true;
 
     killedChickenCount.assign(5, 0);
@@ -1066,6 +1106,12 @@ void Game::load() {
         settingsMenuText[i].renderText(fontMenu, renderer, true);
         settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + (i - 1) * 80);
     }
+
+    //..................................................................
+    roundTimerText.setText("0.000");
+    roundTimerText.setColor(TEXT_COLOR);
+    roundTimerText.renderText(fontGame, renderer, true);
+    roundTimerText.setRect(SCREEN_WIDTH/2 - roundTimerText.getW()/2, 0);
 
     ifstream fin("./assets/data/players.txt");
 

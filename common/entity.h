@@ -4,6 +4,8 @@
 #include "common.h"
 #include "time.h"
 
+typedef pair<double, double> Position;
+
 const int NUMBER_OF_EXPLOSION_PIC = 4;
 const int NUMBER_OF_BIG_EXPLOSION_PIC = 8;
 const double SECOND_PER_PICTURE = 0.06;
@@ -80,6 +82,9 @@ public:
     }
     pair<double, double> getStep() const {
         return make_pair(step_x, step_y);
+    }
+    Position NextPosition() {
+        return Position(x + step_x, y + step_y);
     }
 
     void setPosition(double _x, double _y);

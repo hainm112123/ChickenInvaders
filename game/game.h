@@ -15,6 +15,7 @@
 const int NUMBER_OF_CHICKEN = 30;
 const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const double BOSS_TURN_DELAY = 1.2;
+const double MINI_BOSS_TIME_LIMIT = 20;
 
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 10;
@@ -23,7 +24,7 @@ const double ROCK_WAVE_DELAY = 0.87654321;
 
 const int ROCK_FALL_ROUND = 5;
 const int ROCK_SIDE_ROUND = 3;
-const int MINI_BOSS_ROUND = 4;
+const int MINI_BOSS_ROUND = 1;
 const int BOSS_ROUND = 6;
 const int ROUND_COUNT = 6;
 const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
@@ -167,6 +168,8 @@ class Game {
     int rockWaveCount = 0;
     vector<pair<double, double>>enemy_positions;
     list<FriedChicken*> fried_chickens;
+    Timer roundTimer;
+    Text roundTimerText;
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
@@ -219,7 +222,7 @@ public:
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect, int level);
     void addFriedChicken(double x, double y, int level);
-    void gundamDead();
+    void gundamDead(bool immediately = false);
     void chickenDead(Chicken *chicken);
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
