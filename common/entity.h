@@ -14,7 +14,6 @@ enum EntityType {
     GUNDAM = 0,
     BACKGROUND,
     CHICKEN,
-    CHICKEN_BOSS,
     BULLET,
     ROCKET,
     LASER,

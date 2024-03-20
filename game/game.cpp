@@ -139,28 +139,27 @@ void Game::init() {
         rockWaveTimer.startCountdown();
     }
     else {
-        int level = (round == BOSS_ROUND || round == MINI_BOSS_ROUND);
-        int perRow = round == BOSS_ROUND ? 3 : (round == MINI_BOSS_ROUND ? 1 : NUMBER_OF_CHICKEN_PER_ROW);
-        int numberOfEnemy = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? perRow : NUMBER_OF_CHICKEN;
-        int numberOfBullet = (level ? perRow * 2: perRow) * (game_difficulty * 2 + 1);
+        ChickenType chicken_type = CHICKEN_SMALL;
+        if (round == MINI_BOSS_ROUND) chicken_type = CHICKEN_DODGE;
+        if (round == BOSS_ROUND) chicken_type = CHICKEN_BOSS;
+        int perRow = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? 1 : NUMBER_OF_CHICKEN_PER_ROW;
+        int numberOfEnemy = chicken_type == CHICKEN_SMALL ? NUMBER_OF_CHICKEN : perRow;
+        int numberOfBullet = 0;
+        if (chicken_type == CHICKEN_SMALL) numberOfBullet = perRow;
+        if (chicken_type == CHICKEN_BOSS) numberOfBullet = perRow * 3;
+        numberOfBullet *= (game_difficulty * 2 + 1);
 
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet(CHICKEN_EGG));
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
-            Chicken *chicken = new Chicken(col, row, level, game_difficulty);
-//            chicken->getEntity()->setTexture(Gallery::Instance()->chickens[chicken->getLevel()]);
-            if (round == BOSS_ROUND) {
-                chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->getLevel() + i]);
-            }
-            else {
-                chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->getLevel()]);
-            }
+            Chicken *chicken = new Chicken(col, row, chicken_type, game_difficulty);
+            chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->chicken_type()]);
             chickens.push_back(chicken);
-            if (level) bossHP += chicken->getHP();
+            if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) bossHP += chicken->getHP();
         }
         numberOfAliveChicken = numberOfEnemy;
 
-        if (level) bossTurnTimer.startCountdown();
+        if (chicken_type == CHICKEN_BOSS) bossTurnTimer.startCountdown();
     }
 
 //    gundamLaserTimer.startCountdown();
@@ -261,8 +260,12 @@ void Game::process_enemy() {
             enemy_positions.push_back(make_pair(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y()));
             chicken->_move();
 
-            const int rate = chicken->getLevel() == 0 ? 1 : 100;
-            const int maxNumberOfBullet = chicken->getLevel() == 0 ? 1 : 3;
+            int rate = 0;
+            if (chicken->chicken_type() == CHICKEN_SMALL) rate = 1;
+            if (chicken->chicken_type() == CHICKEN_BOSS) rate = 100;
+            int maxNumberOfBullet = 0;
+            if (chicken->chicken_type() == CHICKEN_SMALL) maxNumberOfBullet = 1;
+            if (chicken->chicken_type() == CHICKEN_BOSS) maxNumberOfBullet = 3;
             if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp()) {
                 chicken->addBullet(chickenBullets.back());
                 chickenBullets.pop_back();
@@ -273,7 +276,7 @@ void Game::process_enemy() {
         chicken->handleBullet(renderer, chickenBullets);
     }
 
-    if (topChicken != nullptr && topChicken->getLevel() == 0) {
+    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_SMALL) {
         ChickenMoveState chickenMoveState = topChicken->getMoveState();
 
         if (touchBottom(bottomChicken, 5)) {
@@ -295,7 +298,29 @@ void Game::process_enemy() {
 
         for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
     }
-    if (topChicken != nullptr && topChicken->getLevel() > 0) {
+    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
+        ChickenMoveState chickenMoveState = topChicken->getMoveState();
+
+        if (touchBottom(bottomChicken, 5)) {
+            chickenMoveState.goDown = 0;
+            chickenMoveState.goUp = 1;
+        }
+        if (touchTop(topChicken)) {
+            chickenMoveState.goDown = 1;
+            chickenMoveState.goUp = 0;
+        }
+        if (touchRight(rightChicken)) {
+            chickenMoveState.goRight = 0;
+            chickenMoveState.goLeft = 1;
+        }
+        if (touchLeft(leftChicken)) {
+            chickenMoveState.goRight = 1;
+            chickenMoveState.goLeft = 0;
+        }
+
+        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
+    }
+    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_BOSS) {
         if (bossTurnTimer.timeIsUp()) {
             for (Chicken *chicken: chickens) {
                 ChickenMoveState moveState = chicken->getMoveState();
@@ -740,23 +765,24 @@ void Game::addFriedChicken(double x, double y, int level) {
 
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
-    if (chicken->getLevel() == 0) {
+    if (chicken->chicken_type() == CHICKEN_SMALL) {
         if (Rand(0, 100) < 20) playChunk(Media::Instance()->chickens[2]);
     }
     else {
         playChunk(Media::Instance()->explosions[1]);
     }
 
-    addExplosion(chicken->getEntity()->getRect(), chicken->getLevel());
-    addFriedChicken(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y(), chicken->getLevel());
+    addExplosion(chicken->getEntity()->getRect(), chicken->chicken_type() == CHICKEN_BOSS);
+    addFriedChicken(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y(), chicken->chicken_type());
 
-    int chickenLevel = chicken->getLevel();
+    int chickenLevel = chicken->chicken_type() == CHICKEN_SMALL ? 0 : 1;
     int killed = (++ killedChickenCount[chickenLevel]);
     if (chickenLevel == 0 && killed % CHICKENS_TO_LEVEL_UP == 0) {
         dropUpgrade(LEVEL_UP);
     }
     if (chickenLevel == 1 && killed % BOSS_TO_NEW_WEAPON == 0) {
-        dropUpgrade(NEW_WEAPON);
+        if (Rand(0, 100) < 60) dropUpgrade(LEVEL_UP);
+        else dropUpgrade(NEW_WEAPON);
     }
 
     numberOfAliveChicken --;
@@ -765,7 +791,7 @@ void Game::chickenDead(Chicken *chicken) {
 //                        cerr << "Round won\n";
     }
 
-    score += CHICKEN_SCORE[chicken->getLevel()] + NG_CHICKEN_SCORE[chicken->getLevel()] * NG;
+    score += CHICKEN_SCORE[chicken->chicken_type()] + NG_CHICKEN_SCORE[chicken->chicken_type()] * NG;
 }
 
 //.......................................menu...............................
@@ -828,6 +854,11 @@ void Game::renderMenu() {
     while (SDL_PollEvent(event) != 0) {
         if (event->type == SDL_QUIT) {
             setGameStatus(GAME_STOP);
+        }
+        else if (event->type == SDL_KEYDOWN) {
+            if ((event->key).keysym.sym == SDLK_ESCAPE && menuState != MENU_MAIN) {
+                menuState = MENU_MAIN;
+            }
         }
         else if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN) {
             for (int i = 0; i < _size(choices); ++ i) {

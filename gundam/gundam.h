@@ -12,7 +12,7 @@
 
 const int GUNDAM_WIDTH = 65;
 const int GUNDAM_HEIGHT = 67;
-const double GUNDAM_SPEED = 600;
+const double GUNDAM_SPEED = 500;
 
 const int MAX_GUNDAM_LEVEL = 10;
 const int NUMBER_OF_BULLET_FORM = 4;

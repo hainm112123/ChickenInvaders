@@ -9,7 +9,7 @@ const int FRIED_CHICKEN_HEIGHT = 39;
 
 const double FRIED_CHICKEN_TURN_DELAY = 0.04;
 const double DELAY_AFTER_TOUCH_BOTTOM = 1.5;
-const int NUMBER_OF_FRIED_CHICKEN[] = {1, 15};
+const int NUMBER_OF_FRIED_CHICKEN[] = {1, 15, 8};
 
 const int FRIED_CHICKEN_STEP_X_MIN = 64;
 const int FRIED_CHICKEN_STEP_X_MAX = 256;

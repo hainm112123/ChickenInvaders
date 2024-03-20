@@ -10,10 +10,10 @@ const double ROCK_HP_UPGRADE = 200;
 const int MIN_ROCK_FALL_SPEED = 490;
 const int MAX_ROCK_FALL_SPEED = 810;
 
-const int MIN_ROCK_SIDE_SPEED_X = 300;
-const int MAX_ROCK_SIDE_SPEED_X = 500;
-const int MIN_ROCK_SIDE_SPEED_Y = 100;
-const int MAX_ROCK_SIDE_SPEED_Y = 300;
+const int MIN_ROCK_SIDE_SPEED_X = 200;
+const int MAX_ROCK_SIDE_SPEED_X = 360;
+const int MIN_ROCK_SIDE_SPEED_Y = 81;
+const int MAX_ROCK_SIDE_SPEED_Y = 256;
 
 const int NG_ROCK_SPEED = 200;
 

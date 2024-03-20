@@ -1,19 +1,19 @@
 #include "chicken.h"
 
-Chicken::Chicken(int offsetX, int offsetY, int _level, int game_difficulty) {
-    level = _level;
-    int width = CHICKEN_WIDTH[level];
-    int height = CHICKEN_HEIGHT[level];
-    int distance = CHICKENS_DISTANCE[level];
-    entity = Entity((level == 0 ? CHICKEN : CHICKEN_BOSS), {offsetX * (width + distance), 20 + offsetY * (height + distance), width, height});
+Chicken::Chicken(int offsetX, int offsetY, ChickenType _type, int game_difficulty) {
+    type = _type;
+    int width = CHICKEN_WIDTH[type];
+    int height = CHICKEN_HEIGHT[type];
+    int distance = CHICKENS_DISTANCE[type];
+    entity = Entity(CHICKEN, {offsetX * (width + distance), 20 + offsetY * (height + distance), width, height});
 
-    hp = CHICKEN_HP[level] + CHICKEN_HP_UPGRADE[level] * game_difficulty;
-    speed = CHICKEN_SPEED[level] + NG_CHICKEN_SPEED * game_difficulty;
-    bulletWidth = CHICKEN_EGG_WIDTH[level];
-    bulletHeight = CHICKEN_EGG_HEIGHT[level];
-    bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[level], MAX_CHICKEN_EGG_SPEED[level]) + game_difficulty * NG_CHICKEN_EGG_SPEED;
+    hp = CHICKEN_HP[type] + CHICKEN_HP_UPGRADE[type] * game_difficulty;
+    speed = CHICKEN_SPEED[type] + NG_CHICKEN_SPEED * game_difficulty;
+    bulletWidth = CHICKEN_EGG_WIDTH[type];
+    bulletHeight = CHICKEN_EGG_HEIGHT[type];
+    bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[type], MAX_CHICKEN_EGG_SPEED[type]) + game_difficulty * NG_CHICKEN_EGG_SPEED;
 
-    moveState = {0, 1, 0, !level};
+    moveState = {0, 1, 0, (type == CHICKEN_SMALL)};
     bulletTimer.setDuration(BULLET_DELAY);
 }
 
@@ -49,7 +49,7 @@ bool Chicken::receiveDamage(double dmg) {
 }
 
 void Chicken::addBullet(Bullet *bullet) {
-    Texture texture = Gallery::Instance()->eggs[level];
+    Texture texture = Gallery::Instance()->eggs[type];
     bullet->setEntity({entity.getX() + entity.getW()/2 - bulletWidth/2, entity.getY() + entity.getH(), texture.w, texture.h}, bulletSpeed, texture);
     bullet->setIsMove(true);
     bullets.insert(bullet);
