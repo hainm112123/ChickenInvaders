@@ -128,6 +128,7 @@ void Game::init() {
     bossHP = 0;
     rockWaveTimer.deactive();
 
+    rocket_damage = ROCKET_DAMAGE + NG_ROCKET_DAMAGE * NG;
     game_difficulty = (NG + int(difficultyState));
 
     if (round == ROCK_SIDE_ROUND) {
@@ -406,7 +407,7 @@ void Game::process_enemy() {
 
 void Game::init_rock() {
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount > 0 && rockWaveTimer.timeIsUp()) {
-        int n = 8 + game_difficulty * 8;
+        int n = 8 + game_difficulty * 5;
         int H_OFFSET = 700;
         int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
         for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
@@ -448,7 +449,7 @@ void Game::process() {
             gundam.control(*event, gundamLaserTimer);
         }
         if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_r) {
-            if (!rocket.Active() && rocketCount > 0) {
+            if (!rocket.Active() && rocketCount > 0 && gundam.isAlive()) {
                 rocket.Set();
                 rocketCount --;
                 playChunk(Media::Instance()->rocket);
@@ -508,7 +509,7 @@ void Game::process() {
     init_rock();
 
     //..............................round...........................................
-    if (roundWon) {
+    if (roundWon && gundam.getLives() > 0) {
 //        cout << initTimer.timeIsUp() << "\n";
         if (initTimer.timeIsUp()) {
             if (round == BOSS_ROUND) {
@@ -655,8 +656,6 @@ void Game::handleGameEvent() {
         if (gundam.isAlive()) {
             for (Bullet *bullet: currentChickenBullets) {
                 if (bullet->getEntity()->collisionWith(gundam.getEntity())) {
-//                    chickenBullets.push_back(bullet);
-//                    chicken->removeBullet(bullet);
                     gundamDead();
                     break;
                 }
@@ -667,26 +666,14 @@ void Game::handleGameEvent() {
             set<Bullet*> gundamBullets = gundam.getBullets();
             for (Bullet *bullet: gundamBullets) {
                 if (chicken->getEntity()->collisionWith((bullet->getEntity()))) {
-                    bool alive = chicken->receiveDamage(gundam.getBulletDamage());
                     gundam.removeBullet(bullet);
-                    if (!alive) {
-                        chickenDead(chicken);
-                        break;
-                    }
-                    else {
-                        if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
-                    }
+                    chickenReceiveDamage(chicken, gundam.getBulletDamage());
+                    if (!chicken->isAlive()) break;
                 }
             }
 
             if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
-                bool alive = chicken->receiveDamage(gundamLaserDamage);
-                if (!alive) {
-                    chickenDead(chicken);
-                }
-                else {
-                    if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
-                }
+                chickenReceiveDamage(chicken, gundamLaserDamage);
             }
         }
     }
@@ -698,23 +685,18 @@ void Game::handleGameEvent() {
         }
 
         set<Bullet*> gundamBullets = gundam.getBullets();
-        bool alive = true;
+
         for (Bullet *bullet: gundamBullets) {
             if (rock->collisionWith((bullet->getEntity()))) {
-                if (!rock->receiveDamage(gundam.getBulletDamage())) alive = false;
                 gundam.removeBullet(bullet);
-                playChunk(Media::Instance()->bulletRock);
+                rockReceiveDamage(rock, gundam.getBulletDamage());
             }
         }
 
-        if (alive && gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
-            if (!rock->receiveDamage(gundamLaserDamage)) alive = false;
-            playChunk(Media::Instance()->bulletRock);
+        if (rock->isActive() && gundam.isLaserOn() && rock->collisionWith(gundam.getLaser())) {
+            rockReceiveDamage(rock, gundamLaserDamage);
         }
-        if (!alive) {
-//            if (!(rock->isActive()))cout << (rock->isActive()) << "\n";
-            addExplosion(rock->getRect(), 1);
-        }
+
     }
 
     if ((round == ROCK_FALL_ROUND || round == ROCK_SIDE_ROUND) && rockWaveCount == 0 && rocks.empty() && !roundWon) {
@@ -743,15 +725,13 @@ void Game::handleGameEvent() {
     //...............rocket......................................
     if (rocket.reached(audioState == AUDIO_UNMUTED)) {
         for (Chicken *chicken: chickens) {
-            chickenDead(chicken);
-            delete(chicken);
+            chickenReceiveDamage(chicken, rocket_damage);
+            set<Bullet*> bullets = chicken->getBullets();
+            for (Bullet *bullet: bullets) chicken->removeBullet(bullet, chickenBullets);
         }
-        chickens.clear();
         for (Rock *rock: rocks) {
-            addExplosion(rock->getRect(), 0);
-            delete(rock);
+            rockReceiveDamage(rock, rocket_damage);
         }
-        rocks.clear();
     }
 
     //......................speed round (mini boss) ....................................
@@ -834,6 +814,24 @@ void Game::chickenDead(Chicken *chicken) {
     score += CHICKEN_SCORE[chicken->chicken_type()] + NG_CHICKEN_SCORE[chicken->chicken_type()] * NG;
 }
 
+void Game::chickenReceiveDamage(Chicken *chicken, double damage) {
+    bool alive = chicken->receiveDamage(damage);
+    if (!alive) {
+        chickenDead(chicken);
+    }
+    else {
+        if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
+    }
+}
+
+void Game::rockReceiveDamage(Rock *rock, double damage) {
+    bool alive = true;
+    if (!rock->receiveDamage(damage)) alive = false;
+    playChunk(Media::Instance()->bulletRock);
+    if (!alive) {
+        addExplosion(rock->getRect(), 1);
+    }
+}
 //.......................................menu...............................
 void Game::toggleAudio() {
     audioState = GameAudio((audioState + 1) % AUDIO_COUNT);
@@ -999,7 +997,8 @@ void Game::initData() {
     _clear();
     score = round = NG = 0;
     scrolling = 0;
-    rocketCount = frychickenCount = 0;
+    rocketCount = 5;
+    frychickenCount = 0;
     roundWon = true;
 
     killedChickenCount.assign(5, 0);

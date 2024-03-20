@@ -55,7 +55,8 @@ void Chicken::addBullet(Bullet *bullet) {
     bullets.insert(bullet);
 }
 
-void Chicken::removeBullet(Bullet *bullet) {
+void Chicken::removeBullet(Bullet *bullet, vector<Bullet*> &gameEnemyBullets) {
+    gameEnemyBullets.push_back(bullet);
     assert(bullets.find(bullet) != bullets.end());
     bullets.erase(bullet);
 }
@@ -67,8 +68,7 @@ void Chicken::handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBul
             bullet->handleEnemyBullet();
         }
         else {
-            gameEnemyBullets.push_back(bullet);
-            removeBullet(bullet);
+            removeBullet(bullet, gameEnemyBullets);
         }
     }
 }

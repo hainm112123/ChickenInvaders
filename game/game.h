@@ -41,7 +41,7 @@ const double GUNDAM_LASER_DURATION = 15;
 
 const int CHICKENS_TO_LEVEL_UP = 30;
 const int BOSS_TO_NEW_WEAPON = 1;
-const int FRIED_CHICKEN_TO_ROCKET = 10;
+const int FRIED_CHICKEN_TO_ROCKET = 30;
 
 enum GameStatus {
     GAME_STOP = 0,
@@ -89,7 +89,7 @@ const string ROUND_TEXT[] = {
     "Warm up!",
     "Get ready!",
     "Asteroid is coming!",
-    "Get ready",
+    "Be quick or dead!",
     "High-speed asteroid!",
     "Be careful!",
 };
@@ -156,6 +156,7 @@ class Game {
 
     Gundam gundam;
     Rocket rocket;
+    double rocket_damage;
 
     vector<Chicken*> chickens;
     int numberOfAliveChicken;
@@ -224,6 +225,9 @@ public:
     void addFriedChicken(double x, double y, int level);
     void gundamDead(bool immediately = false);
     void chickenDead(Chicken *chicken);
+    void chickenReceiveDamage(Chicken *chicken, double damage);
+    void rockReceiveDamage(Rock *rock, double damage);
+
     void playChunk(Mix_Chunk *chunk, int channel = -1, int loop = 0);
     void playMusic(Mix_Music *music);
     void toggleAudio();

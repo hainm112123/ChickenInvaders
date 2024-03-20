@@ -11,6 +11,9 @@ const int BIG_EXPLOSION_WIDTH = 429;
 const int BIG_EXPLOSION_HEIGHT = 453;
 const double MOVE_TIME = 2;
 
+const double ROCKET_DAMAGE = 2000;
+const double NG_ROCKET_DAMAGE = 1000;
+
 class Rocket: public Entity {
     int damage;
     double src_x, src_y, dst_x, dst_y;

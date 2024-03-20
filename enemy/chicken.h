@@ -88,7 +88,7 @@ public:
     void _move();
     void render(SDL_Renderer *renderer);
     void addBullet(Bullet *_bullet);
-    void removeBullet(Bullet *bullet);
+    void removeBullet(Bullet *bullet, vector<Bullet*> &gameEnemyBullets);
     void handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBullets);
 };
 
