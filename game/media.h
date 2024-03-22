@@ -41,7 +41,7 @@ public:
     }
 
     vector<Mix_Chunk*> bullets, explosions, chickens;
-    Mix_Chunk *upgrade, *bulletRock, *laser, *rocket;
+    Mix_Chunk *upgrade, *bulletRock, *laser, *rocket, *bite;
     Mix_Music *start, *battle, *ending;
 
     Media();

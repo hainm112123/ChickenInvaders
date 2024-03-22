@@ -718,6 +718,7 @@ void Game::handleGameEvent() {
                     frychickenCount -= FRIED_CHICKEN_TO_ROCKET;
                     rocketCount ++;
                 }
+                playChunk(Media::Instance()->bite);
             }
             it = next_it;
         }
@@ -787,7 +788,7 @@ void Game::addFriedChicken(double x, double y, int level) {
 void Game::chickenDead(Chicken *chicken) {
 //                    chickens.erase(chicken);
     if (chicken->chicken_type() == CHICKEN_SMALL) {
-        if (Rand(0, 100) < 20) playChunk(Media::Instance()->chickens[2]);
+        if (Rand(0, 100) < 50) playChunk(Media::Instance()->chickens[2]);
     }
     else {
         playChunk(Media::Instance()->explosions[1]);
@@ -821,7 +822,7 @@ void Game::chickenReceiveDamage(Chicken *chicken, double damage) {
         chickenDead(chicken);
     }
     else {
-        if (Rand(0, 100) < 15) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
+        if (Rand(0, 100) < 30) playChunk(Media::Instance()->chickens[Rand(0, 1)]);
     }
 }
 
