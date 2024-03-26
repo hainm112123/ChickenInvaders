@@ -25,7 +25,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     difficultyState = GAME_EASY;
     audioState = AUDIO_UNMUTED;
     score = 0;
-    round = 0;
+    round = INIT_ROUND;
     roundWon = true;
 
     background.setTexture(Gallery::Instance()->background);
@@ -143,11 +143,9 @@ void Game::init() {
         ChickenType chicken_type = CHICKEN_SMALL;
         if (round == MINI_BOSS_ROUND) chicken_type = CHICKEN_DODGE;
         if (round == BOSS_ROUND) chicken_type = CHICKEN_BOSS;
-        int perRow = (round == BOSS_ROUND || round == MINI_BOSS_ROUND) ? 1 : NUMBER_OF_CHICKEN_PER_ROW;
-        int numberOfEnemy = chicken_type == CHICKEN_SMALL ? NUMBER_OF_CHICKEN : perRow;
-        int numberOfBullet = 0;
-        if (chicken_type == CHICKEN_SMALL) numberOfBullet = perRow;
-        if (chicken_type == CHICKEN_BOSS) numberOfBullet = perRow * 3;
+        int perRow = NUMBER_OF_CHICKEN_PER_ROW[round];
+        int numberOfEnemy = NUMBER_OF_CHICKEN[round];
+        int numberOfBullet = NUMBER_OF_CHICKEN_BULLET[round];
         numberOfBullet *= (game_difficulty * 2 + 1);
 
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet(CHICKEN_EGG));
@@ -519,7 +517,7 @@ void Game::process() {
                 NG ++;
             }
 //            cerr << "Start init\n";
-            round = (round % ROUND_COUNT) + 1;
+            round = GameRound((round % ROUND_COUNT) + 1);
             init();
         }
         else {
@@ -848,6 +846,8 @@ void Game::toggleAudio() {
 void Game::renderMenu() {
     if (status != GAME_INITALIZING) return;
 
+    SDL_RenderClear(renderer);
+
     for (int i = 1; i < _size(settingsMenuChoice); ++ i) {
         if (i == SETTING_MENU_AUDIO) {
             settingsMenuChoice[i].setText(GAME_AUDIO[audioState]);
@@ -962,6 +962,8 @@ void Game::renderMenu() {
 void Game::renderPauseMenu() {
     if (status != GAME_PAUSED) return;
 
+    SDL_RenderClear(renderer);
+
     while (SDL_PollEvent(event)) {
         if (event->type == SDL_QUIT) {
             setGameStatus(GAME_STOP);
@@ -1004,7 +1006,8 @@ void Game::renderPauseMenu() {
 //..............................data..........................................
 void Game::initData() {
     _clear();
-    score = round = NG = 0;
+    score = NG = 0;
+    round = INIT_ROUND;
     scrolling = 0;
     rocketCount = 3;
     if (difficultyState == GAME_NORMAL) rocketCount = 1;
@@ -1174,6 +1177,8 @@ void Game::gameOver() {
     SDL_Event e;
     bool rankShowing = true;
     while (rankShowing) {
+        SDL_RenderClear(renderer);
+
         (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
         if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
         background.render(renderer, scrolling);
@@ -1227,6 +1232,8 @@ void Game::enterYourName() {
     bool summarizing = true;
     SDL_Event e;
     while (summarizing) {
+        SDL_RenderClear(renderer);
+
         (scrolling += SCREEN_SPEED * TimeManager::Instance()->getElapsedTime());
         if (scrolling >= BG_SIZE) scrolling -= BG_SIZE;
         background.render(renderer, scrolling);

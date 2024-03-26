@@ -12,8 +12,6 @@
 #include "../enemy/fried_chicken.h"
 #include "../weapon/rocket.h"
 
-const int NUMBER_OF_CHICKEN = 30;
-const int NUMBER_OF_CHICKEN_PER_ROW = 10;
 const double BOSS_TURN_DELAY = 1.2;
 const double MINI_BOSS_TIME_LIMIT = 20;
 
@@ -22,13 +20,21 @@ const int ROCK_SIDE_WAVE = 10;
 const int NG_ROCK_WAVE = 10;
 const double ROCK_WAVE_DELAY = 0.87654321;
 
-const int ROCK_FALL_ROUND = 5;
-const int ROCK_SIDE_ROUND = 3;
-const int MINI_BOSS_ROUND = 4;
-const int BOSS_ROUND = 6;
+enum GameRound {
+    INIT_ROUND = 0,
+    CHICKEN_ROUND,
+    CHICKEN_CIRCULAR_ROUND,
+    ROCK_SIDE_ROUND,
+    MINI_BOSS_ROUND,
+    ROCK_FALL_ROUND,
+    BOSS_ROUND,
+};
 const int ROUND_COUNT = 6;
 const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
 const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
+const int NUMBER_OF_CHICKEN[] = {0, 30, 20, 0, 1, 0, 1};
+const int NUMBER_OF_CHICKEN_PER_ROW[] = {0, 10, 1, 0, 1, 0, 1};
+const int NUMBER_OF_CHICKEN_BULLET[] = {0, 10, 0, 0, 0, 0, 3};
 
 const double SCREEN_SPEED = 144;
 const int BG_SIZE = 762;
@@ -146,7 +152,8 @@ class Game {
 
     bool roundWon;
     int width, height;
-    int score, round, NG = 0, game_difficulty;
+    int score, NG = 0, game_difficulty;
+    GameRound round;
     GameStatus status;
     GameDifficulty difficultyState;
     GameAudio audioState;
