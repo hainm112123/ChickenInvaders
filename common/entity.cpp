@@ -21,6 +21,7 @@ void Entity::setRect(SDL_Rect _rect) {
 void Entity::setPosition(double _x, double _y) {
     x = _x; y = _y;
     rect.x = x; rect.y = y;
+//    cout << x << " " << y << " " << rect.x << " " << rect.y << "\n";
 }
 
 void Entity::setStep(double _step_x, double _step_y) {

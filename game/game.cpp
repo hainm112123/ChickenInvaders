@@ -151,7 +151,9 @@ void Game::init() {
         for (int i = 0; i < numberOfBullet; ++ i) chickenBullets.push_back(new Bullet(CHICKEN_EGG));
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
-            Chicken *chicken = new Chicken(col, row, chicken_type, game_difficulty);
+            Chicken *chicken = round == CHICKEN_CIRCULAR_ROUND ?
+                                new Chicken(chicken_type, CHICKEN_CIRCULAR_MOVE, game_difficulty, {CHICKEN_CIRCULAR_DISTANCE_MAX, (360 / numberOfEnemy) * i}) :
+                                new Chicken(chicken_type, CHICKEN_BASIC_MOVE, game_difficulty, {col, row});
             chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->chicken_type()]);
             chickens.push_back(chicken);
             if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) bossHP += chicken->getHP();
@@ -594,7 +596,7 @@ void Game::process() {
 void Game::dropUpgrade(EntityType eType) {
     if (eType != LEVEL_UP && eType != NEW_WEAPON) return;
 
-    int x = (1ll * rand() * rand()) % SCREEN_WIDTH, y = -10;
+    int x = Rand(50, SCREEN_WIDTH - 50), y = -10;
     UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(Rand(0, NUMBER_OF_UPGRADE - 2)));
     Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
     upgrade->getEntity()->setStep(0, UPGRADE_SPEED);

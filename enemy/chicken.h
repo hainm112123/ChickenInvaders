@@ -9,8 +9,12 @@
 const int CHICKEN_WIDTH[] = {78, 200, 129};
 const int CHICKEN_HEIGHT[] = {65, 200, 108};
 
-const double CHICKEN_SPEED[] = {100, 300, 256};
-const double NG_CHICKEN_SPEED = 60;
+const double CHICKEN_SPEED[] = {96, 300, 256};
+const double NG_CHICKEN_SPEED = 36;
+const int CHICKEN_CIRCULAR_DISTANCE_MAX = 600;
+const int CHICKEN_CIRCULAR_DISTANCE_MIN = 60;
+const double CIRCULAR_CENTER_X = SCREEN_WIDTH / 2;
+const double CIRCULAR_CENTER_Y = SCREEN_HEIGHT / 2;
 
 const double CHICKEN_HP[] = {100, 6789, 2500};
 const double CHICKEN_HP_UPGRADE[] = {69, 3333, 1111};
@@ -33,6 +37,10 @@ enum ChickenType {
     CHICKEN_BOSS,
     CHICKEN_DODGE,
 };
+enum ChickenMoveType {
+    CHICKEN_BASIC_MOVE = 0,
+    CHICKEN_CIRCULAR_MOVE
+};
 
 struct ChickenMoveState {
     bool goLeft, goRight, goUp, goDown;
@@ -46,9 +54,12 @@ class Chicken {
     double speed, bulletSpeed;
     int bulletWidth, bulletHeight;
     ChickenMoveState moveState;
+    ChickenMoveType moveType;
+    double circular_distance, angle;
+    int direction = 1;
 
 public:
-    Chicken(int offsetX = 0, int offsetY = 0, ChickenType _type = CHICKEN_SMALL, int game_difficulty = 0);
+    Chicken(ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
     ~Chicken();
 
     Timer bulletTimer;
