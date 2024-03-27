@@ -235,6 +235,9 @@ void Game::process_gundam() {
 
 void Game::process_enemy() {
     enemy_positions.clear();
+    for (Rock *rock: rocks) if (!rock->isActive()) {
+        removeRock(rock);
+    }
 
     //...............rock.....................................
     for (Rock *rock: rocks) {
@@ -242,11 +245,6 @@ void Game::process_enemy() {
             rock->handleMove();
             rock->render(renderer);
             enemy_positions.push_back(make_pair(rock->get_act_x(), rock->get_act_y()));
-        }
-        else {
-//            rocks.erase(rock);
-//            delete(rock);
-            removeRock(rock);
         }
     }
 
@@ -437,7 +435,7 @@ void Game::init_rock() {
         int n = 8 + game_difficulty * 2;
         int H_OFFSET = 700;
         int L = (round == ROCK_FALL_ROUND ? (SCREEN_WIDTH / 5) * 4 : (SCREEN_HEIGHT + H_OFFSET)) / n;
-        for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 8) {
+        for (int i = 0; i < n; ++ i) if (Rand(0, 10) < 6) {
             int x, y, step_x, step_y;
             if (round == ROCK_FALL_ROUND) {
                 x = Rand(L * i - 100, L * (i + 1) + 100) ;
