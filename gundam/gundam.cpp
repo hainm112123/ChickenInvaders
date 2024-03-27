@@ -3,7 +3,7 @@
 #include "../weapon/bullet.h"
 
 Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
-    lives = 3;
+    lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
 //    weapons.push_back(GUNDAM_AUTO_AIM);
@@ -195,7 +195,7 @@ void Gundam::setLaserOn(bool _laserOn) {
 }
 
 void Gundam::reset() {
-    lives = 3;
+    lives = 5;
     alive = true;
     weapons.clear();
     bullets.clear();

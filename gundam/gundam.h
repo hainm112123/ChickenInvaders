@@ -12,6 +12,7 @@
 
 const int GUNDAM_WIDTH = 65;
 const int GUNDAM_HEIGHT = 67;
+const int GUNDAM_LIVES = 5;
 const double GUNDAM_SPEED = 500;
 
 const int MAX_GUNDAM_LEVEL = 10;

@@ -24,6 +24,7 @@ public:
     Texture bossHealthBar, bossHealthBorder;
     Texture rocket, big_explosion;
     Texture pause_button, home_button, audio_muted_button, audio_unmuted_button, resume_button, pause_menu;
+    Texture teleport;
 
     Gallery(SDL_Renderer *_renderer);
     ~Gallery();

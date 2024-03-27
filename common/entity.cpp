@@ -104,36 +104,41 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION) {
-        int n = 1;
+    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT) {
+        int n = 1, m = 1, cnt = 1;
         double perPic = SECOND_PER_PICTURE;
         switch(type) {
             case LEVEL_UP:
-                n = 25;
+                cnt = n = 25;
                 break;
             case EXPLOSION:
-                n = NUMBER_OF_EXPLOSION_PIC;
+                cnt = n = NUMBER_OF_EXPLOSION_PIC;
                 perPic = SECOND_PER_PICTURE;
                 break;
             case BIG_EXPLOSION:
-                n = NUMBER_OF_BIG_EXPLOSION_PIC;
+                cnt = n = NUMBER_OF_BIG_EXPLOSION_PIC;
                 perPic = SECOND_PER_PICTURE_LONGER;
+                break;
+            case TELEPORT:
+                m = n = 4;
+                cnt = NUMBER_OF_TELEPORT_PIC;
+                perPic = SECOND_PER_PICTURE_FASTER;
                 break;
             default:
                 break;
         }
         currentTime += elapsed;
-        if (currentTime >= perPic * n) {
-            if (type == EXPLOSION || type == BIG_EXPLOSION) return;
-            currentTime -= perPic * n;
+        if (currentTime >= perPic * cnt) {
+            if (type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT) return;
+            currentTime -= perPic * cnt;
         }
         int ind = int(currentTime / perPic);
 //        cout << ind << "\n";
-        int w = texture.w / n, h = texture.h;
+        int w = texture.w / n, h = texture.h / m;
         if (type == LEVEL_UP) {
             rect.w = w; rect.h = h;
         }
-        SDL_Rect src = {ind * w, 0, w, h};
+        SDL_Rect src = {(ind % n) * w, (ind / n) * h, w, h};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
     else if (type == BULLET) {

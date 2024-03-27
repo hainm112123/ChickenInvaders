@@ -19,7 +19,7 @@ Chicken::Chicken(ChickenType _type, ChickenMoveType _moveType, int game_difficul
         circular_distance = args[0];
         angle = args[1];
         entity.setPosition(CIRCULAR_CENTER_X + circular_distance * cos(to_radian(angle)), CIRCULAR_CENTER_Y + circular_distance * sin(to_radian(angle)));
-        speed = (CHICKEN_SPEED[type] + NG_CHICKEN_SPEED * game_difficulty);
+        speed = (CHICKEN_SPEED[type] + NG_CHICKEN_SPEED * game_difficulty) / 2;
     }
 
     hp = CHICKEN_HP[type] + CHICKEN_HP_UPGRADE[type] * game_difficulty;

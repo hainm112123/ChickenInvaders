@@ -8,6 +8,8 @@
 
 const int CHICKEN_WIDTH[] = {78, 200, 129};
 const int CHICKEN_HEIGHT[] = {65, 200, 108};
+const int CHICKEN_TELEPORT_WIDTH = 169;
+const int CHICKEN_TELEPORT_HEIGHT = 196;
 
 const double CHICKEN_SPEED[] = {96, 300, 256};
 const double NG_CHICKEN_SPEED = 36;

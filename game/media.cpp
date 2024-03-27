@@ -57,6 +57,7 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(audio_muted_button.texture);
     SDL_DestroyTexture(audio_unmuted_button.texture);
     SDL_DestroyTexture(pause_menu.texture);
+    SDL_DestroyTexture(teleport.texture);
 
     instance = nullptr;
 }
@@ -212,6 +213,8 @@ void Gallery::loadGamePictures() {
     audio_muted_button = loadTexture("./assets/graphics/pause_menu/audio_muted.png");
     audio_unmuted_button = loadTexture("./assets/graphics/pause_menu/audio_unmuted.png");
     pause_menu = loadTexture("./assets/graphics/pause_menu/pause_menu.png");
+
+    teleport = loadTexture("./assets/graphics/tele.png");
 }
 
 //.............................Media............................................
