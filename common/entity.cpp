@@ -120,7 +120,8 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 perPic = SECOND_PER_PICTURE_LONGER;
                 break;
             case TELEPORT:
-                m = n = 4;
+                m = 2;
+                n = 6;
                 cnt = NUMBER_OF_TELEPORT_PIC;
                 perPic = SECOND_PER_PICTURE_FASTER;
                 break;

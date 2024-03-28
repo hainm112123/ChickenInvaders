@@ -8,7 +8,7 @@ typedef pair<double, double> Position;
 
 const int NUMBER_OF_EXPLOSION_PIC = 4;
 const int NUMBER_OF_BIG_EXPLOSION_PIC = 8;
-const int NUMBER_OF_TELEPORT_PIC = 15;
+const int NUMBER_OF_TELEPORT_PIC = 12;
 const double SECOND_PER_PICTURE = 0.06;
 const double SECOND_PER_PICTURE_FASTER = 0.04;
 const double SECOND_PER_PICTURE_LONGER = 0.1;

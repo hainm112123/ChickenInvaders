@@ -10,7 +10,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
     initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY), bossTurnTimer(BOSS_TURN_DELAY),
     gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
-    chickenTeleportCooldown(CHICKEN_TELEPORT_COOLDOWN), chickenTeleportDuration(CHICKEN_TELEPORT_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(),
     rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
@@ -267,7 +266,7 @@ void Game::process_enemy() {
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
             enemy_positions.push_back(make_pair(chicken->getEntity()->get_act_x(), chicken->getEntity()->get_act_y()));
-            if (chicken->chicken_type() != CHICKEN_DODGE || chickenTeleportDuration.timeIsUp()) {
+            if (chicken->chicken_type() != CHICKEN_DODGE || chicken->teleportDuration.timeIsUp()) {
                 chicken->_move();
             }
 
@@ -283,14 +282,14 @@ void Game::process_enemy() {
                 (chicken->bulletTimer).startCountdown();
             }
 
-            if (chicken->chicken_type() == CHICKEN_DODGE && !chickenTeleportDuration.timeIsUp()) {
+            if (chicken->chicken_type() == CHICKEN_DODGE && !chicken->teleportDuration.timeIsUp()) {
                 if (chickenTeleport.CurrentTime() >= NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER) {
-                    if (onChickenTeleport) {
+                    if (chicken->OnTeleport()) {
                         chickenTeleport.resetTime();
                         chicken->getEntity()->setPosition(Rand(100, SCREEN_WIDTH - 100), 20);
                         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
                         chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
-                        onChickenTeleport = false;
+                        chicken->setOnTeleport(true);
                         playChunk(Media::Instance()->laser);
                     }
                 }
@@ -501,10 +500,9 @@ void Game::process() {
     gundamShieldTimer.process();
     gundamLaserTimer.process();
 
-    chickenTeleportCooldown.process();
-    chickenTeleportDuration.process();
-
     for (Chicken *chicken: chickens) if (chicken->isAlive()) {
+        chicken->teleportCooldown.process();
+        chicken->teleportDuration.process();
         (chicken->bulletTimer).process();
     }
 
@@ -844,13 +842,13 @@ void Game::chickenDead(Chicken *chicken) {
 }
 
 void Game::chickenReceiveDamage(Chicken *chicken, double damage) {
-    if (chicken->chicken_type() == CHICKEN_DODGE && chickenTeleportCooldown.timeIsUp()) {
-        chickenTeleportCooldown.startCountdown();
-        chickenTeleportDuration.startCountdown();
+    if (chicken->chicken_type() == CHICKEN_DODGE && chicken->teleportCooldown.timeIsUp()) {
+        chicken->teleportCooldown.startCountdown();
+        chicken->teleportDuration.startCountdown();
         chickenTeleport.resetTime();
         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
         chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
-        onChickenTeleport = true;
+        chicken->setOnTeleport(true);
         playChunk(Media::Instance()->laser);
     }
     else {
@@ -1054,7 +1052,7 @@ void Game::initData() {
     if (difficultyState == GAME_HARD) rocketCount = 0;
     frychickenCount = 0;
     roundWon = true;
-    onChickenTeleport = false;
+//    onChickenTeleport = false;
 
     killedChickenCount.assign(5, 0);
     chickens.clear(); chickenBullets.clear();
@@ -1374,8 +1372,8 @@ void Game::reset() {
     gundamReviveTimer.deactive();
     gundamShieldTimer.deactive();
     initTimer.deactive();
-    chickenTeleportCooldown.deactive();
-    chickenTeleportDuration.deactive();
+//    chickenTeleportCooldown.deactive();
+//    chickenTeleportDuration.deactive();
 
     gundam.reset();
 

@@ -19,8 +19,6 @@ const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 10;
 const int NG_ROCK_WAVE = 3;
 const double ROCK_WAVE_DELAY = 0.87654321;
-const double CHICKEN_TELEPORT_COOLDOWN = 10;
-const double CHICKEN_TELEPORT_DURATION = NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER * 2;
 
 enum GameRound {
     INIT_ROUND = 0,
@@ -164,8 +162,6 @@ class Game {
 
     Timer initTimer, gameEndTimer, rockWaveTimer, bossTurnTimer;
     Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
-    Timer chickenTeleportCooldown, chickenTeleportDuration;
-    bool onChickenTeleport = false;
 
     Text roundTitle, roundText;
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];

@@ -33,6 +33,8 @@ const int CHICKEN_SCORE[] = {10, 200, 169};
 const int NG_CHICKEN_SCORE[] = {6, 121, 81};
 
 const double BULLET_DELAY = 0.3;
+const double CHICKEN_TELEPORT_COOLDOWN = 10;
+const double CHICKEN_TELEPORT_DURATION = NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER * 2;
 
 enum ChickenType {
     CHICKEN_SMALL,
@@ -59,12 +61,14 @@ class Chicken {
     ChickenMoveType moveType;
     double circular_distance, angle;
     int direction = 1;
+    bool onTeleport = false;
 
 public:
     Chicken(ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
     ~Chicken();
 
     Timer bulletTimer;
+    Timer teleportCooldown, teleportDuration;
 
     Entity* getEntity() {
         return &entity;
@@ -95,7 +99,11 @@ public:
     ChickenMoveState getMoveState() const {
         return moveState;
     }
+    bool OnTeleport() const {
+        return onTeleport;
+    }
 
+    void setOnTeleport(bool val);
     bool receiveDamage(double dmg);
     void setMoveState(ChickenMoveState _moveState);
     void _move();

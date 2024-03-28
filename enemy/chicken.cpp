@@ -28,6 +28,8 @@ Chicken::Chicken(ChickenType _type, ChickenMoveType _moveType, int game_difficul
     bulletSpeed = Rand(MIN_CHICKEN_EGG_SPEED[type], MAX_CHICKEN_EGG_SPEED[type]) + game_difficulty * NG_CHICKEN_EGG_SPEED;
 
     bulletTimer.setDuration(BULLET_DELAY);
+    teleportCooldown.setDuration(CHICKEN_TELEPORT_COOLDOWN);
+    teleportDuration.setDuration(CHICKEN_TELEPORT_DURATION);
 }
 
 Chicken::~Chicken() {
@@ -42,6 +44,10 @@ void Chicken::render(SDL_Renderer *renderer) {
 
 void Chicken::setMoveState(ChickenMoveState _moveState) {
     moveState = _moveState;
+}
+
+void Chicken::setOnTeleport(bool val) {
+    onTeleport = val;
 }
 
 void Chicken::_move() {
