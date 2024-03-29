@@ -77,7 +77,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         int w = texture.w / m, h = texture.h / n;
         SDL_Rect src = {w*i + w/2 - GUNDAM_LASER_WIDTH/2, h*j, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
-    } else if (type == CHICKEN) {
+    } else if (type == CHICKEN || type == GUNDAM) {
         int n = textures.size();
         currentTime += elapsed;
         double per_pic = SECOND_PER_PICTURE;

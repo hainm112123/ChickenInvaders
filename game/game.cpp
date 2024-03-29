@@ -16,6 +16,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
     chickenTeleport(TELEPORT),
     gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE),
+    pause_menu(PAUSE_MENU_ELEMENT), home_button(PAUSE_MENU_ELEMENT), audio_button(PAUSE_MENU_ELEMENT), resume_button(PAUSE_MENU_ELEMENT), pause_button(PAUSE_MENU_ELEMENT),
     menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu),
     menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, Gallery::Instance()->menu_settings),
     menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu_control),

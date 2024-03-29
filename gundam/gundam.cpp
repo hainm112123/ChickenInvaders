@@ -6,13 +6,17 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
-//    weapons.push_back(GUNDAM_AUTO_AIM);
-//    weapons.push_back(GUNDAM_BORON);
-//    weapons.push_back(GUNDAM_NEUTRON);
+    weapons.push_back(GUNDAM_AUTO_AIM);
+    weapons.push_back(GUNDAM_BORON);
+    weapons.push_back(GUNDAM_NEUTRON);
     level = bullet_form = 0;
     currentWeaponID = 0;
+    appearance = GUNDAM_CENTER;
+    moving_state = GUNDAM_STAY;
+    turned_time = 0;
 
-    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()], true);
+//    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()], true);
+    entity.setTextures(Gallery::Instance()->gundams[appearance]);
     shield.setTexture(Gallery::Instance()->shield);
     int shieldSize = max(entity.getW(), entity.getH()) + 20;
 //    cout << entity.getX() << " " << entity.getW() << " " << shieldSize << "\n";
@@ -36,7 +40,20 @@ void Gundam::setGame(Game *_game) {
 
 void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
     if (!alive) return;
-    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()]);
+//    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()]);
+    if (turned_time < GUNDAM_APPEARANCE_CHANGE) turned_time += TimeManager::Instance()->getElapsedTime();
+    if (moving_state == GUNDAM_STAY) {
+        appearance = GUNDAM_CENTER;
+    }
+    else if (moving_state == GUNDAM_MOVING_LEFT) {
+        appearance = turned_time < GUNDAM_APPEARANCE_CHANGE ? GUNDAM_LEFT_1 : GUNDAM_LEFT_2;
+    }
+    else {
+        appearance = turned_time < GUNDAM_APPEARANCE_CHANGE ? GUNDAM_RIGHT_1 : GUNDAM_RIGHT_2;
+    }
+//    cout << turned_time << " " << appearance << "\n";
+
+    entity.setTextures(Gallery::Instance()->gundams[appearance]);
     entity.render(renderer);
     if (hasShield) shield.render(renderer);
     if (hasLaser && laserOn) laser.render(renderer);
@@ -63,6 +80,15 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
 //                shield.updateStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Down\n";
                 keydown[type] = 1;
+
+                if (type == GUNDAM_MOVE_LEFT && moving_state != GUNDAM_MOVING_LEFT) {
+                    turned_time = 0;
+                    moving_state = GUNDAM_MOVING_LEFT;
+                }
+                if (type == GUNDAM_MOVE_RIGHT && moving_state != GUNDAM_MOVING_RIGHT) {
+                    turned_time = 0;
+                    moving_state = GUNDAM_MOVING_RIGHT;
+                }
             }
             else if (event.type == SDL_KEYUP && event.key.repeat == 0 && keydown[type]) {
 //                entity.setStep(0, 0);
@@ -70,6 +96,15 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
 //                shield.updateStep(-gundam_step_x[type] * GUNDAM_SPEED, -gundam_step_y[type] * GUNDAM_SPEED);
 //                cout << "Key Up\n";
                 keydown[type] = 0;
+
+                if (type == GUNDAM_MOVE_LEFT && moving_state == GUNDAM_MOVING_LEFT) {
+                    turned_time = 0;
+                    moving_state = GUNDAM_STAY;
+                }
+                if (type == GUNDAM_MOVE_RIGHT && moving_state == GUNDAM_MOVING_RIGHT) {
+                    turned_time = 0;
+                    moving_state = GUNDAM_STAY;
+                }
             }
         }
     }
@@ -214,6 +249,10 @@ void Gundam::reset() {
 }
 
 void Gundam::resetControl() {
+    appearance = GUNDAM_CENTER;
+    moving_state = GUNDAM_STAY;
+    turned_time = 0;
+
     entity.setStep(0, 0);
     setLaserOn(false);
     memset(keydown, 0, sizeof(keydown));

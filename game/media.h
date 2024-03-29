@@ -17,8 +17,8 @@ public:
         instance = new Gallery(_renderer);
     }
 
-    vector<vector<Texture>> gundamWeapons, chickens;
-    vector<Texture> eggs, gundams, newWeapons, rocks, expolosions, fried_chickens;
+    vector<vector<Texture>> gundamWeapons, chickens, gundams;
+    vector<Texture> eggs, newWeapons, rocks, expolosions, fried_chickens;
     Texture background, menu, menu_settings, menu_control;
     Texture laser, levelUp, shield, heart, level, rocket_mini, fry_chicken_mini;
     Texture bossHealthBar, bossHealthBorder;

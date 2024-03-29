@@ -10,14 +10,15 @@
 #include "../game/media.h"
 #include "../common/time.h"
 
-const int GUNDAM_WIDTH = 65;
-const int GUNDAM_HEIGHT = 67;
+const int GUNDAM_WIDTH = 60;
+const int GUNDAM_HEIGHT = 82;
 const int GUNDAM_LIVES = 5;
 const double GUNDAM_SPEED = 500;
+const double GUNDAM_APPEARANCE_CHANGE = 0.1;
 
 const int MAX_GUNDAM_LEVEL = 10;
 const int NUMBER_OF_BULLET_FORM = 4;
-const double FIRE_DELAY[] = {0.1, 0, 0.2, 0.81};
+const double FIRE_DELAY[] = {0.06, 0, 0.15, 0.64};
 
 enum GundamMove {
     GUNDAM_MOVE_UP = 0,
@@ -25,6 +26,18 @@ enum GundamMove {
     GUNDAM_MOVE_DOWN,
     GUNDAM_MOVE_RIGHT,
     GUNDAM_FIRE,
+};
+enum GundamAppearance {
+    GUNDAM_LEFT_2,
+    GUNDAM_LEFT_1,
+    GUNDAM_CENTER,
+    GUNDAM_RIGHT_1,
+    GUNDAM_RIGHT_2
+};
+enum GundamMovingState {
+    GUNDAM_MOVING_LEFT,
+    GUNDAM_STAY,
+    GUNDAM_MOVING_RIGHT
 };
 const int gundam_step_x[] = {0, -1, 0, 1};
 const int gundam_step_y[] = {-1, 0, 1, 0};
@@ -54,6 +67,10 @@ class Gundam {
     bool keydown[5];
 
     Timer fire_timer;
+    GundamAppearance appearance;
+    GundamMovingState moving_state;
+    double turned_time;
+
 
 public:
     Gundam();
