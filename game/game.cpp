@@ -291,7 +291,7 @@ void Game::process_enemy() {
                         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
                         chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
                         chicken->setOnTeleport(true);
-                        playChunk(Media::Instance()->laser);
+                        playChunk(Media::Instance()->tele);
                     }
                 }
                 else {
@@ -699,7 +699,7 @@ void Game::handleGameEvent() {
                 }
             }
 
-            if (gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
+            if (chicken->isAlive() && gundam.isLaserOn() && chicken->getEntity()->collisionWith(gundam.getLaser())) {
                 chickenReceiveDamage(chicken, gundamLaserDamage);
             }
         }
@@ -753,12 +753,12 @@ void Game::handleGameEvent() {
     //...............rocket......................................
     if (rocket.reached(audioState == AUDIO_UNMUTED)) {
         for (Chicken *chicken: chickens) {
-            chickenReceiveDamage(chicken, rocket_damage);
+            if (chicken->isAlive()) chickenReceiveDamage(chicken, rocket_damage);
             set<Bullet*> bullets = chicken->getBullets();
             for (Bullet *bullet: bullets) chicken->removeBullet(bullet, chickenBullets);
         }
         for (Rock *rock: rocks) {
-            rockReceiveDamage(rock, rocket_damage);
+            if (rock->isActive()) rockReceiveDamage(rock, rocket_damage);
         }
     }
 
@@ -850,7 +850,7 @@ void Game::chickenReceiveDamage(Chicken *chicken, double damage) {
         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
         chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
         chicken->setOnTeleport(true);
-        playChunk(Media::Instance()->laser);
+        playChunk(Media::Instance()->tele);
     }
     else {
         bool alive = chicken->receiveDamage(damage);

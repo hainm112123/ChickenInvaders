@@ -84,7 +84,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         if (currentTime >= per_pic * n) currentTime -= per_pic * n;
         SDL_RenderCopy(renderer, textures[int(currentTime / per_pic)].texture, NULL, &rect);
     }
-    else if (type == MENU || type == SHIELD || type == HEART) {
+    else if (type == MENU || type == HEART/* || type == SHIELD*/) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {
@@ -104,7 +104,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT) {
+    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SHIELD) {
         int n = 1, m = 1, cnt = 1;
         double perPic = SECOND_PER_PICTURE;
         switch(type) {
@@ -125,6 +125,12 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 cnt = NUMBER_OF_TELEPORT_PIC;
                 perPic = SECOND_PER_PICTURE_FASTER;
                 break;
+            case SHIELD:
+                m = 2;
+                n = 3;
+                cnt = m * n;
+                perPic = SECOND_PER_PICTURE;
+//                cout << rect.w << " " << rect.h << "\n";
             default:
                 break;
         }

@@ -18,7 +18,7 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
 //    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()], true);
     entity.setTextures(Gallery::Instance()->gundams[appearance]);
     shield.setTexture(Gallery::Instance()->shield);
-    int shieldSize = max(entity.getW(), entity.getH()) + 20;
+    int shieldSize = max(entity.getW(), entity.getH()) + 40;
 //    cout << entity.getX() << " " << entity.getW() << " " << shieldSize << "\n";
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
     laser.setTexture(Gallery::Instance()->laser);
@@ -64,7 +64,7 @@ void Gundam::_move() {
 
     if (!alive) return;
     entity._move(true);
-    int shieldSize = max(entity.getW(), entity.getH()) + 20;
+    int shieldSize = max(entity.getW(), entity.getH()) + 60;
     shield.setRect({entity.getX() + entity.getW()/2 - shieldSize/2, entity.getY() + entity.getH()/2 - shieldSize/2, shieldSize, shieldSize});
     laser.setRect({entity.getX() + entity.getW()/2 - GUNDAM_LASER_WIDTH/2, entity.getY() - GUNDAM_LASER_HIGHT, GUNDAM_LASER_WIDTH, GUNDAM_LASER_HIGHT});
 //    shield._move();

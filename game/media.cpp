@@ -194,7 +194,7 @@ void Gallery::loadGamePictures() {
     laser = loadTexture("./assets/graphics/texture_laser.png");
     background = loadTexture("./assets/graphics/CI1Space_1.png");
 
-    shield = loadTexture("./assets/graphics/spr_shield.png");
+    shield = loadTexture("./assets/graphics/shield_1.png");
     levelUp = loadTexture("./assets/graphics/level_up.png");
     newWeapons = {
         loadTexture("./assets/graphics/gift0.png"),
@@ -271,6 +271,7 @@ Media::~Media() {
     Mix_FreeChunk(bulletRock);
     Mix_FreeChunk(rocket);
     Mix_FreeChunk(bite);
+    Mix_FreeChunk(tele);
 
     Mix_CloseAudio();
 
@@ -298,6 +299,7 @@ void Media::loadMedia() {
     laser = Mix_LoadWAV("./assets/sound/laser8.wav");
     rocket = Mix_LoadWAV("./assets/sound/rocket.wav");
     bite = Mix_LoadWAV("./assets/sound/bite.mp3");
+    tele = Mix_LoadWAV("./assets/sound/tele.wav");
 
     start = Mix_LoadMUS("./assets/sound/Zoltraak.mp3");
     battle = Mix_LoadMUS("./assets/sound/battle.mp3");
