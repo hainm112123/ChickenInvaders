@@ -15,7 +15,7 @@ const int MAX_ROCK_SIDE_SPEED_X = 360;
 const int MIN_ROCK_SIDE_SPEED_Y = 81;
 const int MAX_ROCK_SIDE_SPEED_Y = 256;
 
-const int NG_ROCK_SPEED = 200;
+const int NG_ROCK_SPEED = 96;
 
 const int MIN_ROCK_SIZE = 36;
 const int MAX_ROCK_SIZE = 81;

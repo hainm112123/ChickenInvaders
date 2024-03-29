@@ -826,7 +826,8 @@ void Game::chickenDead(Chicken *chicken) {
     int chickenLevel = chicken->chicken_type() == CHICKEN_SMALL ? 0 : 1;
     int killed = (++ killedChickenCount[chickenLevel]);
     if (chickenLevel == 0 && killed % CHICKENS_TO_LEVEL_UP == 0) {
-        dropUpgrade(LEVEL_UP);
+        if (Rand(0, 100) < 60) dropUpgrade(NEW_WEAPON);
+        else dropUpgrade(NEW_WEAPON);
     }
     if (chickenLevel == 1 && killed % BOSS_TO_NEW_WEAPON == 0) {
         if (Rand(0, 100) < 60) dropUpgrade(LEVEL_UP);
@@ -1048,9 +1049,9 @@ void Game::initData() {
     score = NG = 0;
     round = INIT_ROUND;
     scrolling = 0;
-    rocketCount = 3;
+    rocketCount = 0;
+    if (difficultyState == GAME_EASY) rocketCount = 3;
     if (difficultyState == GAME_NORMAL) rocketCount = 1;
-    if (difficultyState == GAME_HARD) rocketCount = 0;
     frychickenCount = 0;
     roundWon = true;
 //    onChickenTeleport = false;

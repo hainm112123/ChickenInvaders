@@ -6,9 +6,6 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
-    weapons.push_back(GUNDAM_AUTO_AIM);
-    weapons.push_back(GUNDAM_BORON);
-    weapons.push_back(GUNDAM_NEUTRON);
     level = bullet_form = 0;
     currentWeaponID = 0;
     appearance = GUNDAM_CENTER;
@@ -36,6 +33,11 @@ Gundam::~Gundam() {
 
 void Gundam::setGame(Game *_game) {
     game = _game;
+    if (game->DifficultyState() == GAME_EASY) {
+        weapons.push_back(GUNDAM_BORON);
+        weapons.push_back(GUNDAM_NEUTRON);
+        weapons.push_back(GUNDAM_AUTO_AIM);
+    }
 }
 
 void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
@@ -114,6 +116,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
 
             Bullet *bullet = new Bullet(getCurrentWeapon());
             bullet_form = min(level, NUMBER_OF_BULLET_FORM - 1);
+//            cout << level << "\n";
             Texture texture = Gallery::Instance()->gundamWeapons[getCurrentWeapon()][bullet_form];
             bullet->setEntity({entity.getX() + entity.getW() / 2 - texture.w / 2, entity.getY() - texture.h, texture.w, texture.h}, -GUNDAM_BULLET_SPEED[getCurrentWeapon()], texture);
             bullet->setIsMove(true);
@@ -193,6 +196,8 @@ void Gundam::addWeapon(WeaponType newWeapon) {
     for (int i = 0; i < int(weapons.size()); ++ i) if (weapons[i] == newWeapon) {
 //        cout << "Already had\n";
         currentWeaponID = i;
+        levelUp();
+//        cout << level << "\n";
         return;
     }
     weapons.push_back(newWeapon);
@@ -238,6 +243,12 @@ void Gundam::reset() {
     level = bullet_form = 0;
     currentWeaponID = 0;
     laserOn = false;
+
+    if (game->DifficultyState() == GAME_EASY) {
+        weapons.push_back(GUNDAM_BORON);
+        weapons.push_back(GUNDAM_NEUTRON);
+        weapons.push_back(GUNDAM_AUTO_AIM);
+    }
 
     entity.setRect(SCREEN_WIDTH/2, SCREEN_HEIGHT - 100);
     entity.setStep(0, 0);

@@ -61,9 +61,10 @@ enum GameDifficulty {
     GAME_EASY = 0,
     GAME_NORMAL,
     GAME_HARD,
+    GAME_INSANE,
     GAME_DIFFICULTY_COUNT,
 };
-const string GAME_DIFFICULTY[] = {"Easy", "Normal", "Hard"};
+const string GAME_DIFFICULTY[] = {"Easy", "Normal", "Hard", "Insane"};
 
 enum GameAudio {
     AUDIO_UNMUTED = 0,
@@ -216,6 +217,9 @@ public:
     }
     bool isRunning() const {
         return status != GAME_STOP;
+    }
+    GameDifficulty DifficultyState() const {
+        return difficultyState;
     }
 
     void setGameStatus(GameStatus newStatus);
