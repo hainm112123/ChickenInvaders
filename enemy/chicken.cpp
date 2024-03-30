@@ -162,6 +162,7 @@ bool Chicken::checkBulletCollision(Entity *other) {
 
 void Chicken::useRocket() {
     if (!rocketInit.timeIsUp() || !rocketCooldown.timeIsUp()) return;
+    if (type != CHICKEN_BOSS) return;
     if (onRocket) return;
 
     rocketCooldown.startCountdown();

@@ -21,8 +21,8 @@ const int CHICKEN_CIRCULAR_DISTANCE_MIN = 60;
 const double CIRCULAR_CENTER_X = SCREEN_WIDTH / 2;
 const double CIRCULAR_CENTER_Y = SCREEN_HEIGHT / 2;
 
-const double CHICKEN_HP[] = {100, 6543, 2500};
-const double CHICKEN_HP_UPGRADE[] = {69, 3333, 1111};
+const double CHICKEN_HP[] = {100, 5678, 2500};
+const double CHICKEN_HP_UPGRADE[] = {69, 3210, 1111};
 
 const int CHICKENS_DISTANCE[] = {30, 100, 0};
 

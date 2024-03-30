@@ -53,7 +53,7 @@ bool Entity::isInsideScreen() {
 bool Entity::collisionWith(const Entity *entity) {
     int x = max(rect.x, (entity->rect).x), y = max(rect.y, (entity->rect).y),
         u = min(rect.x + rect.w, (entity->rect).x + (entity->rect).w), v = min(rect.y + rect.h, (entity->rect).y + (entity->rect).h);
-    if (u - x > 10 && v - y > 10) return true;
+    if (u - x > 3 && v - y > 3) return true;
     return false;
 }
 bool Entity::collisionWith(const Entity &entity) {

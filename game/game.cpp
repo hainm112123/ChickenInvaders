@@ -120,6 +120,12 @@ void Game::init() {
 
 //    cout << round << "\n";
 //    gundamLaserTimer.startCountdown();
+    if (round == 1 && NG == 0 && difficultyState == GAME_EASY) {
+        gundam.addWeapon(GUNDAM_BORON);
+        gundam.addWeapon(GUNDAM_NEUTRON);
+        gundam.addWeapon(GUNDAM_AUTO_AIM);
+        gundam.changeWeapon();
+    }
 
     roundWon = false;
     chickenBullets.clear();
@@ -664,6 +670,7 @@ void Game::handleGameEvent() {
             set<Bullet*> gundamBullets = gundam.getBullets();
             for (Bullet *bullet: gundamBullets) {
                 if (chicken->getEntity()->collisionWith((bullet->getEntity()))) {
+//                    cout << "abc\n";
                     gundam.removeBullet(bullet);
                     chickenReceiveDamage(chicken, gundam.getBulletDamage());
                     if (!chicken->isAlive()) break;

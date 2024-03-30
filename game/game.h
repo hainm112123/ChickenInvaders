@@ -34,7 +34,7 @@ const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
 const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
 const int NUMBER_OF_CHICKEN[] = {0, 30, 20, 0, 1, 0, 1};
 const int NUMBER_OF_CHICKEN_PER_ROW[] = {0, 10, 1, 0, 1, 0, 1};
-const int NUMBER_OF_CHICKEN_BULLET[] = {0, 10, 0, 0, 0, 0, 3};
+const int NUMBER_OF_CHICKEN_BULLET[] = {0, 10, 0, 0, 0, 0, 2};
 
 const double SCREEN_SPEED = 144;
 const int BG_SIZE = 762;
