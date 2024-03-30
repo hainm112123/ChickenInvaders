@@ -294,6 +294,7 @@ void Media::loadMedia() {
     explosions = {
         Mix_LoadWAV("./assets/sound/exp.wav"),
         Mix_LoadWAV("./assets/sound/exp_uco.wav"),
+        Mix_LoadWAV("./assets/sound/explosions/explosion09.wav"),
     };
     upgrade = Mix_LoadWAV("./assets/sound/level_up.wav");
     bulletRock = Mix_LoadWAV("./assets/sound/whistle.wav");

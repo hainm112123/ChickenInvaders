@@ -187,7 +187,6 @@ class Game {
 
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
-    Entity chickenTeleport;
 
     int rocketCount = 0, frychickenCount = 0;
     map<string, int> scores;

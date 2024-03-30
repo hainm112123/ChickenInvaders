@@ -6,6 +6,9 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
+//    weapons.push_back(GUNDAM_BORON);
+//    weapons.push_back(GUNDAM_NEUTRON);
+//    weapons.push_back(GUNDAM_AUTO_AIM);
     level = bullet_form = 0;
     currentWeaponID = 0;
     appearance = GUNDAM_CENTER;
@@ -33,11 +36,6 @@ Gundam::~Gundam() {
 
 void Gundam::setGame(Game *_game) {
     game = _game;
-    if (game->DifficultyState() == GAME_EASY) {
-        weapons.push_back(GUNDAM_BORON);
-        weapons.push_back(GUNDAM_NEUTRON);
-        weapons.push_back(GUNDAM_AUTO_AIM);
-    }
 }
 
 void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
@@ -243,12 +241,6 @@ void Gundam::reset() {
     level = bullet_form = 0;
     currentWeaponID = 0;
     laserOn = false;
-
-    if (game->DifficultyState() == GAME_EASY) {
-        weapons.push_back(GUNDAM_BORON);
-        weapons.push_back(GUNDAM_NEUTRON);
-        weapons.push_back(GUNDAM_AUTO_AIM);
-    }
 
     entity.setRect(SCREEN_WIDTH/2, SCREEN_HEIGHT - 100);
     entity.setStep(0, 0);

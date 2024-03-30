@@ -11,6 +11,8 @@ const int CHICKEN_WIDTH[] = {78, 200, 129};
 const int CHICKEN_HEIGHT[] = {65, 200, 108};
 const int CHICKEN_TELEPORT_WIDTH = 169;
 const int CHICKEN_TELEPORT_HEIGHT = 196;
+const int CHICKEN_ROCKET_WIDTH = 69;
+const int CHICKEN_ROCKET_HEIGHT = 190;
 
 const double CHICKEN_SPEED[] = {96, 300, 256};
 const double NG_CHICKEN_SPEED = 36;
@@ -29,6 +31,7 @@ const int CHICKEN_EGG_HEIGHT[] = {15, 52, 0};
 const int MIN_CHICKEN_EGG_SPEED[] = {150, 200, 0};
 const int MAX_CHICKEN_EGG_SPEED[] = {400, 444, 0};
 const double NG_CHICKEN_EGG_SPEED = 160;
+const double ROCKET_SPEED = 400;
 
 const int CHICKEN_BOMB_EXPLOSION_WIDTH = 169;
 const int CHICKEN_BOMB_EXPLOSION_HEIGHT = 169;
@@ -41,6 +44,10 @@ const int NG_CHICKEN_SCORE[] = {6, 121, 81};
 const double BULLET_DELAY = 0.3;
 const double CHICKEN_TELEPORT_COOLDOWN = 10;
 const double CHICKEN_TELEPORT_DURATION = NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER * 2;
+const double CHICKEN_ROCKET_INIT = 3;
+const double CHICKEN_ROCKET_COOLDOWN = 15;
+const double CHICKEN_ROCKET_DELAY = 1.5;
+const double CHICKEN_ROCKET_MOVE_TIME = 0.3;
 
 enum ChickenType {
     CHICKEN_SMALL,
@@ -58,6 +65,9 @@ struct ChickenMoveState {
 
 class Chicken {
     Entity entity;
+
+    Game *game;
+
     double hp;
     set<Bullet*> bullets;
     ChickenType type;
@@ -68,15 +78,19 @@ class Chicken {
     double circular_distance, angle;
     int direction = 1;
     bool onTeleport = false;
+    bool onRocket = false, rocketExploding = false;
+    double rocketTimeCounter = 0;
 
     deque<Entity*> explosions;
 
 public:
-    Chicken(ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
+    Chicken(Game *_game, ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
     ~Chicken();
 
+    Entity teleport, big_explosion, rocket;
     Timer bulletTimer;
     Timer teleportCooldown, teleportDuration;
+    Timer rocketInit, rocketCooldown;
 
     Entity* getEntity() {
         return &entity;
@@ -110,8 +124,12 @@ public:
     bool OnTeleport() const {
         return onTeleport;
     }
+    bool OnRocket() const {
+        return onRocket;
+    }
 
     void setOnTeleport(bool val);
+    void setOnRocket(bool val);
     bool receiveDamage(double dmg);
     void setMoveState(ChickenMoveState _moveState);
     void _move();
@@ -121,6 +139,9 @@ public:
     void handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBullets);
     void handleExplosion(SDL_Renderer *renderer);
     bool checkBulletCollision(Entity *other);
+    void timerProcess();
+    void handleRocket(SDL_Renderer *renderer, double _dest_x, double _dest_y);
+    void useRocket();
 };
 
 #endif // CHICKEN_H_INCLUDED

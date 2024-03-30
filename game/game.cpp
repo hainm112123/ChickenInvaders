@@ -14,7 +14,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     gundam(),
     rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
     bossHealthBar(BOSS_HEALTH_BAR), bossHealthBorder(BOSS_HEALTH_BAR),
-    chickenTeleport(TELEPORT),
     gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE),
     pause_menu(PAUSE_MENU_ELEMENT), home_button(PAUSE_MENU_ELEMENT), audio_button(PAUSE_MENU_ELEMENT), resume_button(PAUSE_MENU_ELEMENT), pause_button(PAUSE_MENU_ELEMENT),
     menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu),
@@ -57,9 +56,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     resume_button.setRect(button_offset_x - resume_button.getW() - 5, button_offset_y);
     home_button.setRect(button_offset_x + 5, button_offset_y);
     audio_button.setRect(button_offset_x - audio_button.getW()/2, pause_menu.getY() + pause_menu.getH()*3/4 - audio_button.getH()/2);
-
-    chickenTeleport.setTexture(Gallery::Instance()->teleport);
-    chickenTeleport.setRect({0, 0, CHICKEN_TELEPORT_WIDTH, CHICKEN_TELEPORT_HEIGHT});
 }
 Game::~Game() {
     _clear();
@@ -157,8 +153,8 @@ void Game::init() {
         for (int i = 0; i < numberOfEnemy; ++ i) {
             int row = i / perRow, col = i % perRow;
             Chicken *chicken = round == CHICKEN_CIRCULAR_ROUND ?
-                                new Chicken(chicken_type, CHICKEN_CIRCULAR_MOVE, game_difficulty, {CHICKEN_CIRCULAR_DISTANCE_MAX, (360 / numberOfEnemy) * i}) :
-                                new Chicken(chicken_type, CHICKEN_BASIC_MOVE, game_difficulty, {col, row});
+                                new Chicken(this, chicken_type, CHICKEN_CIRCULAR_MOVE, game_difficulty, {CHICKEN_CIRCULAR_DISTANCE_MAX, (360 / numberOfEnemy) * i}) :
+                                new Chicken(this, chicken_type, CHICKEN_BASIC_MOVE, game_difficulty, {col, row});
             chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->chicken_type()]);
             chickens.push_back(chicken);
             if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) bossHP += chicken->getHP();
@@ -271,31 +267,36 @@ void Game::process_enemy() {
                 chicken->_move();
             }
 
+            if (chicken->chicken_type() == CHICKEN_BOSS) {
+                chicken->useRocket();
+                chicken->handleRocket(renderer, gundam.getEntity()->get_act_x(), gundam.getEntity()->get_act_y());
+            }
+
             int rate = 0;
             if (chicken->chicken_type() == CHICKEN_SMALL) rate = 1;
             if (chicken->chicken_type() == CHICKEN_BOSS) rate = 100;
             int maxNumberOfBullet = 0;
             if (chicken->chicken_type() == CHICKEN_SMALL) maxNumberOfBullet = 1;
             if (chicken->chicken_type() == CHICKEN_BOSS) maxNumberOfBullet = 3;
-            if (rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp()) {
+            if (!chicken->OnRocket() && rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp()) {
                 chicken->addBullet(chickenBullets.back());
                 chickenBullets.pop_back();
                 (chicken->bulletTimer).startCountdown();
             }
 
             if (chicken->chicken_type() == CHICKEN_DODGE && !chicken->teleportDuration.timeIsUp()) {
-                if (chickenTeleport.CurrentTime() >= NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER) {
+                if (chicken->teleport.CurrentTime() >= NUMBER_OF_TELEPORT_PIC * SECOND_PER_PICTURE_FASTER) {
                     if (chicken->OnTeleport()) {
-                        chickenTeleport.resetTime();
+                        chicken->teleport.resetTime();
                         chicken->getEntity()->setPosition(Rand(100, SCREEN_WIDTH - 100), 20);
                         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
-                        chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
+                        chicken->teleport.setRect(chicken_rect.x + chicken_rect.w/2 - chicken->teleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chicken->teleport.getH()/2);
                         chicken->setOnTeleport(true);
                         playChunk(Media::Instance()->tele);
                     }
                 }
                 else {
-                    chickenTeleport.render(renderer);
+                    chicken->teleport.render(renderer);
                 }
             }
             else {
@@ -389,29 +390,6 @@ void Game::process_enemy() {
         }
     }
 
-//    if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_DODGE) {
-//        ChickenMoveState chickenMoveState = topChicken->getMoveState();
-//
-//        if (touchBottom(bottomChicken, 5)) {
-//            chickenMoveState.goDown = 0;
-//            chickenMoveState.goUp = 1;
-//        }
-//        if (touchTop(topChicken)) {
-//            chickenMoveState.goDown = 1;
-//            chickenMoveState.goUp = 0;
-//        }
-//        if (touchRight(rightChicken)) {
-//            chickenMoveState.goRight = 0;
-//            chickenMoveState.goLeft = 1;
-//        }
-//        if (touchLeft(leftChicken)) {
-//            chickenMoveState.goRight = 1;
-//            chickenMoveState.goLeft = 0;
-//        }
-//
-//        for (Chicken *chicken: chickens) chicken->setMoveState(chickenMoveState);
-//    }
-
     //....................fried chicken..................................
 
     if (!fried_chickens.empty()) {
@@ -503,9 +481,7 @@ void Game::process() {
     gundamLaserTimer.process();
 
     for (Chicken *chicken: chickens) if (chicken->isAlive()) {
-        chicken->teleportCooldown.process();
-        chicken->teleportDuration.process();
-        (chicken->bulletTimer).process();
+        chicken->timerProcess();
     }
 
     if (round == MINI_BOSS_ROUND && !chickens.empty()) {
@@ -673,7 +649,7 @@ void Game::handleGameEvent() {
     //............................chicken...................................................
     for (Chicken *chicken: chickens) {
         if (chicken->isAlive()) {
-            if (chicken->getEntity()->collisionWith(gundam.getEntity())) {
+            if (!chicken->OnRocket() && chicken->getEntity()->collisionWith(gundam.getEntity())) {
                 if (gundam.isAlive()) {
                     gundamDead();
                 }
@@ -684,7 +660,7 @@ void Game::handleGameEvent() {
             gundamDead();
         }
 
-        if (chicken->isAlive()) {
+        if (chicken->isAlive() && !chicken->OnRocket()) {
             set<Bullet*> gundamBullets = gundam.getBullets();
             for (Bullet *bullet: gundamBullets) {
                 if (chicken->getEntity()->collisionWith((bullet->getEntity()))) {
@@ -842,9 +818,9 @@ void Game::chickenReceiveDamage(Chicken *chicken, double damage) {
     if (chicken->chicken_type() == CHICKEN_DODGE && chicken->teleportCooldown.timeIsUp()) {
         chicken->teleportCooldown.startCountdown();
         chicken->teleportDuration.startCountdown();
-        chickenTeleport.resetTime();
+        chicken->teleport.resetTime();
         SDL_Rect chicken_rect = chicken->getEntity()->getRect();
-        chickenTeleport.setRect(chicken_rect.x + chicken_rect.w/2 - chickenTeleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chickenTeleport.getH()/2);
+        chicken->teleport.setRect(chicken_rect.x + chicken_rect.w/2 - chicken->teleport.getW()/2, chicken_rect.y + chicken_rect.h/2 - chicken->teleport.getH()/2);
         chicken->setOnTeleport(true);
         playChunk(Media::Instance()->tele);
     }
@@ -1042,16 +1018,15 @@ void Game::renderPauseMenu() {
 void Game::initData() {
     _clear();
     score = NG = 0;
-//    round = INIT_ROUND;
-    round = ROCK_FALL_ROUND;
-    audioState = AUDIO_MUTED;
+    round = INIT_ROUND;
+//    round = ROCK_FALL_ROUND;
+//    audioState = AUDIO_MUTED;
     scrolling = 0;
     rocketCount = 0;
     if (difficultyState == GAME_EASY) rocketCount = 3;
     if (difficultyState == GAME_NORMAL) rocketCount = 1;
     frychickenCount = 0;
     roundWon = true;
-//    onChickenTeleport = false;
 
     killedChickenCount.assign(5, 0);
     chickens.clear(); chickenBullets.clear();
