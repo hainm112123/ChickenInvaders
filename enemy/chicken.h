@@ -5,6 +5,7 @@
 #include "../common/entity.h"
 #include "../weapon/bullet.h"
 #include "../game/media.h"
+#include "../gundam/gundam.h"
 
 const int CHICKEN_WIDTH[] = {78, 200, 129};
 const int CHICKEN_HEIGHT[] = {65, 200, 108};
@@ -18,16 +19,21 @@ const int CHICKEN_CIRCULAR_DISTANCE_MIN = 60;
 const double CIRCULAR_CENTER_X = SCREEN_WIDTH / 2;
 const double CIRCULAR_CENTER_Y = SCREEN_HEIGHT / 2;
 
-const double CHICKEN_HP[] = {100, 6789, 2500};
+const double CHICKEN_HP[] = {100, 6543, 2500};
 const double CHICKEN_HP_UPGRADE[] = {69, 3333, 1111};
 
 const int CHICKENS_DISTANCE[] = {30, 100, 0};
 
-const int CHICKEN_EGG_WIDTH[] = {15, 80, 0};
-const int CHICKEN_EGG_HEIGHT[] = {15, 80, 0};
+const int CHICKEN_EGG_WIDTH[] = {15, 56, 0};
+const int CHICKEN_EGG_HEIGHT[] = {15, 52, 0};
 const int MIN_CHICKEN_EGG_SPEED[] = {150, 200, 0};
-const int MAX_CHICKEN_EGG_SPEED[] = {400, 490, 0};
+const int MAX_CHICKEN_EGG_SPEED[] = {400, 444, 0};
 const double NG_CHICKEN_EGG_SPEED = 160;
+
+const int CHICKEN_BOMB_EXPLOSION_WIDTH = 169;
+const int CHICKEN_BOMB_EXPLOSION_HEIGHT = 169;
+const int CHICKEN_ROCKET_EXPLOSION_WIDTH = 256;
+const int CHICKEN_ROCKET_EXPLOSION_HEIGHT = 256;
 
 const int CHICKEN_SCORE[] = {10, 200, 169};
 const int NG_CHICKEN_SCORE[] = {6, 121, 81};
@@ -62,6 +68,8 @@ class Chicken {
     double circular_distance, angle;
     int direction = 1;
     bool onTeleport = false;
+
+    deque<Entity*> explosions;
 
 public:
     Chicken(ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
@@ -111,6 +119,8 @@ public:
     void addBullet(Bullet *_bullet);
     void removeBullet(Bullet *bullet, vector<Bullet*> &gameEnemyBullets);
     void handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBullets);
+    void handleExplosion(SDL_Renderer *renderer);
+    bool checkBulletCollision(Entity *other);
 };
 
 #endif // CHICKEN_H_INCLUDED

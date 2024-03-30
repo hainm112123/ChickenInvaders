@@ -180,8 +180,8 @@ void Game::init() {
 bool touchTop(Chicken *chicken) {
     return chicken->getEntity()->getY() < 0;
 }
-bool touchBottom(Chicken *chicken, int mul) {
-    return chicken->getEntity()->getY() > chicken->getEntity()->getH() * mul;
+bool touchBottom(Chicken *chicken, double mul) {
+    return (double)(chicken->getEntity()->getY()) > double(chicken->getEntity()->getH()) * mul;
 }
 bool touchLeft(Chicken *chicken) {
     return chicken->getEntity()->getX() < 0;
@@ -304,6 +304,7 @@ void Game::process_enemy() {
 
         }
         chicken->handleBullet(renderer, chickenBullets);
+        chicken->handleExplosion(renderer);
     }
 
     if (topChicken != nullptr && topChicken->chicken_type() == CHICKEN_SMALL) {
@@ -366,8 +367,8 @@ void Game::process_enemy() {
 
         for (Chicken *chicken: chickens) {
             ChickenMoveState moveState = chicken->getMoveState();
-
-            if (touchBottom(chicken, 1)) {
+            double mul = chicken_type == CHICKEN_BOSS ? 0.5 : 1.5;
+            if (touchBottom(chicken, mul)) {
                 moveState.goDown = 0;
                 moveState.goUp = 1;
             }
@@ -679,14 +680,8 @@ void Game::handleGameEvent() {
             }
         }
 
-        set<Bullet*> currentChickenBullets = chicken->getBullets();
-        if (gundam.isAlive()) {
-            for (Bullet *bullet: currentChickenBullets) {
-                if (bullet->getEntity()->collisionWith(gundam.getEntity())) {
-                    gundamDead();
-                    break;
-                }
-            }
+        if (gundam.isAlive() && chicken->checkBulletCollision(gundam.getEntity())) {
+            gundamDead();
         }
 
         if (chicken->isAlive()) {
@@ -826,11 +821,11 @@ void Game::chickenDead(Chicken *chicken) {
     int chickenLevel = chicken->chicken_type() == CHICKEN_SMALL ? 0 : 1;
     int killed = (++ killedChickenCount[chickenLevel]);
     if (chickenLevel == 0 && killed % CHICKENS_TO_LEVEL_UP == 0) {
-        if (Rand(0, 100) < 60) dropUpgrade(NEW_WEAPON);
+        if (Rand(0, 100) < 60) dropUpgrade(LEVEL_UP);
         else dropUpgrade(NEW_WEAPON);
     }
     if (chickenLevel == 1 && killed % BOSS_TO_NEW_WEAPON == 0) {
-        if (Rand(0, 100) < 60) dropUpgrade(LEVEL_UP);
+        if (Rand(0, 100) < 40) dropUpgrade(LEVEL_UP);
         else dropUpgrade(NEW_WEAPON);
     }
 
@@ -1047,7 +1042,9 @@ void Game::renderPauseMenu() {
 void Game::initData() {
     _clear();
     score = NG = 0;
-    round = INIT_ROUND;
+//    round = INIT_ROUND;
+    round = ROCK_FALL_ROUND;
+    audioState = AUDIO_MUTED;
     scrolling = 0;
     rocketCount = 0;
     if (difficultyState == GAME_EASY) rocketCount = 3;

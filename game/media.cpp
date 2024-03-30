@@ -143,7 +143,8 @@ void Gallery::loadGamePictures() {
     };
     eggs = {
         loadTexture("./assets/graphics/egg.png"),
-        loadTexture("./assets/graphics/egg_boss.png"),
+        loadTexture("./assets/graphics/bomb.png"),
+//        loadTexture("./assets/graphics/egg_boss.png"),
     };
     gundams = {
 //        loadTexture("./assets/graphics/player-red-1.png"),

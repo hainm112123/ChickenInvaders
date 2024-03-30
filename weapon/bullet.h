@@ -44,7 +44,7 @@ public:
 
     void render(SDL_Renderer *renderer);
     void handleGundamBullet(double target_x = -oo, double target_y = -oo);
-    void handleEnemyBullet();
+    bool handleEnemyBullet(bool is_boss = false);
 };
 
 #endif // BULLET_H_INCLUDED

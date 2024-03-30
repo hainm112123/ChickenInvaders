@@ -35,10 +35,11 @@ Chicken::Chicken(ChickenType _type, ChickenMoveType _moveType, int game_difficul
 Chicken::~Chicken() {
     for (Bullet *bullet: bullets) delete(bullet);
     bullets.clear();
+    for (Entity *explosion: explosions) delete(explosion);
+    explosions.clear();
 }
 
 void Chicken::render(SDL_Renderer *renderer) {
-//    SDL_SetRenderDrawColor(renderer, WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b, 0);
     entity.render(renderer);
 }
 
@@ -95,10 +96,37 @@ void Chicken::handleBullet(SDL_Renderer *renderer, vector<Bullet*> &gameEnemyBul
     for (Bullet *bullet: bullets) {
         if (bullet->getIsMove()) {
             bullet->render(renderer);
-            bullet->handleEnemyBullet();
+            bool tmp = bullet->handleEnemyBullet(type == CHICKEN_BOSS);
+            if (type == CHICKEN_BOSS && tmp) {
+                SDL_Rect rect = bullet->getEntity()->getRect();
+                rect.x -= 50;
+                rect.y -= 50;
+                rect.w = CHICKEN_BOMB_EXPLOSION_WIDTH;
+                rect.h = CHICKEN_BOMB_EXPLOSION_HEIGHT;
+                explosions.push_back(new Entity(EXPLOSION, rect, Gallery::Instance()->expolosions[1]));
+            }
         }
         else {
             removeBullet(bullet, gameEnemyBullets);
         }
     }
+}
+
+void Chicken::handleExplosion(SDL_Renderer *renderer) {
+    while (!explosions.empty() && explosions.front()->CurrentTime() >= SECOND_PER_PICTURE * NUMBER_OF_EXPLOSION_PIC) {
+        Entity *explosion = explosions.front();
+        explosions.pop_front();
+        delete(explosion);
+    }
+    for (auto *explosion: explosions) explosion->render(renderer);
+}
+
+bool Chicken::checkBulletCollision(Entity *other) {
+    for (Bullet *bullet: bullets) {
+        if (bullet->getEntity()->collisionWith(other)) return true;
+    }
+    for (Entity *explosion: explosions) {
+        if (explosion->collisionWith(other)) return true;
+    }
+    return false;
 }

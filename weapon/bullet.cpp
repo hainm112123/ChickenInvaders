@@ -41,10 +41,13 @@ void Bullet::handleGundamBullet(double target_x, double target_y) {
     }
 }
 
-void Bullet::handleEnemyBullet() {
+bool Bullet::handleEnemyBullet(bool is_boss) {
     entity._move();
-    if (entity.getY() > SCREEN_HEIGHT + entity.getH() + 100) {
+    double limit = is_boss ? SCREEN_HEIGHT - entity.getH() - 10: SCREEN_HEIGHT + entity.getH() + 100;
+    if (entity.getY() > limit) {
         setIsMove(false);
+        return true;
     }
+    return false;
 }
 
