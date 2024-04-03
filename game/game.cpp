@@ -935,9 +935,9 @@ void Game::renderMenu() {
                         playChunk(Media::Instance()->upgrade);
                         if (menuState == MENU_MAIN) {
                             if (i == MAIN_MENU_START) {
-                                menuState = MENU_PLAY;
-//                                setGameStatus(GAME_PLAYING);
-//                                initTimer.startCountdown();
+//                                menuState = MENU_PLAY;
+                                setGameStatus(GAME_PLAYING);
+                                initTimer.startCountdown();
                             }
                             if (i == MAIN_MENU_SETTINGS) {
                                 menuState = MENU_SETTINGS;
@@ -956,16 +956,16 @@ void Game::renderMenu() {
                             if (i == 0) {
                                 menuState = MENU_MAIN;
                             }
-                            if (menuState == MENU_PLAY) {
-                                if (i == PLAY_MENU_CONTINUE) {
-
-                                }
-                                if (i == PLAY_MENU_NEW_GAME || i == PLAY_MENU_CONTINUE) {
-                                    setGameStatus(GAME_PLAYING);
-                                    initTimer.startCountdown();
-                                    menuState = MENU_MAIN;
-                                }
-                            }
+//                            if (menuState == MENU_PLAY) {
+//                                if (i == PLAY_MENU_CONTINUE) {
+//
+//                                }
+//                                if (i == PLAY_MENU_NEW_GAME || i == PLAY_MENU_CONTINUE) {
+//                                    setGameStatus(GAME_PLAYING);
+//                                    initTimer.startCountdown();
+//                                    menuState = MENU_MAIN;
+//                                }
+//                            }
                             if (menuState == MENU_SETTINGS) {
                                 if (i == SETTING_MENU_AUDIO) {
                                     toggleAudio();

@@ -151,6 +151,12 @@ const int NUM_KEYCODES = 36;
 const int MAX_NAME_LENGTH = 16;
 const int NUMBER_SHOWED_PLAYER = 10;
 
+struct LastGameData {
+    int score, NG;
+    GameRound round;
+    GameDifficulty difficultyState;
+};
+
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
