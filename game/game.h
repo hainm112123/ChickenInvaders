@@ -75,6 +75,7 @@ const string GAME_AUDIO[] = {"Unmuted", "Muted"};
 
 enum MenuState {
     MENU_MAIN = 0,
+    MENU_PLAY,
     MENU_SETTINGS,
     MENU_CONTROL,
     MENU_RANKING,
@@ -85,6 +86,10 @@ enum MainMenuTab {
     MAIN_MENU_CONTROL,
     MAIN_MENU_RANKING,
     MAIN_MENU_QUIT,
+};
+enum PlayMenuTab {
+    PLAY_MENU_NEW_GAME = 1,
+    PLAY_MENU_CONTINUE
 };
 enum SettingsMenuTab {
     SETTING_MENU_AUDIO = 1,
@@ -197,9 +202,9 @@ class Game {
     Entity pause_menu, home_button, audio_button, resume_button, pause_button;
 
     MenuState menuState = MENU_MAIN;
-    Entity menu, menu_settings, menu_control;
+    Entity menu, menu_play, menu_settings, menu_control;
     vector<Text> settingsMenuText;
-    vector<Text> mainMenuChoice, settingsMenuChoice, rankingMenuChoice, controlMenuChoice;
+    vector<Text> mainMenuChoice, playMenuChoice, settingsMenuChoice, rankingMenuChoice, controlMenuChoice;
     Text backButton;
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);

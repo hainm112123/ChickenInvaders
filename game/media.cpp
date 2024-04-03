@@ -298,7 +298,7 @@ void Media::loadMedia() {
     };
     upgrade = Mix_LoadWAV("./assets/sound/level_up.wav");
     bulletRock = Mix_LoadWAV("./assets/sound/whistle.wav");
-    laser = Mix_LoadWAV("./assets/sound/laser8.wav");
+    laser = Mix_LoadWAV("./assets/sound/laser5.wav");
     rocket = Mix_LoadWAV("./assets/sound/rocket.wav");
     bite = Mix_LoadWAV("./assets/sound/bite.mp3");
     tele = Mix_LoadWAV("./assets/sound/tele.wav");

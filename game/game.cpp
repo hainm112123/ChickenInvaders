@@ -17,6 +17,7 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     gundamLevelImage(GUNDAM_STATE), rocketMini(GUNDAM_STATE), frychickenMini(GUNDAM_STATE),
     pause_menu(PAUSE_MENU_ELEMENT), home_button(PAUSE_MENU_ELEMENT), audio_button(PAUSE_MENU_ELEMENT), resume_button(PAUSE_MENU_ELEMENT), pause_button(PAUSE_MENU_ELEMENT),
     menu(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu),
+    menu_play(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu),
     menu_settings(MENU, {0, 0, SCREEN_WIDTH, SCREEN_WIDTH}, Gallery::Instance()->menu_settings),
     menu_control(MENU, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}, Gallery::Instance()->menu_control),
     backButton("Back", TEXT_COLOR)
@@ -879,12 +880,17 @@ void Game::renderMenu() {
 
     vector<Text> texts = {};
     vector<Text> &choices = (menuState == MENU_MAIN ? mainMenuChoice : (
+                             menuState == MENU_PLAY ? playMenuChoice : (
                              menuState == MENU_SETTINGS ? settingsMenuChoice : (
                              menuState == MENU_RANKING ? rankingMenuChoice : (
-                             controlMenuChoice))));
+                             controlMenuChoice)))));
     if (menuState == MENU_MAIN) {
         choices = mainMenuChoice;
         menu.render(renderer);
+    }
+    else if(menuState == MENU_PLAY) {
+        choices = playMenuChoice;
+        menu_play.render(renderer);
     }
     else if (menuState == MENU_SETTINGS) {
         texts = settingsMenuText;
@@ -929,9 +935,9 @@ void Game::renderMenu() {
                         playChunk(Media::Instance()->upgrade);
                         if (menuState == MENU_MAIN) {
                             if (i == MAIN_MENU_START) {
-                                setGameStatus(GAME_PLAYING);
-                                initTimer.startCountdown();
-//                                playMusic(Media::Instance()->battle);
+                                menuState = MENU_PLAY;
+//                                setGameStatus(GAME_PLAYING);
+//                                initTimer.startCountdown();
                             }
                             if (i == MAIN_MENU_SETTINGS) {
                                 menuState = MENU_SETTINGS;
@@ -949,6 +955,16 @@ void Game::renderMenu() {
                         else {
                             if (i == 0) {
                                 menuState = MENU_MAIN;
+                            }
+                            if (menuState == MENU_PLAY) {
+                                if (i == PLAY_MENU_CONTINUE) {
+
+                                }
+                                if (i == PLAY_MENU_NEW_GAME || i == PLAY_MENU_CONTINUE) {
+                                    setGameStatus(GAME_PLAYING);
+                                    initTimer.startCountdown();
+                                    menuState = MENU_MAIN;
+                                }
                             }
                             if (menuState == MENU_SETTINGS) {
                                 if (i == SETTING_MENU_AUDIO) {
@@ -1123,6 +1139,11 @@ void Game::load() {
     };
     backButton.renderText(fontRoundTitle, renderer, true);
     backButton.setRect(SCREEN_WIDTH - backButton.getW() - 30, SCREEN_HEIGHT - backButton.getH() - 20);
+    playMenuChoice = {
+        backButton,
+        Text("New game", TEXT_COLOR),
+        Text("Continue", TEXT_COLOR)
+    };
     settingsMenuChoice = {
         backButton,
         Text("", TEXT_COLOR),
@@ -1140,6 +1161,10 @@ void Game::load() {
     for (int i = 0; i < _size(mainMenuChoice); ++ i) {
         mainMenuChoice[i].renderText(fontMenu, renderer, true);
         mainMenuChoice[i].setRect(SCREEN_WIDTH/2 - mainMenuChoice[i].getW()/2, SCREEN_HEIGHT - 320 + i * 60);
+    }
+    for (int i = 1; i < _size(playMenuChoice); ++ i) {
+        playMenuChoice[i].renderText(fontMenu, renderer, true);
+        playMenuChoice[i].setRect(SCREEN_WIDTH/2 - playMenuChoice[i].getW()/2, SCREEN_HEIGHT - 380 + i * 60);
     }
     for (int i = 1; i < _size(settingsMenuText); ++ i) {
         settingsMenuText[i].renderText(fontMenu, renderer, true);
