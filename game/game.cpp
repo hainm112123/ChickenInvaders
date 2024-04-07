@@ -589,11 +589,12 @@ void Game::process() {
     //....................................................................
     if (round == MINI_BOSS_ROUND) {
 //        cout << roundTimer.RemainTime() << "\n";
-        string remain_time = to_string(roundTimer.RemainTime());
+        string remain_time = "Time left: " + to_string(roundTimer.RemainTime());
         for (int i = 0; i < 3; ++ i) remain_time.pop_back();
 //        remain_time += 's';
+//        remain_time += " second";
         roundTimerText.setText(remain_time);
-        roundTimerText.renderText(fontGame, renderer);
+        roundTimerText.renderText(fontRoundText, renderer);
     }
 
     //gundam bullet
@@ -1172,9 +1173,9 @@ void Game::load() {
     }
 
     //..................................................................
-    roundTimerText.setText("0.000");
+    roundTimerText.setText("Time left: 0.000");
     roundTimerText.setColor(TEXT_COLOR);
-    roundTimerText.renderText(fontGame, renderer, true);
+    roundTimerText.renderText(fontRoundText, renderer, true);
     roundTimerText.setRect(SCREEN_WIDTH/2 - roundTimerText.getW()/2, 0);
 
     ifstream fin("./assets/data/players.txt");

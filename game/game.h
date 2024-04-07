@@ -18,7 +18,7 @@ const double MINI_BOSS_TIME_LIMIT = 36;
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 10;
 const int NG_ROCK_WAVE = 3;
-const double ROCK_WAVE_DELAY = 0.87654321;
+const double ROCK_WAVE_DELAY = 1.2;
 
 enum GameRound {
     INIT_ROUND = 0,
@@ -39,7 +39,7 @@ const int NUMBER_OF_CHICKEN_BULLET[] = {0, 10, 0, 0, 0, 0, 2};
 const double SCREEN_SPEED = 144;
 const int BG_SIZE = 762;
 
-const double INIT_DELAY = 3;
+const double INIT_DELAY = 3.6;
 const double GAME_END_DELAY = 3;
 const double GUNDAM_REVIVE_TIME = 2;
 const double GUNDAM_SHIELD_DURATION = 3;
