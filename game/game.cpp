@@ -624,7 +624,7 @@ void Game::setRoundWon() {
     cout << "Round Won\n";
     roundWon = true;
     initTimer.startCountdown();
-    score += ROUND_SCORE[round - 1] + NG_ROUND_SCORE[round - 1] * NG;
+    score += ROUND_SCORE[round - 1] + NG_ROUND_SCORE[round - 1] * game_difficulty;
 }
 
 void Game::handleGameEvent() {
@@ -913,7 +913,10 @@ void Game::renderMenu() {
         texts[i].renderText(fontMenu, renderer);
     }
     for (int i = 0; i < _size(choices); ++ i) {
-        choices[i].renderText(fontMenu, renderer);
+        SDL_Rect rect = choices[i].getRect();
+        choices[i].renderText(choices[i].color_equal(TEXT_HOVER_COLOR) ? fontMenuHover : fontMenu, renderer, true);
+        choices[i].setRect(rect.x + rect.w/2 - choices[i].getW()/2, rect.y + rect.h/2 - choices[i].getH()/2);
+        choices[i].renderText(choices[i].color_equal(TEXT_HOVER_COLOR) ? fontMenuHover : fontMenu, renderer);
     }
 
     while (SDL_PollEvent(event) != 0) {
@@ -1088,6 +1091,7 @@ void Game::load() {
 //    playMusic(Media::Instance()->start);
     TTF_Init();
     fontMenu = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 36);
+    fontMenuHover = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 40);
     fontGame = TTF_OpenFont("./assets/font/Zebulon.otf", 24);
     fontRoundTitle = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 32);
     fontRoundText = TTF_OpenFont("./assets/font/Zebulon.otf", 20);

@@ -13,7 +13,7 @@
 #include "../weapon/rocket.h"
 
 const double BOSS_TURN_DELAY = 1.2;
-const double MINI_BOSS_TIME_LIMIT = 36;
+const double MINI_BOSS_TIME_LIMIT = 60;
 
 const int ROCK_FALL_WAVE = 15;
 const int ROCK_SIDE_WAVE = 10;
@@ -30,8 +30,8 @@ enum GameRound {
     BOSS_ROUND,
 };
 const int ROUND_COUNT = 6;
-const int ROUND_SCORE[] = {100, 150, 400, 250, 400, 300};
-const int NG_ROUND_SCORE[] = {36, 49, 100, 144, 121, 256};
+const int ROUND_SCORE[] = {100, 150, 400, 500, 400, 600};
+const int NG_ROUND_SCORE[] = {120, 144, 169, 196, 169, 256};
 const int NUMBER_OF_CHICKEN[] = {0, 30, 20, 0, 1, 0, 1};
 const int NUMBER_OF_CHICKEN_PER_ROW[] = {0, 10, 1, 0, 1, 0, 1};
 const int NUMBER_OF_CHICKEN_BULLET[] = {0, 10, 0, 0, 0, 0, 2};
@@ -160,7 +160,7 @@ struct LastGameData {
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
-    TTF_Font *fontMenu, *fontGame, *fontRoundTitle, *fontRoundText;
+    TTF_Font *fontMenu, *fontMenuHover, *fontGame, *fontRoundTitle, *fontRoundText;
 
     bool roundWon;
     int width, height;

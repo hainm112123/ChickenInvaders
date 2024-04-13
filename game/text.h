@@ -14,6 +14,10 @@ public:
     ~Text();
     Text(const string &_text, const SDL_Color &_color);
 
+    bool color_equal(SDL_Color other) {
+        return color.r == other.r && color.g == other.g && color.b == other.b && color.a == other.a;
+    }
+
     void setText(const string &_text);
     void setColor(const SDL_Color &_color);
 
