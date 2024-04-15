@@ -48,6 +48,8 @@
 		<Unit filename="game/game.h" />
 		<Unit filename="game/media.cpp" />
 		<Unit filename="game/media.h" />
+		<Unit filename="game/slider.cpp" />
+		<Unit filename="game/slider.h" />
 		<Unit filename="game/text.cpp" />
 		<Unit filename="game/text.h" />
 		<Unit filename="gundam/gundam.cpp" />
