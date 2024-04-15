@@ -11,6 +11,7 @@
 #include "text.h"
 #include "../enemy/fried_chicken.h"
 #include "../weapon/rocket.h"
+#include "slider.h"
 
 const double BOSS_TURN_DELAY = 1.2;
 const double MINI_BOSS_TIME_LIMIT = 60;
@@ -92,8 +93,8 @@ enum PlayMenuTab {
     PLAY_MENU_CONTINUE
 };
 enum SettingsMenuTab {
-    SETTING_MENU_AUDIO = 1,
-    SETTING_MENU_DIFFICULTY
+    SETTING_MENU_DIFFICULTY = 1,
+    SETTING_MENU_AUDIO,
 };
 enum RankingMenuTab {
     RANKING_MENU_CLEAR_RANKING = 1,
@@ -212,6 +213,8 @@ class Game {
     vector<Text> settingsMenuText;
     vector<Text> mainMenuChoice, playMenuChoice, settingsMenuChoice, rankingMenuChoice, controlMenuChoice;
     Text backButton;
+    Slider SFX, BGM;
+
 public:
     Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height);
     ~Game();

@@ -20,3 +20,7 @@ double get_angle_from_step(double x, double y) {
     double deg = atan2(x, -y) * 180 / M_PI;
     return deg;
 }
+
+void setColor(SDL_Renderer *renderer, SDL_Color color) {
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}

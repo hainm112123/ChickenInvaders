@@ -31,6 +31,7 @@ const int oo = int(1e9);
 const double eps = 1e-9;
 
 const SDL_Color WHITE_COLOR = {255, 255, 255, 255};
+const SDL_Color GRAY_COLOR = {128, 128, 128, 0};
 const SDL_Color WHITE_COLOR_2ND = {255, 255, 255, 0};
 const SDL_Color BLACK_COLOR = {0, 0, 0, 0};
 const SDL_Color GREEN_COLOR = {0, 128, 0, 0};
@@ -62,6 +63,8 @@ double to_radian(double degree);
 double to_degree(double radian);
 
 double get_angle_from_step(double x, double y);
+
+void setColor(SDL_Renderer *renderer, SDL_Color color);
 
 struct Texture {
     SDL_Texture *texture;

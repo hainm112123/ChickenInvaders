@@ -918,8 +918,16 @@ void Game::renderMenu() {
         choices[i].setRect(rect.x + rect.w/2 - choices[i].getW()/2, rect.y + rect.h/2 - choices[i].getH()/2);
         choices[i].renderText(choices[i].color_equal(TEXT_HOVER_COLOR) ? fontMenuHover : fontMenu, renderer);
     }
+    if (menuState == MENU_SETTINGS) {
+        BGM.render(renderer);
+        SFX.render(renderer);
+    }
 
     while (SDL_PollEvent(event) != 0) {
+        BGM.handleEvent(*event);
+        SFX.handleEvent(*event);
+        Mix_VolumeMusic(MIX_MAX_VOLUME * BGM.Value());
+        Mix_Volume(-1, MIX_MAX_VOLUME * SFX.Value());
         if (event->type == SDL_QUIT) {
             setGameStatus(GAME_STOP);
         }
@@ -1139,8 +1147,10 @@ void Game::load() {
     };
     settingsMenuText = {
         Text("", TEXT_COLOR),
+        Text("Difficulty", TEXT_COLOR),
         Text("Audio", TEXT_COLOR),
-        Text("Difficulty", TEXT_COLOR)
+        Text("BGM", TEXT_COLOR),
+        Text("SFX", TEXT_COLOR),
     };
     backButton.renderText(fontRoundTitle, renderer, true);
     backButton.setRect(SCREEN_WIDTH - backButton.getW() - 30, SCREEN_HEIGHT - backButton.getH() - 20);
@@ -1173,8 +1183,11 @@ void Game::load() {
     }
     for (int i = 1; i < _size(settingsMenuText); ++ i) {
         settingsMenuText[i].renderText(fontMenu, renderer, true);
-        settingsMenuText[i].setRect(SCREEN_WIDTH/4, 150 + (i - 1) * 80);
+        settingsMenuText[i].setRect(SCREEN_WIDTH/4 + 50 * (i > 2), 150 + (i - 1) * 80);
     }
+    BGM.init(SCREEN_WIDTH*3/4, settingsMenuText[3].getY() + settingsMenuText[3].getH()/2);
+    SFX.init(SCREEN_WIDTH*3/4, settingsMenuText[4].getY() + settingsMenuText[4].getH()/2);
+
 
     //..................................................................
     roundTimerText.setText("Time left: 0.000");
