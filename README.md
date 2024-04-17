@@ -10,6 +10,9 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 - [3. Bảng điểm](#3-bảng-điểm)
 
 ## 0. Cách tải game
+**Bước 1:** Clone repo này về hoặc chọn Code -> Download Zip
+**Bước 2:** Cài codeblocks-20.03mingw
+**Bước 3:** Mở file (#ChickenInvaders.cbp) và chạy game bằng phím F9
 
 ## 1. Bắt đầu game
 
