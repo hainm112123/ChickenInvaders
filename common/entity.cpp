@@ -59,6 +59,12 @@ bool Entity::collisionWith(const Entity *entity) {
 bool Entity::collisionWith(const Entity &entity) {
     return collisionWith(&entity);
 }
+bool Entity::collisionWith(const SDL_Rect &other_rect) {
+    int x = max(rect.x, other_rect.x), y = max(rect.y, other_rect.y),
+        u = min(rect.x + rect.w, other_rect.x + other_rect.w), v = min(rect.y + rect.h, other_rect.y + other_rect.h);
+    if (u - x > 3 && v - y > 3) return true;
+    return false;
+}
 
 void Entity::render(SDL_Renderer *renderer, int arg) {
     const double elapsed = TimeManager::Instance()->getElapsedTime();
@@ -104,7 +110,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SHIELD) {
+    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SHIELD || type == BOSS_LASER) {
         int n = 1, m = 1, cnt = 1;
         double perPic = SECOND_PER_PICTURE;
         switch(type) {
@@ -130,7 +136,14 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 n = 3;
                 cnt = m * n;
                 perPic = SECOND_PER_PICTURE;
+                break;
 //                cout << rect.w << " " << rect.h << "\n";
+            case BOSS_LASER:
+                m = 3;
+                n = 6;
+                cnt = m * n;
+                perPic = SECOND_PER_PICTURE;
+                break;
             default:
                 break;
         }

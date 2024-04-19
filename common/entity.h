@@ -33,6 +33,7 @@ enum EntityType {
     GUNDAM_STATE,
     FRIED_CHICKEN,
     BOSS_HEALTH_BAR,
+    BOSS_LASER,
     PAUSE_MENU_ELEMENT
 };
 
@@ -100,6 +101,7 @@ public:
     void _move(bool isInsideScreen = false);
     bool collisionWith(const Entity *entity);
     bool collisionWith(const Entity &entity);
+    bool collisionWith(const SDL_Rect &other_rect);
 
     void render(SDL_Renderer *renderer, int arg = 0);
     void setTexture(Texture _texture, bool isSetRect = false);

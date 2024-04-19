@@ -2,7 +2,9 @@
 #include "../game/game.h"
 
 Chicken::Chicken(Game *_game, ChickenType _type, ChickenMoveType _moveType, int game_difficulty, vector<int> args):
-        game(_game), teleport(TELEPORT), big_explosion(BIG_EXPLOSION), rocket(ROCKET)
+        game(_game),
+        teleport(TELEPORT), big_explosion(BIG_EXPLOSION), rocket(ROCKET),
+        laser(BOSS_LASER)
 {
     type = _type;
     moveType = _moveType;
@@ -35,8 +37,11 @@ Chicken::Chicken(Game *_game, ChickenType _type, ChickenMoveType _moveType, int 
     teleportDuration.setDuration(CHICKEN_TELEPORT_DURATION);
     rocketInit.setDuration(CHICKEN_ROCKET_INIT);
     rocketCooldown.setDuration(CHICKEN_ROCKET_COOLDOWN);
+    laserCooldown.setDuration(CHICKEN_LASER_COOLDOWN);
+    skillCooldown.setDuration(CHICKEN_SKILL_COOLDOWN);
 
     rocketInit.startCountdown();
+    skillCooldown.startCountdown();
 
     teleport.setTexture(Gallery::Instance()->teleport);
     teleport.setRect({0, 0, CHICKEN_TELEPORT_WIDTH, CHICKEN_TELEPORT_HEIGHT});
@@ -44,6 +49,9 @@ Chicken::Chicken(Game *_game, ChickenType _type, ChickenMoveType _moveType, int 
     rocket.setRect({0, 0, CHICKEN_ROCKET_WIDTH, CHICKEN_ROCKET_HEIGHT});
     big_explosion.setTexture(Gallery::Instance()->big_explosion);
     big_explosion.setRect({0, 0, CHICKEN_ROCKET_EXPLOSION_WIDTH, CHICKEN_ROCKET_EXPLOSION_HEIGHT});
+
+    laser.setTexture(Gallery::Instance()->boss_laser);
+    laser.setRect({0, 0, BOSS_LASER_WIDTH, BOSS_LASER_HEIGHT});
 }
 
 Chicken::~Chicken() {
@@ -64,6 +72,8 @@ void Chicken::timerProcess() {
     teleportDuration.process();
     rocketInit.process();
     rocketCooldown.process();
+    laserCooldown.process();
+    skillCooldown.process();
 }
 
 void Chicken::setMoveState(ChickenMoveState _moveState) {
@@ -86,6 +96,7 @@ void Chicken::_move() {
         if (moveState.goUp) step_y = -speed;
         if (moveState.goDown) step_y = speed;
     //    cout << step_x << " " << step_y << "\n";
+        if (usingLaser) step_x = 0;
         entity.setStep(step_x, step_y);
         entity._move();
     }
@@ -150,6 +161,8 @@ void Chicken::handleExplosion(SDL_Renderer *renderer) {
 }
 
 bool Chicken::checkBulletCollision(Entity *other) {
+    static const double laser_start_damage = SECOND_PER_PICTURE * 4;
+    static const double laser_end_damage = SECOND_PER_PICTURE * 14;
     for (Bullet *bullet: bullets) {
         if (bullet->getEntity()->collisionWith(other)) return true;
     }
@@ -157,11 +170,15 @@ bool Chicken::checkBulletCollision(Entity *other) {
         if (explosion->collisionWith(other)) return true;
     }
     if (rocketExploding && big_explosion.collisionWith(other)) return true;
+    if (laserTimeCounter >= laser_start_damage && laserTimeCounter < laser_end_damage) {
+        SDL_Rect laser_dmg_rect = {laser.getX() + laser.getW()/2 - laser.getW()/8, laser.getY(), laser.getW()/4, laser.getH()};
+        if (other->collisionWith(laser_dmg_rect)) return true;
+    }
     return false;
 }
 
 void Chicken::useRocket() {
-    if (!rocketInit.timeIsUp() || !rocketCooldown.timeIsUp()) return;
+    if (!rocketInit.timeIsUp() || !rocketCooldown.timeIsUp() || !skillCooldown.timeIsUp()) return;
     if (type != CHICKEN_BOSS) return;
     if (onRocket) return;
 
@@ -230,4 +247,44 @@ void Chicken::handleRocket(SDL_Renderer *renderer, double _dest_x, double _dest_
             }
         }
     }
+
+    skillCooldown.startCountdown();
+}
+
+void Chicken::useLaser() {
+    if (!laserCooldown.timeIsUp() || !skillCooldown.timeIsUp()) return;
+    if (type != CHICKEN_BOSS) return;
+    usingLaser = true;
+    num_laser_left = 10;
+    laserTimeCounter = -3;
+    laser.setPosition(Rand(0, SCREEN_WIDTH - BOSS_LASER_WIDTH), 0);
+}
+
+void Chicken::handleLaser(SDL_Renderer *renderer, int gundam_x) {
+    static double per_pic = SECOND_PER_PICTURE;
+    static int num_pic = 18;
+    static const double laser_start_damage = per_pic * 4;
+    static const double laser_end_damage = per_pic * 14;
+
+    if (!usingLaser) return;
+    laserTimeCounter += TimeManager::Instance()->getElapsedTime();
+    if (laserTimeCounter >= per_pic * num_pic + 0.5) {
+        if (num_laser_left > 0) {
+            laser.setPosition(gundam_x - laser.getW()/2, 0);
+            laser.resetTime();
+            laserTimeCounter = 0;
+            num_laser_left --;
+        }
+        else {
+            usingLaser = 0;
+        }
+    }
+    else if (laserTimeCounter >= 0 && laserTimeCounter < per_pic * num_pic) {
+        laser.render(renderer);
+        if (laserTimeCounter >= laser_start_damage && laserTimeCounter < laser_end_damage) {
+            game->playChunk(Media::Instance()->laser);
+        }
+    }
+
+    skillCooldown.startCountdown();
 }
