@@ -9,8 +9,10 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 - [2. Các thành phần trong game](#2-các-thành-phần-trong-game)
   * [a. Người chơi](#a-người-chơi)
   * [b. Kẻ địch](#b-kẻ-địch)
-- [3. Một vài hình ảnh trong game](#3-một-vài-hình-ảnh-trong-game)
-- [4. Về source code của game](#4-về-source-code-của-game)
+  * [c. Khác](#c-khác)
+- [3. Điều khiển và gameplay](#3-điều-khiển-và-gameplay)
+- [4. Một vài hình ảnh trong game](#4-một-vài-hình-ảnh-trong-game)
+- [5. Về source code của game](#5-về-source-code-của-game)
 
 ## 0. Cách tải game
 **Bước 1:** Clone repo này về hoặc chọn Code -> Download Zip
@@ -79,7 +81,21 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
   * Bật/Tắt âm thanh.
 ![game_pause](https://github.com/hainm112123/ChickenInvaders/assets/108868969/fb76cfd8-0dfd-4d3c-839d-7c00c383d2fc)
 
-## 3. Một vài hình ảnh trong game
+## 3. Điều khiển và gameplay
+
+- Các phím điều khiển:
+  * Di chuyển: các phím W, A, S, D tương ứng với di chuyển lên, sang trái, xuống, sang phải
+  * Đổi vũ khí: Q
+  * Sử dụng tên lửa: R
+  * Bắn đạn: Space
+  * ESC: tạm dừng game
+- Về gameplay
+  * Trò chơi sẽ diễn ra theo từng màn, nhiệm vụ của người chơi là sống sót, tiêu diệt kẻ địch, vượt qua các màn và đạt điểm số cao nhất có thể
+  * Trò chơi sẽ kết thúc khi phi thuyền của người chơi hết mạng
+  * Sau khi trò chơi kết thúc, một màn hình để người chơi nhập tên lên bảng xếp hạng sẽ xuất hiện
+    ![game_over](https://github.com/hainm112123/ChickenInvaders/assets/108868969/86ef7882-d670-403e-b425-347dae8e7d8e)
+
+## 4. Một vài hình ảnh trong game
 
 ![game_chicken_round](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e49a17d1-4db3-49d2-bb72-15a8450935c4)
 ![game_chicken_circle](https://github.com/hainm112123/ChickenInvaders/assets/108868969/1fd16f85-990a-4bf2-a5ad-e3e283375d2c)
@@ -91,7 +107,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 ![game_boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/797b8469-c95b-4e2a-84ba-fcaa447bc114)
 ![game_boss_skill](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d0cbb570-8a1a-4ee9-a150-c5013151a480)
 
-## 4. Về source code của game
+## 5. Về source code của game
 - Folder assets: Chứa các folder hình ảnh, âm thanh, phông chữ, dữ liệu của game
 - Folder common: chứa các file được sử dụng chung, nhiều bởi các file khác
   * common: chứa các hàm chung
