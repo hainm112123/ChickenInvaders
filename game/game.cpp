@@ -277,6 +277,14 @@ void Game::process_enemy() {
             if (chicken->chicken_type() == CHICKEN_BOSS) {
                 chicken->useRocket();
                 chicken->handleRocket(renderer, gundam.getEntity()->get_act_x(), gundam.getEntity()->get_act_y());
+                chicken->useLaser();
+                chicken->handleLaser(renderer, gundam.getEntity()->getX());
+                if (chicken->UsingLaser()) {
+                    chicken->getEntity()->setTextures(Gallery::Instance()->angry_boss);
+                }
+                else {
+                    chicken->getEntity()->setTextures(Gallery::Instance()->chickens[chicken->chicken_type()]);
+                }
             }
 
             int rate = 0;
@@ -285,7 +293,9 @@ void Game::process_enemy() {
             int maxNumberOfBullet = 0;
             if (chicken->chicken_type() == CHICKEN_SMALL) maxNumberOfBullet = 1;
             if (chicken->chicken_type() == CHICKEN_BOSS) maxNumberOfBullet = 3;
-            if (!chicken->OnRocket() && rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp()) {
+            if (!chicken->OnRocket() && !chicken->UsingLaser() &&
+                rand() % 1000 < rate && chicken->getNumberOfBullet() < maxNumberOfBullet && !chickenBullets.empty() && (chicken->bulletTimer).timeIsUp())
+            {
                 chicken->addBullet(chickenBullets.back());
                 chickenBullets.pop_back();
                 (chicken->bulletTimer).startCountdown();

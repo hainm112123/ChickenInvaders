@@ -13,6 +13,8 @@ const int CHICKEN_TELEPORT_WIDTH = 169;
 const int CHICKEN_TELEPORT_HEIGHT = 196;
 const int CHICKEN_ROCKET_WIDTH = 69;
 const int CHICKEN_ROCKET_HEIGHT = 190;
+const int BOSS_LASER_WIDTH = 433;
+const int BOSS_LASER_HEIGHT = 720;
 
 const double CHICKEN_SPEED[] = {96, 300, 256};
 const double NG_CHICKEN_SPEED = 36;
@@ -48,6 +50,8 @@ const double CHICKEN_ROCKET_INIT = 3;
 const double CHICKEN_ROCKET_COOLDOWN = 15;
 const double CHICKEN_ROCKET_DELAY = 1.5;
 const double CHICKEN_ROCKET_MOVE_TIME = 0.4321;
+const double CHICKEN_LASER_COOLDOWN = 20;
+const double CHICKEN_SKILL_COOLDOWN = 5;
 
 enum ChickenType {
     CHICKEN_SMALL,
@@ -77,9 +81,10 @@ class Chicken {
     ChickenMoveType moveType;
     double circular_distance, angle;
     int direction = 1;
-    bool onTeleport = false;
+    bool onTeleport = false, usingLaser = false;
     bool onRocket = false, rocketExploding = false;
-    double rocketTimeCounter = 0;
+    double rocketTimeCounter = 0, laserTimeCounter = 0;
+    int num_laser_left = 10;
 
     deque<Entity*> explosions;
 
@@ -87,10 +92,11 @@ public:
     Chicken(Game *_game, ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});
     ~Chicken();
 
-    Entity teleport, big_explosion, rocket;
+    Entity teleport, big_explosion, rocket, laser;
     Timer bulletTimer;
     Timer teleportCooldown, teleportDuration;
     Timer rocketInit, rocketCooldown;
+    Timer laserCooldown, skillCooldown;
 
     Entity* getEntity() {
         return &entity;
@@ -127,6 +133,9 @@ public:
     bool OnRocket() const {
         return onRocket;
     }
+    bool UsingLaser() const {
+        return usingLaser;
+    }
 
     void setOnTeleport(bool val);
     void setOnRocket(bool val);
@@ -142,6 +151,8 @@ public:
     void timerProcess();
     void handleRocket(SDL_Renderer *renderer, double _dest_x, double _dest_y);
     void useRocket();
+    void useLaser();
+    void handleLaser(SDL_Renderer *renderer, int gundam_x);
 };
 
 #endif // CHICKEN_H_INCLUDED

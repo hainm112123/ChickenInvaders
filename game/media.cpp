@@ -36,6 +36,7 @@ Gallery::~Gallery() {
     for (Texture texture: rocks) SDL_DestroyTexture(texture.texture);
     for (Texture texture: expolosions) SDL_DestroyTexture(texture.texture);
     for (Texture texture: fried_chickens) SDL_DestroyTexture(texture.texture);
+    for (Texture texture: angry_boss) SDL_DestroyTexture(texture.texture);
     SDL_DestroyTexture(laser.texture);
     SDL_DestroyTexture(background.texture);
     SDL_DestroyTexture(levelUp.texture);
@@ -58,6 +59,7 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(audio_unmuted_button.texture);
     SDL_DestroyTexture(pause_menu.texture);
     SDL_DestroyTexture(teleport.texture);
+    SDL_DestroyTexture(boss_laser.texture);
 
     instance = nullptr;
 }
@@ -114,6 +116,13 @@ void Gallery::loadGamePictures() {
             loadTexture("./assets/graphics/chicken/chicken (2).png"),
             loadTexture("./assets/graphics/chicken/chicken (1).png"),
         },
+    };
+    angry_boss = {
+        loadTexture("./assets/graphics/boss_angry/Militarychicken_0.png"),
+        loadTexture("./assets/graphics/boss_angry/Militarychicken_1.png"),
+        loadTexture("./assets/graphics/boss_angry/Militarychicken_2.png"),
+        loadTexture("./assets/graphics/boss_angry/Militarychicken_1.png"),
+        loadTexture("./assets/graphics/boss_angry/Militarychicken_0.png"),
     };
     gundamWeapons = {
         {
@@ -246,6 +255,7 @@ void Gallery::loadGamePictures() {
     pause_menu = loadTexture("./assets/graphics/pause_menu/pause_menu.png");
 
     teleport = loadTexture("./assets/graphics/tele.png");
+    boss_laser = loadTexture("./assets/graphics/boss_skill_laser.png");
 }
 
 //.............................Media............................................
