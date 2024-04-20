@@ -3,6 +3,7 @@
 
 #include "../common/common.h"
 #include "../common/entity.h"
+#include "../game/media.h"
 
 const double ROCK_HP = 300;
 const double ROCK_HP_UPGRADE = 200;
@@ -23,9 +24,11 @@ const int MAX_ROCK_SIZE = 81;
 class Rock : public Entity{
     double hp;
     bool active = false;
+    deque<Entity*> sparks;
 
 public:
     using Entity::Entity;
+    ~Rock();
     bool isActive() {
         return active;
     }
@@ -33,6 +36,7 @@ public:
 
     bool receiveDamage(double dmg);
     void handleMove();
+    void handleState(SDL_Renderer *renderer);
 };
 
 #endif // ROCK_H_INCLUDED

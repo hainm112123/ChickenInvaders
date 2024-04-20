@@ -110,7 +110,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         SDL_Rect src = {(index % m) * w + offsetX, (index / m) * h + offsetY, w - offsetX, h - offsetY};
         SDL_RenderCopy(renderer, texture.texture, &src, &rect);
     }
-    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SHIELD || type == BOSS_LASER) {
+    else if (type == LEVEL_UP || type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SHIELD || type == BOSS_LASER || type == SPARK) {
         int n = 1, m = 1, cnt = 1;
         double perPic = SECOND_PER_PICTURE;
         switch(type) {
@@ -144,12 +144,17 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
                 cnt = m * n;
                 perPic = SECOND_PER_PICTURE;
                 break;
+            case SPARK:
+                m = 2;
+                n = 5;
+                cnt = m * n;
+                perPic = SECOND_PER_PICTURE;
             default:
                 break;
         }
         currentTime += elapsed;
         if (currentTime >= perPic * cnt) {
-            if (type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT) return;
+            if (type == EXPLOSION || type == BIG_EXPLOSION || type == TELEPORT || type == SPARK) return;
             currentTime -= perPic * cnt;
         }
         int ind = int(currentTime / perPic);

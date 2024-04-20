@@ -247,6 +247,7 @@ void Game::process_enemy() {
         if (rock->isActive()) {
             rock->handleMove();
             rock->render(renderer);
+            rock->handleState(renderer);
             enemy_positions.push_back(make_pair(rock->get_act_x(), rock->get_act_y()));
         }
     }

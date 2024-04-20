@@ -86,7 +86,7 @@ class Chicken {
     double rocketTimeCounter = 0, laserTimeCounter = 0;
     int num_laser_left = 10;
 
-    deque<Entity*> explosions;
+    deque<Entity*> explosions, sparks;
 
 public:
     Chicken(Game *_game, ChickenType _type = CHICKEN_SMALL, ChickenMoveType _moveType = CHICKEN_BASIC_MOVE, int game_difficulty = 0, vector<int>args = {});

@@ -55,6 +55,9 @@ const int HEALTH_BAR_HEIGHT = 80;
 const int HEALTH_BORDER_WIDTH = 277;
 const int HEALTH_BORDER_HEIGHT = 87;
 
+const int SPARK_WIDTH = 60;
+const int SPARK_HEIGHT = 45;
+
 int Rand(int l, int r);
 
 double dist(double x, double y, double u, double v);

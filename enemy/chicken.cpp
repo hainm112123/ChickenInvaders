@@ -59,6 +59,8 @@ Chicken::~Chicken() {
     bullets.clear();
     for (Entity *explosion: explosions) delete(explosion);
     explosions.clear();
+    for (Entity *spark: sparks) delete(spark);
+    sparks.clear();
 }
 
 void Chicken::render(SDL_Renderer *renderer) {
@@ -113,6 +115,9 @@ void Chicken::_move() {
 
 bool Chicken::receiveDamage(double dmg) {
 //    cout << hp << " " << dmg << "\n";
+    SDL_Rect rect = entity.getRect();
+    Entity *spark = new Entity(SPARK, {rect.x + rect.w/2 - SPARK_WIDTH/2, rect.y + rect.h/2 - SPARK_HEIGHT/2, SPARK_WIDTH, SPARK_HEIGHT}, Gallery::Instance()->spark);
+    sparks.push_back(spark);
     hp -= dmg;
     return hp > 0;
 }
@@ -158,6 +163,18 @@ void Chicken::handleExplosion(SDL_Renderer *renderer) {
         delete(explosion);
     }
     for (auto *explosion: explosions) explosion->render(renderer);
+
+    while (!sparks.empty() && sparks.front()->CurrentTime() >= SECOND_PER_PICTURE * 10) {
+        Entity *spark = sparks.front();
+        sparks.pop_front();
+        delete(spark);
+    }
+    SDL_Rect rect = entity.getRect();
+    for (auto *spark: sparks) {
+//        cout << "spark render\n";
+        spark->setRect(rect.x + rect.w/2 - spark->getW()/2, rect.y + rect.h/2 - spark->getH()/2);
+        spark->render(renderer);
+    }
 }
 
 bool Chicken::checkBulletCollision(Entity *other) {

@@ -60,6 +60,7 @@ Gallery::~Gallery() {
     SDL_DestroyTexture(pause_menu.texture);
     SDL_DestroyTexture(teleport.texture);
     SDL_DestroyTexture(boss_laser.texture);
+    SDL_DestroyTexture(spark.texture);
 
     instance = nullptr;
 }
@@ -256,6 +257,8 @@ void Gallery::loadGamePictures() {
 
     teleport = loadTexture("./assets/graphics/tele.png");
     boss_laser = loadTexture("./assets/graphics/boss_skill_laser.png");
+
+    spark = loadTexture("./assets/graphics/spark.png");
 }
 
 //.............................Media............................................
