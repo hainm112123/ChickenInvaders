@@ -2,7 +2,8 @@
 #include "../game/game.h"
 #include "../weapon/bullet.h"
 
-Gundam::Gundam():
+Gundam::Gundam(Player _player_id):
+    player_id(_player_id),
     entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}),
     shield(SHIELD), laser(LASER),
     reviveTimer(GUNDAM_REVIVE_TIME), shieldTimer(GUNDAM_SHIELD_DURATION), laserTimer(GUNDAM_LASER_DURATION)
@@ -77,7 +78,7 @@ void Gundam::_move() {
 void Gundam::control(SDL_Event event) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
 //        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
-        if (MoveKeyCode[type] == event.key.keysym.sym) {
+        if (MoveKeyCode[player_id][type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
 //                entity.setStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
                 entity.updateStep(GUNDAM_SPEED * gundam_step_x[type], GUNDAM_SPEED * gundam_step_y[type]);
@@ -113,7 +114,7 @@ void Gundam::control(SDL_Event event) {
         }
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-        if (event.key.keysym.sym == SDLK_SPACE && alive && laserTimer.timeIsUp() && fire_timer.timeIsUp()) {
+        if (event.key.keysym.sym == AttackKeyCode[player_id] && alive && laserTimer.timeIsUp() && fire_timer.timeIsUp()) {
             fire_timer.startCountdown();
 
             Bullet *bullet = new Bullet(getCurrentWeapon());
@@ -129,7 +130,7 @@ void Gundam::control(SDL_Event event) {
 //            revive();
 ////            cout << alive << " " << entity.getX() << " " << entity.getY() << "\n";
 //        }
-        if (event.key.keysym.sym == SDLK_q && alive) {
+        if (event.key.keysym.sym == SwapWeaponKeyCode[player_id] && alive) {
             changeWeapon();
         }
     }

@@ -58,6 +58,11 @@ enum GameStatus {
     GAME_OVER,
 };
 
+enum GameMode {
+    GAME_SINGLE_PLAYER = 0,
+    GAME_MULTIPLAYER,
+};
+
 enum GameDifficulty {
     GAME_EASY = 0,
     GAME_NORMAL,
@@ -89,8 +94,8 @@ enum MainMenuTab {
     MAIN_MENU_QUIT,
 };
 enum PlayMenuTab {
-    PLAY_MENU_NEW_GAME = 1,
-    PLAY_MENU_CONTINUE
+    PLAY_MENU_SINGLE_PLAYER = 1,
+    PLAY_MENU_MULTIPLAYER
 };
 enum SettingsMenuTab {
     SETTING_MENU_DIFFICULTY = 1,
@@ -168,10 +173,12 @@ class Game {
     int score, NG = 0, game_difficulty;
     GameRound round;
     GameStatus status;
+    GameMode mode = GAME_SINGLE_PLAYER;
     GameDifficulty difficultyState;
     GameAudio audioState;
     Entity background;
     double scrolling = 0;
+    int num_players = 1;
 
     Timer initTimer, gameEndTimer, rockWaveTimer, bossTurnTimer;
 //    Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
@@ -179,7 +186,7 @@ class Game {
     Text roundTitle, roundText;
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];
 
-    Gundam gundam;
+    vector<Gundam> gundam;
     Rocket rocket;
     double rocket_damage;
 
@@ -200,11 +207,11 @@ class Game {
     set<Upgrade*> upgrades;
     deque<Entity*> explosions;
 
-    int rocketCount = 0, frychickenCount = 0;
+    int rocketCount[2] = {0, 0}, frychickenCount[2] = {0, 0};
     map<string, int> scores;
-    vector<Entity> hearts;
-    Entity gundamLevelImage, rocketMini, frychickenMini;
-    Text scoreText, scoreValue, gundamLevelText, frychickenText, rocketText;
+    vector<vector<Entity>> hearts;
+    vector<Entity> gundamLevelImage, rocketMini, frychickenMini;
+    Text scoreText, scoreValue, gundamLevelText[2], frychickenText[2], rocketText[2];
 
     Entity pause_menu, home_button, audio_button, resume_button, pause_button;
 
@@ -253,7 +260,7 @@ public:
     void dropUpgrade(EntityType type);
     void addExplosion(SDL_Rect rect, int level);
     void addFriedChicken(double x, double y, int level);
-    void gundamDead(bool immediately = false);
+    void gundamDead(int ind, bool immediately = false);
     void chickenDead(Chicken *chicken);
     void chickenReceiveDamage(Chicken *chicken, double damage);
     void rockReceiveDamage(Rock *rock, double damage);
@@ -276,6 +283,9 @@ public:
     vector<pair<int, string>> getRanking();
 
     void _clear(bool round_init = false);
+
+    bool isRoundWon();
+    bool isGameOver();
 };
 
 #endif // GAME_H_INCLUDED
