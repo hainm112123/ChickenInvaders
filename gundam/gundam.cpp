@@ -2,7 +2,11 @@
 #include "../game/game.h"
 #include "../weapon/bullet.h"
 
-Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
+Gundam::Gundam():
+    entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}),
+    shield(SHIELD), laser(LASER),
+    reviveTimer(GUNDAM_REVIVE_TIME), shieldTimer(GUNDAM_SHIELD_DURATION), laserTimer(GUNDAM_LASER_DURATION)
+{
     lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
@@ -70,7 +74,7 @@ void Gundam::_move() {
 //    shield._move();
 }
 
-void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
+void Gundam::control(SDL_Event event) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
 //        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
         if (MoveKeyCode[type] == event.key.keysym.sym) {
@@ -109,7 +113,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
         }
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-        if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp() && fire_timer.timeIsUp()) {
+        if (event.key.keysym.sym == SDLK_SPACE && alive && laserTimer.timeIsUp() && fire_timer.timeIsUp()) {
             fire_timer.startCountdown();
 
             Bullet *bullet = new Bullet(getCurrentWeapon());
@@ -129,7 +133,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
             changeWeapon();
         }
     }
-    if (!gundamLaserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
+    if (!laserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
             setLaserOn(true);
             keydown[GUNDAM_FIRE] = 1;
@@ -259,4 +263,16 @@ void Gundam::resetControl() {
     entity.setStep(0, 0);
     setLaserOn(false);
     memset(keydown, 0, sizeof(keydown));
+}
+
+void Gundam::processTimer() {
+    reviveTimer.process();
+    shieldTimer.process();
+    laserTimer.process();
+}
+
+void Gundam::deactiveTimer() {
+    laserTimer.deactive();
+    reviveTimer.deactive();
+    shieldTimer.deactive();
 }

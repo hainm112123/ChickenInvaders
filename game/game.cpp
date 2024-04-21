@@ -9,7 +9,6 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     width(_width), height(_height),
     background(BACKGROUND, {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT}),
     initTimer(INIT_DELAY), gameEndTimer(GAME_END_DELAY), rockWaveTimer(ROCK_WAVE_DELAY), bossTurnTimer(BOSS_TURN_DELAY),
-    gundamReviveTimer(GUNDAM_REVIVE_TIME), gundamShieldTimer(GUNDAM_SHIELD_DURATION), gundamLaserTimer(GUNDAM_LASER_DURATION),
     roundTitle("", TEXT_COLOR), roundText("", TEXT_COLOR),
     gundam(),
     rocket(SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT, SCREEN_WIDTH/2 - ROCKET_WIDTH/2, SCREEN_HEIGHT/2 - ROCKET_HEIGHT/2),
@@ -227,13 +226,13 @@ void Game::process_game_state() {
 }
 
 void Game::process_gundam() {
-    if (gundamLaserTimer.timeIsUp()) gundam.setLaserOn(false);
-    if (!gundam.isAlive() && gundamReviveTimer.timeIsUp()) {
-        if (gundam.revive()) gundamShieldTimer.startCountdown();
+    if (gundam.laserTimer.timeIsUp()) gundam.setLaserOn(false);
+    if (!gundam.isAlive() && gundam.reviveTimer.timeIsUp()) {
+        if (gundam.revive()) gundam.shieldTimer.startCountdown();
     }
     gundam._move();
 //    cout << (Gallery::Instance()->gundam).w << " " << (Gallery::Instance()->gundam).h << "\n";
-    gundam.render(renderer, !gundamShieldTimer.timeIsUp(), !gundamLaserTimer.timeIsUp());
+    gundam.render(renderer, !gundam.shieldTimer.timeIsUp(), !gundam.laserTimer.timeIsUp());
 }
 
 void Game::process_enemy() {
@@ -468,7 +467,7 @@ void Game::process() {
             return;
         }
         if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
-            gundam.control(*event, gundamLaserTimer);
+            gundam.control(*event);
         }
         if (event->type == SDL_KEYDOWN && (event->key).keysym.sym == SDLK_r) {
             if (!rocket.Active() && rocketCount > 0 && gundam.isAlive()) {
@@ -494,9 +493,7 @@ void Game::process() {
     rockWaveTimer.process();
     bossTurnTimer.process();
 
-    gundamReviveTimer.process();
-    gundamShieldTimer.process();
-    gundamLaserTimer.process();
+    gundam.processTimer();
 
     for (Chicken *chicken: chickens) if (chicken->isAlive()) {
         chicken->timerProcess();
@@ -653,7 +650,7 @@ void Game::handleGameEvent() {
                 UpgradeType uType = upgrade->getType();
                 if (uType == UPGRADE_ADD_LASER) {
 //                    cout << "GET LASER\n";
-                    gundamLaserTimer.startCountdown();
+                    gundam.laserTimer.startCountdown();
                 }
                 else {
                     gundam.addWeapon(WeaponType(uType));
@@ -771,7 +768,7 @@ void Game::addExplosion(SDL_Rect rect, int level) {
 void Game::gundamDead(bool immediately) {
     if (hearts.empty()) return;
 
-    if (!gundamShieldTimer.timeIsUp()) {
+    if (!gundam.shieldTimer.timeIsUp()) {
         playChunk(Media::Instance()->bulletRock);
         return;
     }
@@ -787,7 +784,7 @@ void Game::gundamDead(bool immediately) {
 
     addExplosion(gundam.getEntity()->getRect(), 1);
     playChunk(Media::Instance()->explosions[0]);
-    gundamReviveTimer.startCountdown();
+    gundam.reviveTimer.startCountdown();
     if (hearts.empty()) {
         gameEndTimer.startCountdown();
     }
@@ -1403,9 +1400,7 @@ void Game::playAgain() {
 void Game::reset() {
     setGameStatus(GAME_STOP);
 
-    gundamLaserTimer.deactive();
-    gundamReviveTimer.deactive();
-    gundamShieldTimer.deactive();
+    gundam.deactiveTimer();
     initTimer.deactive();
 //    chickenTeleportCooldown.deactive();
 //    chickenTeleportDuration.deactive();

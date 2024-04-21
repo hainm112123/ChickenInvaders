@@ -174,7 +174,7 @@ class Game {
     double scrolling = 0;
 
     Timer initTimer, gameEndTimer, rockWaveTimer, bossTurnTimer;
-    Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
+//    Timer gundamReviveTimer, gundamShieldTimer, gundamLaserTimer;
 
     Text roundTitle, roundText;
     Text playerNames[NUMBER_SHOWED_PLAYER], playerScores[NUMBER_SHOWED_PLAYER];

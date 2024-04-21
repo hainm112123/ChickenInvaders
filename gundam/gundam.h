@@ -71,8 +71,9 @@ class Gundam {
     GundamMovingState moving_state;
     double turned_time;
 
-
 public:
+    Timer reviveTimer, shieldTimer, laserTimer;
+
     Gundam();
     ~Gundam();
 
@@ -111,7 +112,7 @@ public:
     void render(SDL_Renderer *renderer, bool hasShield = false, bool hasLaser = false);
 
     void _move();
-    void control(SDL_Event event, Timer &gundamLaserTimer);
+    void control(SDL_Event event);
     void handleBullet(SDL_Renderer *renderer, const vector<pair<double, double>> &enemy_positions);
     void removeBullet(Bullet *bullet);
     void dead();
@@ -119,6 +120,9 @@ public:
 
     void reset();
     void resetControl();
+
+    void processTimer();
+    void deactiveTimer();
 };
 
 #endif // GUNDAM_H_INCLUDED
