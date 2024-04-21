@@ -66,6 +66,8 @@ Game::Game(SDL_Renderer *_renderer, SDL_Event *_event, int _width, int _height):
     rocketMini.push_back(Entity(GUNDAM_STATE));
     frychickenMini.push_back(Entity(GUNDAM_STATE));
     frychickenMini.push_back(Entity(GUNDAM_STATE));
+    heart.push_back(Entity(HEART));
+    heart.push_back(Entity(HEART));
 }
 Game::~Game() {
     _clear();
@@ -207,28 +209,52 @@ bool touchRight(Chicken *chicken) {
 //............................process...............................................
 void Game::process_game_state() {
     const int offset = 10;
+    const int pad_0 = 5, pad_1 = 10, pad_2 = 15;
 
-    for (auto &v: hearts) for (auto &heart: v) heart.render(renderer);
+//    for (auto &v: hearts) for (auto &heart: v) heart.render(renderer);
     scoreText.renderText(fontGame, renderer);
     scoreValue.setText(to_string(score));
     scoreValue.renderText(fontRoundText, renderer);
 
     for (int i = 0; i < num_players; ++ i) {
-        gundamLevelImage[i].render(renderer);
+        heartText[i].setText(to_string(gundam[i].getLives()));
         gundamLevelText[i].setText(to_string(gundam[i].getLevel()));
-        gundamLevelText[i].renderText(fontGame, renderer);
-
-        frychickenMini[i].setRect(gundamLevelText[i].getX() + gundamLevelText[i].getW() + offset*2, gundamLevelImage[i].getY());
-        frychickenMini[i].render(renderer);
         frychickenText[i].setText(to_string(frychickenCount[i]));
-        frychickenText[i].setRect(frychickenMini[i].getX() + frychickenMini[i].getW() + offset/2, gundamLevelImage[i].getY());
-        frychickenText[i].renderText(fontGame, renderer);
-
-        rocketMini[i].setRect(frychickenText[i].getX() + frychickenText[i].getW() + offset*2, gundamLevelImage[i].getY());
-        rocketMini[i].render(renderer);
         rocketText[i].setText(to_string(rocketCount[i]));
-        rocketText[i].setRect(rocketMini[i].getX() + rocketMini[i].getW() + offset/2, gundamLevelImage[i].getY());
-        rocketText[i].renderText(fontGame, renderer);
+        heartText[i].renderText(fontGundamState, renderer, true);
+        gundamLevelText[i].renderText(fontGundamState, renderer, true);
+        frychickenText[i].renderText(fontGundamState, renderer, true);
+        rocketText[i].renderText(fontGundamState, renderer, true);
+
+        if (i == 0) {
+            heart[i].setRect(pad_1, SCREEN_HEIGHT - heart[i].getH() - pad_0);
+            heartText[i].setRect(heart[i].getX() + heart[i].getW() + pad_0, heart[i].getY());
+            gundamLevelImage[i].setRect(heartText[i].getX() + heartText[i].getW() + pad_2, heart[i].getY());
+            gundamLevelText[i].setRect(gundamLevelImage[i].getX() + gundamLevelImage[i].getW() + pad_0, heart[i].getY());
+            frychickenMini[i].setRect(gundamLevelText[i].getX() + gundamLevelText[i].getW() + pad_2, heart[i].getY());
+            frychickenText[i].setRect(frychickenMini[i].getX() + frychickenMini[i].getW() + pad_0, heart[i].getY());
+            rocketMini[i].setRect(frychickenText[i].getX() + frychickenText[i].getW() + pad_2, heart[i].getY());
+            rocketText[i].setRect(rocketMini[i].getX() + rocketMini[i].getW() + pad_0, heart[i].getY());
+        }
+        else {
+            rocketText[i].setRect(SCREEN_WIDTH - pad_1 - rocketText[i].getW(), SCREEN_HEIGHT - heart[i].getH() - pad_0);
+            rocketMini[i].setRect(rocketText[i].getX() - rocketMini[i].getW() - pad_0, rocketText[i].getY());
+            frychickenText[i].setRect(rocketMini[i].getX() - frychickenText[i].getW() - pad_2, rocketText[i].getY());
+            frychickenMini[i].setRect(frychickenText[i].getX() - frychickenMini[i].getW() - pad_0, rocketText[i].getY());
+            gundamLevelText[i].setRect(frychickenMini[i].getX() - gundamLevelText[i].getW()- pad_2, rocketText[i].getY());
+            gundamLevelImage[i].setRect(gundamLevelText[i].getX() - gundamLevelImage[i].getW() - pad_0, rocketText[i].getY());
+            heartText[i].setRect(gundamLevelImage[i].getX() - heartText[i].getW() - pad_2, rocketText[i].getY());
+            heart[i].setRect(heartText[i].getX() - heart[i].getW() - pad_0, rocketText[i].getY());
+        }
+
+        heart[i].render(renderer);
+        gundamLevelImage[i].render(renderer);
+        frychickenMini[i].render(renderer);
+        rocketMini[i].render(renderer);
+        heartText[i].renderText(fontGundamState, renderer);
+        gundamLevelText[i].renderText(fontGundamState, renderer);
+        frychickenText[i].renderText(fontGundamState, renderer);
+        rocketText[i].renderText(fontGundamState, renderer);
     }
 
     if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
@@ -797,11 +823,11 @@ void Game::addExplosion(SDL_Rect rect, int level) {
 }
 
 void Game::gundamDead(int ind, bool immediately) {
-    if (hearts[ind].empty()) return;
+    if (gundam[ind].getLives() == 0) return;
 
     if (immediately) {
-        while (!hearts[ind].empty()) {
-            hearts[ind].pop_back();
+        while (gundam[ind].getLives() > 0) {
+//            hearts[ind].pop_back();
             gundam[ind].dead();
         }
     }
@@ -811,14 +837,14 @@ void Game::gundamDead(int ind, bool immediately) {
         return;
     }
     gundam[ind].dead();
-    hearts[ind].pop_back();
+//    hearts[ind].pop_back();
 
     addExplosion(gundam[ind].getEntity()->getRect(), 1);
     playChunk(Media::Instance()->explosions[0]);
     gundam[ind].reviveTimer.startCountdown();
 
     for (int i = 0; i < num_players; ++ i) {
-        if (hearts[i].empty()) {
+        if (gundam[ind].getLives() == 0) {
             gameEndTimer.startCountdown();
         }
     }
@@ -1117,16 +1143,16 @@ void Game::initData() {
     rocks.clear();
     upgrades.clear();
     explosions.clear();
-    hearts.clear();
+//    hearts.clear();
 
-    hearts.clear();
-    hearts.resize(2);
-    for (int ind = 0; ind < num_players; ++ ind) {
-        for (int i = 0; i < gundam[ind].getLives(); ++ i) {
-            hearts[ind].push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
-            hearts[ind].back().setTexture(Gallery::Instance()->heart);
-        }
-    }
+//    hearts.clear();
+//    hearts.resize(2);
+//    for (int ind = 0; ind < num_players; ++ ind) {
+//        for (int i = 0; i < gundam[ind].getLives(); ++ i) {
+//            hearts[ind].push_back(Entity(HEART, {10 + i * 27, 10, 25, 25}));
+//            hearts[ind].back().setTexture(Gallery::Instance()->heart);
+//        }
+//    }
 }
 
 vector<pair<int, string>> Game::getRanking() {
@@ -1156,6 +1182,7 @@ void Game::load() {
     fontGame = TTF_OpenFont("./assets/font/Zebulon.otf", 24);
     fontRoundTitle = TTF_OpenFont("./assets/font/Zebulon Bold.otf", 32);
     fontRoundText = TTF_OpenFont("./assets/font/Zebulon.otf", 20);
+    fontGundamState = TTF_OpenFont("./assets/font/Zebulon.otf", 16);
 
     initData();
 
@@ -1164,33 +1191,41 @@ void Game::load() {
     scoreText.setText("Score: ");
     scoreText.setColor(TEXT_COLOR);
     scoreText.renderText(fontGame, renderer, true);
-    scoreText.setRect(offset, offset + hearts[0].back().getH() + offset/2);
+    scoreText.setRect(offset, offset + offset/2);
     scoreValue.setText("0");
     scoreValue.setColor(TEXT_COLOR);
     scoreValue.renderText(fontRoundText, renderer, true);
 //    cout << scoreText.getW() << "\n";
-    scoreValue.setRect(offset + scoreText.getW(), offset + hearts[0].back().getH() + offset/2 + scoreText.getH() - scoreValue.getH());
+    scoreValue.setRect(offset + scoreText.getW(), offset + offset/2 + scoreText.getH() - scoreValue.getH());
 
     const int gundamStateOffsetY = scoreText.getY() + scoreText.getH() + offset/2;
     for (int i = 0; i < 2; ++ i) {
         int offset_x = i == 0 ? 0 : 1050;
-        gundamLevelImage[i].setTexture(Gallery::Instance()->level, true);
-        gundamLevelImage[i].setRect(offset + offset_x, gundamStateOffsetY);
+        gundamLevelImage[i].setTexture(Gallery::Instance()->level);
+        gundamLevelImage[i].setRect({0, 0, 8, 20});
+//        gundamLevelImage[i].setRect(offset + offset_x, gundamStateOffsetY);
         gundamLevelText[i].setText(to_string(gundam[i].getLevel()));
         gundamLevelText[i].setColor(TEXT_COLOR);
-        gundamLevelText[i].setRect(gundamLevelImage[i].getX() + gundamLevelImage[i].getW() + offset/2, gundamStateOffsetY);
+//        gundamLevelText[i].setRect(gundamLevelImage[i].getX() + gundamLevelImage[i].getW() + offset/2, gundamStateOffsetY);
 
-        frychickenMini[i].setTexture(Gallery::Instance()->fry_chicken_mini, true);
-        frychickenMini[i].setRect(gundamLevelText[i].getX() + gundamLevelText[i].getW() + offset + offset_x, gundamStateOffsetY);
+        frychickenMini[i].setTexture(Gallery::Instance()->fry_chicken_mini);
+        frychickenMini[i].setRect({0, 0, 26, 20});
+//        frychickenMini[i].setRect(gundamLevelText[i].getX() + gundamLevelText[i].getW() + offset + offset_x, gundamStateOffsetY);
         frychickenText[i].setText(to_string(frychickenCount[i]));
         frychickenText[i].setColor(TEXT_COLOR);
-        frychickenText[i].setRect(frychickenMini[i].getX() + frychickenMini[i].getW() + offset/2, gundamStateOffsetY);
+//        frychickenText[i].setRect(frychickenMini[i].getX() + frychickenMini[i].getW() + offset/2, gundamStateOffsetY);
 
-        rocketMini[i].setTexture(Gallery::Instance()->rocket_mini, true);
-        rocketMini[i].setRect(frychickenText[i].getX() + frychickenText[i].getW() + offset + offset_x, gundamStateOffsetY);
+        rocketMini[i].setTexture(Gallery::Instance()->rocket_mini);
+        rocketMini[i].setRect({0, 0, 6, 20});
+//        rocketMini[i].setRect(frychickenText[i].getX() + frychickenText[i].getW() + offset + offset_x, gundamStateOffsetY);
         rocketText[i].setText(to_string(rocketCount[i]));
         rocketText[i].setColor(TEXT_COLOR);
-        rocketText[i].setRect(rocketMini[i].getX() + rocketMini[i].getW() + offset/2, gundamStateOffsetY);
+//        rocketText[i].setRect(rocketMini[i].getX() + rocketMini[i].getW() + offset/2, gundamStateOffsetY);
+
+        heart[i].setTexture(Gallery::Instance()->heart);
+        heart[i].setRect({0, 0, 20, 20});
+        heartText[i].setText("5");
+        heartText[i].setColor(TEXT_COLOR);
     }
 
     //....................menu.....................................
@@ -1459,8 +1494,8 @@ void Game::reset() {
 
     initData();
 
-    scoreText.setRect(10, 10 + hearts[0].back().getH() + 5);
-    scoreValue.setRect(10 + scoreText.getW(), 10 + hearts[0].back().getH() + 5 + scoreText.getH() - scoreValue.getH());
+    scoreText.setRect(10, 10 + 5);
+    scoreValue.setRect(10 + scoreText.getW(), 10 + 5 + scoreText.getH() - scoreValue.getH());
 }
 
 bool Game::isRoundWon() {

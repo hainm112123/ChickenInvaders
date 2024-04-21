@@ -90,7 +90,7 @@ void Entity::render(SDL_Renderer *renderer, int arg) {
         if (currentTime >= per_pic * n) currentTime -= per_pic * n;
         SDL_RenderCopy(renderer, textures[int(currentTime / per_pic)].texture, NULL, &rect);
     }
-    else if (type == MENU || type == HEART/* || type == SHIELD*/) {
+    else if (type == MENU || type == HEART || type == GUNDAM_STATE/* || type == SHIELD*/) {
         SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
     }
     else if (type == BACKGROUND) {

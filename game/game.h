@@ -166,7 +166,7 @@ struct LastGameData {
 class Game {
     SDL_Renderer *renderer;
     SDL_Event *event;
-    TTF_Font *fontMenu, *fontMenuHover, *fontGame, *fontRoundTitle, *fontRoundText;
+    TTF_Font *fontMenu, *fontMenuHover, *fontGame, *fontRoundTitle, *fontRoundText, *fontGundamState;
 
     bool roundWon;
     int width, height;
@@ -209,9 +209,9 @@ class Game {
 
     int rocketCount[2] = {0, 0}, frychickenCount[2] = {0, 0};
     map<string, int> scores;
-    vector<vector<Entity>> hearts;
-    vector<Entity> gundamLevelImage, rocketMini, frychickenMini;
-    Text scoreText, scoreValue, gundamLevelText[2], frychickenText[2], rocketText[2];
+//    vector<vector<Entity>> hearts;
+    vector<Entity> gundamLevelImage, rocketMini, frychickenMini, heart;
+    Text scoreText, scoreValue, gundamLevelText[2], frychickenText[2], rocketText[2], heartText[2];
 
     Entity pause_menu, home_button, audio_button, resume_button, pause_button;
 
