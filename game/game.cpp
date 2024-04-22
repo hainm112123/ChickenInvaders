@@ -289,8 +289,7 @@ void Game::process_enemy() {
     }
     if (change_target_time >= 0.8) {
         change_target_time -= 0.8;
-//        gundam_ind = Rand(0, num_players - 1);
-        gundam_ind = 1 - gundam_ind;
+        gundam_ind = Rand(0, num_players - 1);
     }
 
     enemy_positions.clear();
@@ -687,6 +686,7 @@ void Game::dropUpgrade(EntityType eType) {
 
     int x = Rand(50, SCREEN_WIDTH - 50), y = -10;
     UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(Rand(0, NUMBER_OF_UPGRADE - 2)));
+    if (round == BOSS_ROUND) uType = UPGRADE_ADD_LASER;
     Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
     upgrade->getEntity()->setStep(0, UPGRADE_SPEED);
     if (uType == UPGRADE_LEVEL_UP) {
