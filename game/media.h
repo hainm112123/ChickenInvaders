@@ -17,12 +17,13 @@ public:
         instance = new Gallery(_renderer);
     }
 
-    vector<vector<Texture>> gundamWeapons, chickens, gundams;
+    vector<vector<vector<Texture>>> gundams;
+    vector<vector<Texture>> gundamWeapons, chickens;
     vector<Texture> eggs, newWeapons, rocks, expolosions, fried_chickens, angry_boss;
     Texture background, menu, menu_settings, menu_control;
     Texture laser, levelUp, shield, heart, level, rocket_mini, fry_chicken_mini;
     Texture bossHealthBar, bossHealthBorder;
-    Texture rocket, big_explosion;
+    Texture rocket, big_explosion, spark;
     Texture pause_button, home_button, audio_muted_button, audio_unmuted_button, resume_button, pause_menu;
     Texture teleport, boss_laser;
 

@@ -39,20 +39,38 @@ enum GundamMovingState {
     GUNDAM_STAY,
     GUNDAM_MOVING_RIGHT
 };
+enum Player {
+    PLAYER_P1 = 0,
+    PLAYER_P2,
+};
+
 const int gundam_step_x[] = {0, -1, 0, 1};
 const int gundam_step_y[] = {-1, 0, 1, 0};
 
-const SDL_Keycode MoveKeyCode[] = {
-    SDLK_w,
-    SDLK_a,
-    SDLK_s,
-    SDLK_d,
+const SDL_Keycode MoveKeyCode[][4] = {
+    {
+        SDLK_w,
+        SDLK_a,
+        SDLK_s,
+        SDLK_d,
+    },
+    {
+        SDLK_UP,
+        SDLK_LEFT,
+        SDLK_DOWN,
+        SDLK_RIGHT
+    }
 };
+
+const SDL_Keycode AttackKeyCode[] = {SDLK_SPACE, SDLK_KP_1};
+const SDL_Keycode SwapWeaponKeyCode[] = {SDLK_q, SDLK_KP_2};
+const SDL_Keycode RocketKeyCode[] = {SDLK_r, SDLK_KP_3};
 
 class Game;
 
 class Gundam {
     Game *game;
+    Player player_id;
     Entity entity;
     set<Bullet*>bullets;
     int lives;
@@ -71,9 +89,10 @@ class Gundam {
     GundamMovingState moving_state;
     double turned_time;
 
-
 public:
-    Gundam();
+    Timer reviveTimer, shieldTimer, laserTimer;
+
+    Gundam(Player _player_id);
     ~Gundam();
 
     set<Bullet*> getBullets() const {
@@ -111,7 +130,7 @@ public:
     void render(SDL_Renderer *renderer, bool hasShield = false, bool hasLaser = false);
 
     void _move();
-    void control(SDL_Event event, Timer &gundamLaserTimer);
+    void control(SDL_Event event);
     void handleBullet(SDL_Renderer *renderer, const vector<pair<double, double>> &enemy_positions);
     void removeBullet(Bullet *bullet);
     void dead();
@@ -119,6 +138,9 @@ public:
 
     void reset();
     void resetControl();
+
+    void processTimer();
+    void deactiveTimer();
 };
 
 #endif // GUNDAM_H_INCLUDED

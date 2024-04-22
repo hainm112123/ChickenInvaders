@@ -24,6 +24,7 @@ enum EntityType {
     NEW_WEAPON,
     EXPLOSION,
     BIG_EXPLOSION,
+    SPARK,
     TELEPORT,
     ROCK,
     MENU,

@@ -29,6 +29,7 @@ int main(int agrc, char **argv)
         a = SDL_GetTicks();
         double delta = a - b;
         if (delta > (double)(1000)/144) {
+//            cout << delta << "\n";
             TimeManager::Instance()->process();
 //            cout << "FPS: " << 1000 / delta << "\n";
             b = a;

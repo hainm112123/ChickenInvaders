@@ -2,7 +2,12 @@
 #include "../game/game.h"
 #include "../weapon/bullet.h"
 
-Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}), shield(SHIELD), laser(LASER) {
+Gundam::Gundam(Player _player_id):
+    player_id(_player_id),
+    entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_WIDTH, GUNDAM_HEIGHT}),
+    shield(SHIELD), laser(LASER),
+    reviveTimer(GUNDAM_REVIVE_TIME), shieldTimer(GUNDAM_SHIELD_DURATION), laserTimer(GUNDAM_LASER_DURATION)
+{
     lives = GUNDAM_LIVES;
     alive = true;
     weapons.push_back(GUNDAM_BLASTER);
@@ -16,7 +21,7 @@ Gundam::Gundam(): entity(GUNDAM, {SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100, GUNDAM_
     turned_time = 0;
 
 //    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()], true);
-    entity.setTextures(Gallery::Instance()->gundams[appearance]);
+    entity.setTextures(Gallery::Instance()->gundams[player_id][appearance]);
     shield.setTexture(Gallery::Instance()->shield);
     int shieldSize = max(entity.getW(), entity.getH()) + 40;
 //    cout << entity.getX() << " " << entity.getW() << " " << shieldSize << "\n";
@@ -53,7 +58,7 @@ void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
     }
 //    cout << turned_time << " " << appearance << "\n";
 
-    entity.setTextures(Gallery::Instance()->gundams[appearance]);
+    entity.setTextures(Gallery::Instance()->gundams[player_id][appearance]);
     entity.render(renderer);
     if (hasShield) shield.render(renderer);
     if (hasLaser && laserOn) laser.render(renderer);
@@ -70,10 +75,10 @@ void Gundam::_move() {
 //    shield._move();
 }
 
-void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
+void Gundam::control(SDL_Event event) {
     for (int type = GUNDAM_MOVE_UP; type <= GUNDAM_MOVE_RIGHT; type += 1) {
 //        if (type == GUNDAM_MOVE_DOWN || type == GUNDAM_MOVE_UP) continue;
-        if (MoveKeyCode[type] == event.key.keysym.sym) {
+        if (MoveKeyCode[player_id][type] == event.key.keysym.sym) {
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
 //                entity.setStep(gundam_step_x[type] * GUNDAM_SPEED, gundam_step_y[type] * GUNDAM_SPEED);
                 entity.updateStep(GUNDAM_SPEED * gundam_step_x[type], GUNDAM_SPEED * gundam_step_y[type]);
@@ -109,7 +114,7 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
         }
     }
     if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-        if (event.key.keysym.sym == SDLK_SPACE && alive && gundamLaserTimer.timeIsUp() && fire_timer.timeIsUp()) {
+        if (event.key.keysym.sym == AttackKeyCode[player_id] && alive && laserTimer.timeIsUp() && fire_timer.timeIsUp()) {
             fire_timer.startCountdown();
 
             Bullet *bullet = new Bullet(getCurrentWeapon());
@@ -125,11 +130,11 @@ void Gundam::control(SDL_Event event, Timer &gundamLaserTimer) {
 //            revive();
 ////            cout << alive << " " << entity.getX() << " " << entity.getY() << "\n";
 //        }
-        if (event.key.keysym.sym == SDLK_q && alive) {
+        if (event.key.keysym.sym == SwapWeaponKeyCode[player_id] && alive) {
             changeWeapon();
         }
     }
-    if (!gundamLaserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
+    if (!laserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
             setLaserOn(true);
             keydown[GUNDAM_FIRE] = 1;
@@ -259,4 +264,16 @@ void Gundam::resetControl() {
     entity.setStep(0, 0);
     setLaserOn(false);
     memset(keydown, 0, sizeof(keydown));
+}
+
+void Gundam::processTimer() {
+    reviveTimer.process();
+    shieldTimer.process();
+    laserTimer.process();
+}
+
+void Gundam::deactiveTimer() {
+    laserTimer.deactive();
+    reviveTimer.deactive();
+    shieldTimer.deactive();
 }
