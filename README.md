@@ -1,5 +1,5 @@
-# Chicken Invaders
-- Thử nghiệm game: https://youtu.be/vwGsdCuc0U0
+![boss_rocket](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a2dd0c88-1444-40fe-8a6c-d0ae3e7ca7e1)# Chicken Invaders
+- Thử nghiệm game: [https://youtu.be/vwGsdCuc0U0](https://www.youtube.com/watch?v=gKGcTRLXTNg)
 
 ## Giới thiệu 
 Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền vượt qua các chướng ngại vật và tiêu diệt kẻ địch.
@@ -22,11 +22,20 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 **Bước 3:** Mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
 
 ## 1. Bắt đầu game
-- Click vào nút "Save the world!" để bắt đầu trò chơi.
+
+- Màn hình chính:
 
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/menu.png)
 
+- Click vào nút "Save the world!" để chọn chế độ chơi. Có 2 chế độ:
+  * Single player: 1 người chơi
+  * Multiplayer: 2 người chơi
+
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/play.png)
+
 - Chọn "Settings" để thay đổi độ khó và cài đặt âm thanh.
+  * Có 4 độ khó: Easy, Normal, Hard, Insane
+  * Âm thanh: có thể bật, tắt âm thanh, thay đổi độ lớn của nhạc nền(BGM) và âm thanh hiệu ứng(SFX)
 
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/settings.png)
 
@@ -34,7 +43,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/control.png)
 
-- Chọn "Hall of fame" để xem bảng xếp hạng. Có thể làm mới bảng xếp hạng.
+- Chọn "Hall of fame" để xem bảng xếp hạng. Có thể làm mới bảng xếp hạng bằng nút "Reset ranking"
 
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/ranking.png)
 
@@ -60,9 +69,11 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
   * Auto aim: ![gift3](https://github.com/hainm112123/ChickenInvaders/assets/108868969/41d997b6-c88a-4dd6-a5ea-58a0c2167eb3)
   * Laser: ![gift_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/46e55ac7-b61e-4112-a3a4-bd214bb2d36d)
 
-- Thông tin của phi thuyền:
-  * Mạng ![heart](https://github.com/hainm112123/ChickenInvaders/assets/108868969/edbb789f-bca5-4943-be26-421193e7a342): Mỗi lần phi thuyền nổ (do va chạm với kẻ địch hạn đạn pháo của kẻ địch), phi thuyền sẽ mất 1 mạng. Người chơi sẽ thua nếu phi thuyền mất hết mạng.
-  * Thông tin về cấp độ, số đùi gà phi thuyền đã nhặt và số tên lửa đang có: ![information](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d733ef32-44fa-4209-9471-e3271de22cbc)
+- Thông tin của phi thuyền: ![information](https://github.com/hainm112123/ChickenInvaders/assets/108868969/0d3bda30-0ba8-468c-919f-5f457e976e52)
+  * Mạng: Mỗi lần phi thuyền nổ (do va chạm với kẻ địch hạn đạn pháo của kẻ địch), phi thuyền sẽ mất 1 mạng. Người chơi sẽ thua nếu phi thuyền mất hết mạng.
+  * Cấp độ: Sức mạnh đạn do phi thuyền bắn ra phụ thuộc vào cấp độ. Tăng cấp sẽ nâng cấp sát thương và hình dạng của đạn
+  * Số đùi gà phi thuyền đã nhặt: Mỗi 30 đùi gà nhặt được sẽ đổi ra một lần sử dụng tên lửa
+  * Số lần sử dụng tên lửa
 
 ### b. Kẻ địch
 - Thiên thạch ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/rock.png): thiên thạch bay với vận tốc cao, làm nổ phi thuyền chỉ với một cú chạm.
@@ -70,7 +81,8 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 - Gà lớn ![chicken_big](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e4a61785-5407-4f1d-9eed-12ff3a3c25c4): loại gà cỡ lớn, lượng máu khá cao. Ở màn chơi có gà lớn, người chơi cần hạ gục nó trong thời gian quy định. Có kĩ năng đặc biệt dịch chuyển(teleport) ![tele](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d773ca17-e93a-4845-bc4b-dbb38e637804)
 - Gà quân đội(Boss) ![boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d999b775-c3ce-41fe-ab36-d03a0b25d1f6): loại gà có sức mạnh cao, lượng máu lớn, có vũ khí và kĩ năng đặc biệt.
   * Vũ khí: Bom hạt nhân ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/bomb.png): loại vũ khí nguy hiểm, có thể gây phá hủy phi thuyền qua một cú va chạm hoặc dư chấn từ vụ nổ.
-  * Kĩ năng đặc biệt: Tên lửa ![rocket_boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d5fc2f99-af65-4325-ba8b-91aabd2acb12): hóa thành một quả tên lửa cỡ lớn, lao về phía phi thuyền của người chơi, gây sát thương và tạo ra vùng dư chấn xung quanh.
+  * Kĩ năng đặc biệt 1: Tên lửa ![rocket_boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d5fc2f99-af65-4325-ba8b-91aabd2acb12): hóa thành một quả tên lửa cỡ lớn, lao về phía phi thuyền của người chơi, gây sát thương và tạo ra vùng dư chấn xung quanh.
+  * Kĩ năng đặc biệt 2: Laser ![boss_skill_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/cc1341d6-7b59-4e49-abaf-5bbb7e43e1ae): Tạo ra những trùm laser có sức sát thương cực lớn.
 - Thanh máu ![boss_health_bar](https://github.com/hainm112123/ChickenInvaders/assets/108868969/4f26eccf-0169-4202-a460-1be026f8cf87): Thanh máu của kẻ địch, hiện khi đối đầu với gà lớn hoặc gà quân đội.
 - Đùi gà ![fried-chicken](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a21bf939-8e05-47a3-bcd0-a3e586183072): Rơi ra khi tiêu diệt kẻ địch. Nhặt được một số lượng nhất định sẽ cho người chơi một quả tên lửa.
 
@@ -91,21 +103,24 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
   * ESC: tạm dừng game
 - Về gameplay
   * Trò chơi sẽ diễn ra theo từng màn, nhiệm vụ của người chơi là sống sót, tiêu diệt kẻ địch, vượt qua các màn và đạt điểm số cao nhất có thể
+  * Có nhiều độ khó cho người chơi lựa chọn. Độ khó cao hơn cũng sẽ cho điểm cao hơn khi tiêu diệt kẻ địch và qua màn
+  * Có 2 chế độ là 1 người chơi và 2 người chơi
   * Trò chơi sẽ kết thúc khi phi thuyền của người chơi hết mạng
   * Sau khi trò chơi kết thúc, một màn hình để người chơi nhập tên lên bảng xếp hạng sẽ xuất hiện
     ![game_over](https://github.com/hainm112123/ChickenInvaders/assets/108868969/86ef7882-d670-403e-b425-347dae8e7d8e)
 
 ## 4. Một vài hình ảnh trong game
 
-![game_chicken_round](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e49a17d1-4db3-49d2-bb72-15a8450935c4)
-![game_chicken_circle](https://github.com/hainm112123/ChickenInvaders/assets/108868969/1fd16f85-990a-4bf2-a5ad-e3e283375d2c)
-![game_rock_side](https://github.com/hainm112123/ChickenInvaders/assets/108868969/069d9633-6306-4a91-a766-dd405263fe69)
-![game_chicken_dodge](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e29eb925-8fce-4144-84e5-7b5809e35833)
-![game_rocket](https://github.com/hainm112123/ChickenInvaders/assets/108868969/186722b3-61da-4f66-9e89-3d0835edf7f4)
-![game_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/63e71540-eda9-4ec2-8d05-c4cda568a961)
-![game_rock_fall](https://github.com/hainm112123/ChickenInvaders/assets/108868969/356310cb-3799-4e0b-be0b-491afe1e0c6c)
-![game_boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/797b8469-c95b-4e2a-84ba-fcaa447bc114)
-![game_boss_skill](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d0cbb570-8a1a-4ee9-a150-c5013151a480)
+![round_chicken](https://github.com/hainm112123/ChickenInvaders/assets/108868969/5a755b37-c000-458e-a79f-30953ec5918d)
+![round_chicken_cycle](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e9f50c16-e7aa-4a47-b9d5-17c2a911cae8)
+![round_chicken_dodge](https://github.com/hainm112123/ChickenInvaders/assets/108868969/f64d8949-871b-4bf5-ad6c-4e3ed7a89013)
+![round_rock_fall](https://github.com/hainm112123/ChickenInvaders/assets/108868969/fb442eea-74da-40ee-a806-688cc215f3e5)
+![round_rock_side](https://github.com/hainm112123/ChickenInvaders/assets/108868969/9bffa0f9-95e5-4f77-b07a-f67c7d01c593)
+![boss_rocket](https://github.com/hainm112123/ChickenInvaders/assets/108868969/cce504fa-8c84-456a-adab-004aa1d8ffc9)
+![boss_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a4d00983-e645-4d7f-b88f-5638a9f05e0e)
+![game_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/0fe592e6-453e-41cb-9e68-348ce1471731)
+![multiplayer](https://github.com/hainm112123/ChickenInvaders/assets/108868969/66b61ac6-eaf5-45b8-bb33-0581dcbc7ff7)
+
 
 ## 5. Về source code của game
 - Folder assets: Chứa các folder hình ảnh, âm thanh, phông chữ, dữ liệu của game
