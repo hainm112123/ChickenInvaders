@@ -31,7 +31,7 @@ Gallery::~Gallery() {
     for (auto textures: gundamWeapons) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (auto textures: chickens) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (Texture texture: eggs) SDL_DestroyTexture(texture.texture);
-    for (auto textures: gundams) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
+    for (auto texturess: gundams) for (auto textures: texturess) for (Texture texture: textures) SDL_DestroyTexture(texture.texture);
     for (Texture texture: newWeapons) SDL_DestroyTexture(texture.texture);
     for (Texture texture: rocks) SDL_DestroyTexture(texture.texture);
     for (Texture texture: expolosions) SDL_DestroyTexture(texture.texture);
@@ -157,41 +157,72 @@ void Gallery::loadGamePictures() {
 //        loadTexture("./assets/graphics/egg_boss.png"),
     };
     gundams = {
-//        loadTexture("./assets/graphics/player-red-1.png"),
-//        loadTexture("./assets/graphics/player-blue-1.png"),
-//        loadTexture("./assets/graphics/player-green-1.png"),
-//        loadTexture("./assets/graphics/player-black.png"),
         {
-            loadTexture("./assets/graphics/gundam/gundam_left_2_1.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_2_2.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_2_3.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_2_2.png")
+            {
+                loadTexture("./assets/graphics/gundam/gundam_left_2_1.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_2_2.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_2_3.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_2_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam/gundam_left_1_1.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_1_2.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_1_3.png"),
+                loadTexture("./assets/graphics/gundam/gundam_left_1_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam/gundam_center_1.png"),
+                loadTexture("./assets/graphics/gundam/gundam_center_2.png"),
+                loadTexture("./assets/graphics/gundam/gundam_center_3.png"),
+                loadTexture("./assets/graphics/gundam/gundam_center_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam/gundam_right_1_1.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_1_2.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_1_3.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_1_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam/gundam_right_2_1.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_2_2.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_2_3.png"),
+                loadTexture("./assets/graphics/gundam/gundam_right_2_2.png")
+            }
         },
         {
-            loadTexture("./assets/graphics/gundam/gundam_left_1_1.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_1_2.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_1_3.png"),
-            loadTexture("./assets/graphics/gundam/gundam_left_1_2.png")
-        },
-        {
-            loadTexture("./assets/graphics/gundam/gundam_center_1.png"),
-            loadTexture("./assets/graphics/gundam/gundam_center_2.png"),
-            loadTexture("./assets/graphics/gundam/gundam_center_3.png"),
-            loadTexture("./assets/graphics/gundam/gundam_center_2.png")
-        },
-        {
-            loadTexture("./assets/graphics/gundam/gundam_right_1_1.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_1_2.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_1_3.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_1_2.png")
-        },
-        {
-            loadTexture("./assets/graphics/gundam/gundam_right_2_1.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_2_2.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_2_3.png"),
-            loadTexture("./assets/graphics/gundam/gundam_right_2_2.png")
+            {
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_2_1.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_2_2.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_2_3.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_2_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_1_1.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_1_2.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_1_3.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_left_1_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam_p2/gundam_center_1.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_center_2.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_center_3.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_center_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_1_1.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_1_2.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_1_3.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_1_2.png")
+            },
+            {
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_2_1.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_2_2.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_2_3.png"),
+                loadTexture("./assets/graphics/gundam_p2/gundam_right_2_2.png")
+            }
         }
     };
+
     rocks = {
         loadTexture("./assets/graphics/asteroid1.png"),
         loadTexture("./assets/graphics/asteroid2.png"),

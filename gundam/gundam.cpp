@@ -21,7 +21,7 @@ Gundam::Gundam(Player _player_id):
     turned_time = 0;
 
 //    entity.setTexture(Gallery::Instance()->gundams[getCurrentWeapon()], true);
-    entity.setTextures(Gallery::Instance()->gundams[appearance]);
+    entity.setTextures(Gallery::Instance()->gundams[player_id][appearance]);
     shield.setTexture(Gallery::Instance()->shield);
     int shieldSize = max(entity.getW(), entity.getH()) + 40;
 //    cout << entity.getX() << " " << entity.getW() << " " << shieldSize << "\n";
@@ -58,7 +58,7 @@ void Gundam::render(SDL_Renderer *renderer, bool hasShield, bool hasLaser) {
     }
 //    cout << turned_time << " " << appearance << "\n";
 
-    entity.setTextures(Gallery::Instance()->gundams[appearance]);
+    entity.setTextures(Gallery::Instance()->gundams[player_id][appearance]);
     entity.render(renderer);
     if (hasShield) shield.render(renderer);
     if (hasLaser && laserOn) laser.render(renderer);
