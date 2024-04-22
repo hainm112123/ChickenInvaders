@@ -118,8 +118,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_rock_side.png)
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/boss_rocket.png)
 ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/boss_laser.png)
-![multiplayer](https://github.com/hainm112123/ChickenInvaders/assets/108868969/66b61ac6-eaf5-45b8-bb33-0581dcbc7ff7)
-
+![multiplayer](https://github.com/hainm112123/ChickenInvaders/assets/108868969/9d244a3b-464a-4392-804f-a76524a37615)
 
 ## 5. Về source code của game
 - Folder assets: Chứa các folder hình ảnh, âm thanh, phông chữ, dữ liệu của game
