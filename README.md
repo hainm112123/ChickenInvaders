@@ -1,4 +1,4 @@
-![boss_rocket](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a2dd0c88-1444-40fe-8a6c-d0ae3e7ca7e1)# Chicken Invaders
+# Chicken Invaders
 - Thử nghiệm game: [https://youtu.be/vwGsdCuc0U0](https://www.youtube.com/watch?v=gKGcTRLXTNg)
 
 ## Giới thiệu 
@@ -82,7 +82,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 - Gà quân đội(Boss) ![boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d999b775-c3ce-41fe-ab36-d03a0b25d1f6): loại gà có sức mạnh cao, lượng máu lớn, có vũ khí và kĩ năng đặc biệt.
   * Vũ khí: Bom hạt nhân ![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/bomb.png): loại vũ khí nguy hiểm, có thể gây phá hủy phi thuyền qua một cú va chạm hoặc dư chấn từ vụ nổ.
   * Kĩ năng đặc biệt 1: Tên lửa ![rocket_boss](https://github.com/hainm112123/ChickenInvaders/assets/108868969/d5fc2f99-af65-4325-ba8b-91aabd2acb12): hóa thành một quả tên lửa cỡ lớn, lao về phía phi thuyền của người chơi, gây sát thương và tạo ra vùng dư chấn xung quanh.
-  * Kĩ năng đặc biệt 2: Laser ![boss_skill_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/cc1341d6-7b59-4e49-abaf-5bbb7e43e1ae): Tạo ra những trùm laser có sức sát thương cực lớn.
+  * Kĩ năng đặc biệt 2: Laser ![boss_skill_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/497f9073-aa5a-43c1-b8ff-5bc92c56e2a0): Tạo ra những trùm laser có sức sát thương cực lớn.
 - Thanh máu ![boss_health_bar](https://github.com/hainm112123/ChickenInvaders/assets/108868969/4f26eccf-0169-4202-a460-1be026f8cf87): Thanh máu của kẻ địch, hiện khi đối đầu với gà lớn hoặc gà quân đội.
 - Đùi gà ![fried-chicken](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a21bf939-8e05-47a3-bcd0-a3e586183072): Rơi ra khi tiêu diệt kẻ địch. Nhặt được một số lượng nhất định sẽ cho người chơi một quả tên lửa.
 
