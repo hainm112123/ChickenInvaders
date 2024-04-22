@@ -278,6 +278,20 @@ void Game::process_gundam() {
 }
 
 void Game::process_enemy() {
+    static int gundam_ind = Rand(0, num_players - 1);
+    static double change_target_time = 0;
+
+    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
+        change_target_time += TimeManager::Instance()->getElapsedTime();
+    }
+    else {
+        change_target_time = 0;
+    }
+    if (change_target_time >= 0.8) {
+        change_target_time -= 0.8;
+        gundam_ind = Rand(0, num_players - 1);
+    }
+
     enemy_positions.clear();
     for (Rock *rock: rocks) if (!rock->isActive()) {
         removeRock(rock);
@@ -318,7 +332,7 @@ void Game::process_enemy() {
 
             if (chicken->chicken_type() == CHICKEN_BOSS) {
                 chicken->useRocket();
-                int gundam_ind = Rand(0, num_players - 1);
+//                int gundam_ind = Rand(0, num_players - 1);
                 chicken->handleRocket(renderer, gundam[gundam_ind].getEntity()->get_act_x(), gundam[gundam_ind].getEntity()->get_act_y());
                 chicken->useLaser();
                 chicken->handleLaser(renderer, gundam[gundam_ind].getEntity()->getX());
@@ -397,7 +411,7 @@ void Game::process_enemy() {
             for (Chicken *chicken: chickens) {
                 ChickenMoveState moveState = chicken->getMoveState();
                 int H_Rate = 50, V_Rate = 50;
-                int gundam_ind = Rand(0, num_players - 1);
+//                int gundam_ind = Rand(0, num_players - 1);
                 if (gundam[gundam_ind].getEntity()->getX() < chicken->getEntity()->getX()) {
                     H_Rate = chicken_type == CHICKEN_BOSS ? 80 : 30;
                 }
@@ -672,6 +686,7 @@ void Game::dropUpgrade(EntityType eType) {
 
     int x = Rand(50, SCREEN_WIDTH - 50), y = -10;
     UpgradeType uType = (eType == LEVEL_UP ? UPGRADE_LEVEL_UP : UpgradeType(Rand(0, NUMBER_OF_UPGRADE - 2)));
+    if (round == BOSS_ROUND) uType = UPGRADE_ADD_LASER;
     Upgrade *upgrade = new Upgrade(uType, {x, y, 0, 0});
     upgrade->getEntity()->setStep(0, UPGRADE_SPEED);
     if (uType == UPGRADE_LEVEL_UP) {
