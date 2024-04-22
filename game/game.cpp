@@ -278,6 +278,21 @@ void Game::process_gundam() {
 }
 
 void Game::process_enemy() {
+    static int gundam_ind = Rand(0, num_players - 1);
+    static double change_target_time = 0;
+
+    if (round == BOSS_ROUND || round == MINI_BOSS_ROUND) {
+        change_target_time += TimeManager::Instance()->getElapsedTime();
+    }
+    else {
+        change_target_time = 0;
+    }
+    if (change_target_time >= 0.8) {
+        change_target_time -= 0.8;
+//        gundam_ind = Rand(0, num_players - 1);
+        gundam_ind = 1 - gundam_ind;
+    }
+
     enemy_positions.clear();
     for (Rock *rock: rocks) if (!rock->isActive()) {
         removeRock(rock);
@@ -318,7 +333,7 @@ void Game::process_enemy() {
 
             if (chicken->chicken_type() == CHICKEN_BOSS) {
                 chicken->useRocket();
-                int gundam_ind = Rand(0, num_players - 1);
+//                int gundam_ind = Rand(0, num_players - 1);
                 chicken->handleRocket(renderer, gundam[gundam_ind].getEntity()->get_act_x(), gundam[gundam_ind].getEntity()->get_act_y());
                 chicken->useLaser();
                 chicken->handleLaser(renderer, gundam[gundam_ind].getEntity()->getX());
@@ -397,7 +412,7 @@ void Game::process_enemy() {
             for (Chicken *chicken: chickens) {
                 ChickenMoveState moveState = chicken->getMoveState();
                 int H_Rate = 50, V_Rate = 50;
-                int gundam_ind = Rand(0, num_players - 1);
+//                int gundam_ind = Rand(0, num_players - 1);
                 if (gundam[gundam_ind].getEntity()->getX() < chicken->getEntity()->getX()) {
                     H_Rate = chicken_type == CHICKEN_BOSS ? 80 : 30;
                 }
