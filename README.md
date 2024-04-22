@@ -1,5 +1,5 @@
 # Chicken Invaders
-- Thử nghiệm game: [https://youtu.be/vwGsdCuc0U0](https://www.youtube.com/watch?v=gKGcTRLXTNg)
+- Thử nghiệm game: https://www.youtube.com/watch?v=gKGcTRLXTNg
 
 ## Giới thiệu 
 Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền vượt qua các chướng ngại vật và tiêu diệt kẻ địch.
