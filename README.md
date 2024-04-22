@@ -111,14 +111,13 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 ## 4. Một vài hình ảnh trong game
 
-![round_chicken](https://github.com/hainm112123/ChickenInvaders/assets/108868969/5a755b37-c000-458e-a79f-30953ec5918d)
-![round_chicken_cycle](https://github.com/hainm112123/ChickenInvaders/assets/108868969/e9f50c16-e7aa-4a47-b9d5-17c2a911cae8)
-![round_chicken_dodge](https://github.com/hainm112123/ChickenInvaders/assets/108868969/f64d8949-871b-4bf5-ad6c-4e3ed7a89013)
-![round_rock_fall](https://github.com/hainm112123/ChickenInvaders/assets/108868969/fb442eea-74da-40ee-a806-688cc215f3e5)
-![round_rock_side](https://github.com/hainm112123/ChickenInvaders/assets/108868969/9bffa0f9-95e5-4f77-b07a-f67c7d01c593)
-![boss_rocket](https://github.com/hainm112123/ChickenInvaders/assets/108868969/cce504fa-8c84-456a-adab-004aa1d8ffc9)
-![boss_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/a4d00983-e645-4d7f-b88f-5638a9f05e0e)
-![game_laser](https://github.com/hainm112123/ChickenInvaders/assets/108868969/0fe592e6-453e-41cb-9e68-348ce1471731)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_chicken.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_chicken_cycle.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_chicken_dodge.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_rock_fall.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/round_rock_side.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/boss_rocket.png)
+![image](https://github.com/hainm112123/ChickenInvaders/blob/master/assets/images/boss_laser.png)
 ![multiplayer](https://github.com/hainm112123/ChickenInvaders/assets/108868969/66b61ac6-eaf5-45b8-bb33-0581dcbc7ff7)
 
 
