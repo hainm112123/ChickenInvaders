@@ -1,5 +1,6 @@
 # Chicken Invaders
-- Thử nghiệm game: https://www.youtube.com/watch?v=gKGcTRLXTNg
+- Cấu trúc code và thử nghiệm game: https://youtu.be/mh6qkOLmlrQ
+- Gameplay: https://www.youtube.com/watch?v=gKGcTRLXTNg
 
 ## Giới thiệu 
 Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền vượt qua các chướng ngại vật và tiêu diệt kẻ địch.
@@ -19,7 +20,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 **Bước 2:** Cài codeblocks-20.03mingw
 
-**Bước 3:** Mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
+**Bước 3:** Chạy file [ChickenInvaders.exe](ChickenInvaders.exe) hoặc mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
 
 ## 1. Bắt đầu game
 
