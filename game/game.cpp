@@ -1514,8 +1514,9 @@ void Game::reset() {
 }
 
 bool Game::isRoundWon() {
-    for (int i = 0; i < num_players; ++ i) if (gundam[i].getLives() <= 0) return 0;
-    return roundWon;
+    if (!roundWon) return 0;
+    for (int i = 0; i < num_players; ++ i) if (gundam[i].getLives() > 0) return 1;
+    return 0;
 }
 
 bool Game::isGameOver() {

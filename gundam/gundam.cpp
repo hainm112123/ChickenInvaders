@@ -134,7 +134,7 @@ void Gundam::control(SDL_Event event) {
             changeWeapon();
         }
     }
-    if (!laserTimer.timeIsUp() && event.key.keysym.sym == SDLK_SPACE && alive) {
+    if (!laserTimer.timeIsUp() && event.key.keysym.sym == AttackKeyCode[player_id] && alive) {
         if (event.type == SDL_KEYDOWN && event.key.repeat == 0) {
             setLaserOn(true);
             keydown[GUNDAM_FIRE] = 1;
