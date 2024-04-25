@@ -20,7 +20,9 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 **Bước 2:** Cài codeblocks-20.03mingw
 
-**Bước 3:** Chạy file [ChickenInvaders.exe](ChickenInvaders.exe) hoặc mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
+**Bước 3:** Thêm các file SDL2.dll, SDL2_image.dll, SDL2_mixer.dll, SDL2_ttf.dll vào thư mục gốc.
+
+**Bước 4:** Chạy file [ChickenInvaders.exe](ChickenInvaders.exe) hoặc mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
 
 ## 1. Bắt đầu game
 
