@@ -1,5 +1,5 @@
 # Chicken Invaders
-- Cấu trúc code và thử nghiệm game: https://youtu.be/mh6qkOLmlrQ
+- Cấu trúc code và thử nghiệm game: https://www.youtube.com/watch?v=Qx-JJN71anE
 - Gameplay: https://www.youtube.com/watch?v=gKGcTRLXTNg
 
 ## Giới thiệu 
