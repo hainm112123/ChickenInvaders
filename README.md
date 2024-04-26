@@ -112,10 +112,10 @@ Cách tải này tiết kiệm rất nhiều bộ nhớ
 ## 3. Điều khiển và gameplay
 
 - Các phím điều khiển:
-  * Di chuyển: các phím W, A, S, D tương ứng với di chuyển lên, sang trái, xuống, sang phải
-  * Đổi vũ khí: Q
-  * Sử dụng tên lửa: R
-  * Bắn đạn: Space
+  * Di chuyển: các phím W, A, S, D / 4 mũi tên tương ứng với di chuyển lên, sang trái, xuống, sang phải
+  * Đổi vũ khí: Q / Numpad 2
+  * Sử dụng tên lửa: R / Numpad 3
+  * Bắn đạn: Space / Numpad 1
   * ESC: tạm dừng game
 - Về gameplay
   * Trò chơi sẽ diễn ra theo từng màn, nhiệm vụ của người chơi là sống sót, tiêu diệt kẻ địch, vượt qua các màn và đạt điểm số cao nhất có thể
