@@ -6,6 +6,8 @@
 Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền vượt qua các chướng ngại vật và tiêu diệt kẻ địch.
 
 - [0. Cách tải game](#0-cách-tải-game)
+  * [a. Cách 1: Không bao gồm code](#a-cách-1-không-bao-gồm-code)
+  * [a. Cách 2: Bao gồm code](#b-cách-2-bao-gồm-code)
 - [1. Bắt đầu game](#1-bắt-đầu-game)
 - [2. Các thành phần trong game](#2-các-thành-phần-trong-game)
   * [a. Người chơi](#a-người-chơi)
@@ -16,13 +18,24 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 - [5. Về source code của game](#5-về-source-code-của-game)
 
 ## 0. Cách tải game
+
+### a. Cách 1: Không bao gồm code
+
+**Bước 1:** Tải file setup.exe tại link sau: https://drive.google.com/drive/folders/18dBnjlyfSMxZjxS16z4QSqli4jPXELCr?usp=sharing
+
+**Bước 2:** Chạy file setup.exe để cài game
+
+**Bước 3:** Chạy ChickenInvaders.exe để chơi game
+
+Cách tải này tiết kiệm rất nhiều bộ nhớ
+
+### b. Cách 2: Bao gồm code 
+
 **Bước 1:** Clone repo này về hoặc chọn Code -> Download Zip
 
 **Bước 2:** Cài codeblocks-20.03mingw
 
-**Bước 3:** Thêm các file SDL2.dll, SDL2_image.dll, SDL2_mixer.dll, SDL2_ttf.dll vào thư mục gốc.
-
-**Bước 4:** Chạy file [ChickenInvaders.exe](ChickenInvaders.exe) hoặc mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
+**Bước 3:** Chạy file [ChickenInvaders.exe](ChickenInvaders.exe) hoặc mở file [ChickenInvaders.cbp](ChickenInvaders.cbp) và chạy game bằng phím F9
 
 ## 1. Bắt đầu game
 
