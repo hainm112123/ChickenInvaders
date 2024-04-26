@@ -6,8 +6,8 @@
 Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền vượt qua các chướng ngại vật và tiêu diệt kẻ địch.
 
 - [0. Cách tải game](#0-cách-tải-game)
-  * [a. Cách 1: Không bao gồm code](#a-cách-1-không-bao-gồm-code)
-  * [a. Cách 2: Bao gồm code](#b-cách-2-bao-gồm-code)
+  * [a. Cách 1: Tải file setup](#a-cách-1-tải-file-setup)
+  * [a. Cách 2: Tải toàn bộ source code](#b-cách-2-tải-toàn-bộ-source-code)
 - [1. Bắt đầu game](#1-bắt-đầu-game)
 - [2. Các thành phần trong game](#2-các-thành-phần-trong-game)
   * [a. Người chơi](#a-người-chơi)
@@ -19,7 +19,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 ## 0. Cách tải game
 
-### a. Cách 1: Không bao gồm code
+### a. Cách 1: Tải file setup
 
 **Bước 1:** Tải file setup.exe tại link sau: https://drive.google.com/drive/folders/18dBnjlyfSMxZjxS16z4QSqli4jPXELCr?usp=sharing
 
@@ -29,7 +29,7 @@ Game bắn gà với nhiều màn chơi đa dạng, điều khiển phi thuyền
 
 Cách tải này tiết kiệm rất nhiều bộ nhớ
 
-### b. Cách 2: Bao gồm code 
+### b. Cách 2: Tải toàn bộ source code
 
 **Bước 1:** Clone repo này về hoặc chọn Code -> Download Zip
 
